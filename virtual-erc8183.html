@@ -1117,6 +1117,29 @@
   </footer>
 
   <script>
+    const ARTICLE_PASSWORD = "memberonly";
+    const ARTICLE_ACCESS_KEY = "duidui-blog-access";
+
+    function enforceArticleAccess() {
+      const cached = localStorage.getItem(ARTICLE_ACCESS_KEY);
+      if (cached === ARTICLE_PASSWORD) {
+        return;
+      }
+
+      const entered = window.prompt("Enter password to view this article:");
+      if (entered === ARTICLE_PASSWORD) {
+        localStorage.setItem(ARTICLE_ACCESS_KEY, ARTICLE_PASSWORD);
+        return;
+      }
+
+      if (entered !== null) {
+        window.alert("Incorrect password.");
+      }
+      window.location.href = "blog.html";
+    }
+
+    enforceArticleAccess();
+
     const clockEl = document.getElementById("clock");
 
     function updateClock() {

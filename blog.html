@@ -1273,7 +1273,7 @@
 
           <!-- Featured card — directly below the stats, inside the hero -->
           <div class="featured-wrap fade-up delay-4">
-            <article class="featured-card featured-card--image" onclick="location.href='virtual-erc8183.html'" style="cursor:pointer">
+            <article class="featured-card featured-card--image" onclick="openProtectedArticle('virtual-erc8183.html')" style="cursor:pointer">
               <div class="featured-topbar"></div>
               <img class="featured-bg-img" src="virtual_article.png" alt="" aria-hidden="true" />
               <div class="featured-img-overlay"></div>
@@ -1290,7 +1290,7 @@
                 <p class="featured-excerpt">
                   วิเคราะห์การ pivot ของ Virtuals Protocol จาก AI launchpad สู่ infrastructure layer ของ agent economy บน Ethereum
                 </p>
-                <a class="featured-cta" href="virtual-erc8183.html" onclick="event.stopPropagation()">
+                <a class="featured-cta" href="virtual-erc8183.html" onclick="event.stopPropagation(); return handleProtectedArticleLink(event, 'virtual-erc8183.html');">
                   อ่านบทความ
                   <svg class="featured-cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M5 12h14M13 6l6 6-6 6"/>
@@ -1417,7 +1417,7 @@
       <div class="post-list" id="post-list">
 
         <!-- Post: VIRTUAL / ERC-8183 -->
-        <article class="post-card post-card--landscape" data-cat="thesis" onclick="location.href='virtual-erc8183.html'">
+        <article class="post-card post-card--landscape" data-cat="thesis" onclick="openProtectedArticle('virtual-erc8183.html')">
           <div class="post-thumb-landscape">
             <img src="virtual_article.png" alt="ทำไม ERC-8183 อาจทำให้ VIRTUAL น่าสนใจอีกครั้งในปี 2026" />
           </div>
@@ -1427,7 +1427,7 @@
               <span class="meta-date">13 มี.ค. 2026</span>
               <span class="meta-dot">·</span>
               <span class="meta-read">5 นาที</span>
-              <a class="post-read-inline" href="virtual-erc8183.html" onclick="event.stopPropagation()">
+              <a class="post-read-inline" href="virtual-erc8183.html" onclick="event.stopPropagation(); return handleProtectedArticleLink(event, 'virtual-erc8183.html');">
                 อ่านบทความ
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               </a>
@@ -1612,6 +1612,39 @@
   </footer>
 
   <script>
+    const ARTICLE_PASSWORD = "memberonly";
+    const ARTICLE_ACCESS_KEY = "duidui-blog-access";
+
+    function requestArticleAccess() {
+      const cached = localStorage.getItem(ARTICLE_ACCESS_KEY);
+      if (cached === ARTICLE_PASSWORD) {
+        return true;
+      }
+
+      const entered = window.prompt("Enter password to view this article:");
+      if (entered === ARTICLE_PASSWORD) {
+        localStorage.setItem(ARTICLE_ACCESS_KEY, ARTICLE_PASSWORD);
+        return true;
+      }
+
+      if (entered !== null) {
+        window.alert("Incorrect password.");
+      }
+      return false;
+    }
+
+    function openProtectedArticle(url) {
+      if (requestArticleAccess()) {
+        window.location.href = url;
+      }
+    }
+
+    function handleProtectedArticleLink(event, url) {
+      event.preventDefault();
+      openProtectedArticle(url);
+      return false;
+    }
+
     // ── Clock ──
     function updateClock() {
       const now = new Date();
