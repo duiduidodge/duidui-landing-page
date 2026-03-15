@@ -1,0 +1,1685 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DUIDUI | Blog — บันทึกการลงทุนคริปโต</title>
+  <meta name="description" content="บันทึกการลงทุนคริปโตของ DUIDUI สำหรับมุมมองตลาด บทความ thesis และบันทึกรายสัปดาห์" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="DUIDUI | Blog — บันทึกการลงทุนคริปโต" />
+  <meta property="og:description" content="บันทึกการลงทุนคริปโตของ DUIDUI สำหรับมุมมองตลาด บทความ thesis และบันทึกรายสัปดาห์" />
+  <meta property="og:image" content="anime_bg.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@dodgeduidui" />
+  <meta name="twitter:title" content="DUIDUI | Blog — บันทึกการลงทุนคริปโต" />
+  <meta name="twitter:description" content="บันทึกการลงทุนคริปโตของ DUIDUI สำหรับมุมมองตลาด บทความ thesis และบันทึกรายสัปดาห์" />
+  <meta name="twitter:image" content="anime_bg.jpg" />
+  <meta name="theme-color" content="#1b2820" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #1b2820;
+      --ink: #cfe0d4;
+      --muted: #7a9e8a;
+      --accent: #2fb86a;
+      --accent-mid: #23a35c;
+      --accent-light: rgba(47, 184, 106, 0.15);
+      --accent-glow: rgba(47, 184, 106, 0.35);
+      --secondary: #3fbfa8;
+      --gold: #d4a832;
+      --line: rgba(255, 255, 255, 0.1);
+      --panel: rgba(255, 255, 255, 0.06);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.28);
+      --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 20px 56px rgba(0, 0, 0, 0.44);
+      --shadow-xl: 0 32px 80px rgba(0, 0, 0, 0.54);
+      --font-body: "Noto Sans Thai", "Sora", sans-serif;
+      --font-mono: "IBM Plex Sans Thai", "DM Mono", monospace;
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    ::selection { background: var(--accent); color: white; }
+    .mono { font-family: var(--font-mono); }
+
+    /* ── Grain ── */
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      z-index: 999;
+    }
+
+    /* ── Hero ── */
+    .hero-fullbleed {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 0 0 40px 40px;
+      box-shadow: 0 16px 48px rgba(4,16,10,0.22);
+    }
+
+    .header-scene {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 160px;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .header-scene img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 18%;
+      transform: scale(1.04);
+    }
+
+    .header-scene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(12,20,15,0.08) 0%, rgba(12,20,15,0.24) 42%, rgba(12,20,15,0.84) 100%),
+        linear-gradient(90deg, rgba(8,20,12,0.12) 0%, transparent 52%, rgba(8,20,12,0.1) 100%);
+    }
+
+    .hero-banner {
+      position: relative;
+      /* Height auto-sizes to content — no more fixed vh causing blank space */
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 34%;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(8,20,12,0.08) 0%, rgba(8,20,12,0.34) 34%, rgba(8,20,12,0.68) 100%),
+        linear-gradient(90deg, rgba(8,20,12,0.45) 0%, rgba(8,20,12,0.1) 55%, transparent 100%);
+      z-index: 1;
+    }
+
+
+    /* ── Site Header / Nav ── */
+    .site-header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 20px;
+    }
+    @media (min-width: 640px) { .site-header { padding: 18px 32px; } }
+    @media (min-width: 1024px) { .site-header { padding: 22px 48px; } }
+
+    .brand {
+      text-decoration: none;
+      color: rgba(246,251,247,0.95);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+    .brand .brand-star { color: #7debb0; }
+
+    /* Desktop nav pill — centered */
+    .nav-links-desktop {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .nav-container {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      padding: 3px 4px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+    .nav-link {
+      padding: 7px 14px;
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 16px;
+      height: 2px;
+      background: white;
+      border-radius: 1px;
+      transition: transform 250ms ease;
+    }
+    .nav-link:hover::after { transform: translateX(-50%) scaleX(1); }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .clock-display {
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ── Hero Two-Column Inner ── */
+    .hero-inner {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 128px 40px 48px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      align-items: stretch;
+      gap: 40px;
+    }
+
+    /* Left column: text fills upper space, featured card anchors at bottom */
+    .hero-left-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    /* Right column: mascot fills space above, social card anchors at bottom */
+    .hero-right-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Hero Text ── */
+    .hero-content {
+      padding-bottom: 0;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #5ecb8a;
+      box-shadow: 0 0 8px rgba(94,203,138,0.6);
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)}
+    }
+
+    .hero-eyebrow-text {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: rgba(200,240,215,0.9);
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .hero-headline {
+      margin: 0 0 20px;
+      font-size: clamp(52px, 7vw, 92px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+      color: #f0f8f3;
+      max-width: 12ch;
+    }
+
+    .hero-headline em {
+      font-style: normal;
+      color: #5ecb8a;
+    }
+
+    .hero-subline {
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.85;
+      color: rgba(200,225,210,0.78);
+      max-width: 36ch;
+    }
+
+    .hero-stats-row {
+      display: flex;
+      gap: 28px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .hero-stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .hero-stat-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: #f0f8f3;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      font-family: var(--font-mono);
+    }
+
+    .hero-stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: rgba(160,200,180,0.65);
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .hero-stat-divider {
+      width: 1px;
+      height: 36px;
+      background: rgba(255,255,255,0.12);
+    }
+
+    .hero-article-badge {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .hero-badge-count {
+      font-size: 32px;
+      font-weight: 800;
+      color: #f0f8f3;
+      letter-spacing: -0.06em;
+      line-height: 1;
+      font-family: var(--font-mono);
+    }
+
+    .hero-badge-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(160,200,180,0.55);
+      font-family: var(--font-mono);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── Mascot (inside right column, fully visible above social card) ── */
+    .hero-mascot-zone {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      position: relative;
+      z-index: 1;
+      padding-top: 8px;
+      min-height: 160px;
+    }
+
+    /* Glass overlay for sidebar-card when placed inside the hero */
+    .hero-social-panel {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 8px 40px rgba(4,16,10,0.22), 0 2px 8px rgba(17,122,67,0.08);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .mascot-glow {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 200px;
+      background: radial-gradient(ellipse, rgba(255,255,255,0.18) 0%, rgba(17,122,67,0.06) 40%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(40px);
+      pointer-events: none;
+      z-index: 0;
+      animation: glowPulse 5s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+      0%,100%{opacity:0.7} 50%{opacity:1}
+    }
+
+    .mascot-ground-shadow {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 180px;
+      height: 18px;
+      background: radial-gradient(ellipse, rgba(0,0,0,0.14) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: 1;
+      pointer-events: none;
+      filter: blur(4px);
+    }
+
+    .mascot-interactive {
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+      display: inline-block;
+      transform: scaleX(-1); /* flip horizontally */
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .mascot-interactive:hover {
+      transform: scaleX(-1) scale(1.04) rotate(-1deg); /* keep flip + hover */
+    }
+
+    .mascot-img-normal {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .mascot-img-wink {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity 120ms ease-in-out;
+      pointer-events: none;
+    }
+
+    .mascot-interactive:hover .mascot-img-wink {
+      opacity: 1;
+    }
+
+    /* ── Page Wrapper ── */
+    .page-wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      /* No top padding — hero fades directly into filter tabs */
+      padding: 48px 40px 96px;
+      position: relative;
+      z-index: 6;
+    }
+
+    /* (section-label removed — no longer needed) */
+
+    /* ── Featured Article (inside hero, single-column) ── */
+    .featured-wrap {
+      /* No extra margin — positioned directly inside hero-left-col */
+    }
+
+    .featured-card {
+      position: relative;
+      background: rgba(255,255,255,0.08);
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 8px 40px rgba(4,16,10,0.22), 0 2px 8px rgba(17,122,67,0.08);
+      overflow: hidden;
+      display: block;
+      transition: transform 300ms cubic-bezier(0.34,1.56,0.64,1), box-shadow 280ms ease;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .featured-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 56px rgba(4,16,10,0.28), 0 0 0 1px rgba(17,122,67,0.12);
+    }
+
+    /* Image-backed featured card */
+    .featured-card--image { background: #0d1a11; }
+
+    .featured-bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      opacity: 0.28;
+      transition: opacity 300ms ease, transform 400ms ease;
+    }
+    .featured-card--image:hover .featured-bg-img {
+      opacity: 0.34;
+      transform: scale(1.03);
+    }
+
+    .featured-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        160deg,
+        rgba(4,16,10,0.82) 0%,
+        rgba(4,16,10,0.72) 50%,
+        rgba(4,16,10,0.65) 100%
+      );
+      z-index: 1;
+    }
+
+    .featured-card--image .featured-body { position: relative; z-index: 2; }
+    .featured-card--image .featured-title { color: #f0f8f3; }
+    .featured-card--image .featured-excerpt { color: rgba(200,228,210,0.82); }
+
+    .featured-topbar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #4e9968 0%, #9fc88a 52%, #d8be6b 100%);
+      z-index: 2;
+    }
+
+    .featured-body {
+      padding: 28px 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .featured-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Category pills */
+    .cat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+    .cat-pill.narrative { background: rgba(47,184,106,0.14); color: var(--accent); border: 1px solid rgba(47,184,106,0.25); }
+    .cat-pill.insight { background: rgba(63,191,168,0.14); color: var(--secondary); border: 1px solid rgba(63,191,168,0.25); }
+    .cat-pill.thesis { background: rgba(212,168,50,0.14); color: #d4a832; border: 1px solid rgba(212,168,50,0.3); }
+    .cat-pill.featured-badge { background: rgba(47,184,106,0.88); color: #fff; border: none; }
+
+    .meta-dot { color: var(--line); }
+    .meta-date, .meta-read { font-size: 11px; color: var(--muted); letter-spacing: 0.04em; font-family: var(--font-mono); }
+
+    .featured-title {
+      margin: 14px 0 10px;
+      font-size: clamp(18px, 2vw, 26px);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .featured-excerpt {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.78;
+      color: var(--muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .featured-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 18px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      font-family: var(--font-mono);
+      transition: transform 240ms cubic-bezier(0.34,1.56,0.64,1), box-shadow 200ms ease, filter 200ms ease;
+      box-shadow: 0 6px 20px rgba(17,122,67,0.28);
+      width: fit-content;
+    }
+    .featured-cta:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 12px 32px rgba(17,122,67,0.38);
+      filter: brightness(1.08);
+    }
+    .featured-cta-arrow { transition: transform 200ms ease; }
+    .featured-cta:hover .featured-cta-arrow { transform: translateX(3px); }
+
+    /* (featured-visual removed — card is now single-column inside the hero) */
+
+    /* ── Filter Tabs ── */
+    .filter-wrap {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-bottom: 28px;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      padding: 4px;
+      width: fit-content;
+      box-shadow: 0 2px 10px rgba(17,122,67,0.06);
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .filter-wrap::-webkit-scrollbar { display: none; }
+
+    .filter-tab {
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 220ms cubic-bezier(0.34,1.56,0.64,1);
+      white-space: nowrap;
+      font-family: var(--font-mono);
+    }
+    .filter-tab:hover { color: var(--accent); background: var(--accent-light); }
+    .filter-tab.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 3px 12px rgba(17,122,67,0.32);
+    }
+
+    .filter-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px; height: 18px;
+      border-radius: 999px;
+      font-size: 9px;
+      padding: 0 4px;
+      background: rgba(255,255,255,0.28);
+      margin-left: 5px;
+    }
+    .filter-tab:not(.active) .filter-count { background: rgba(17,122,67,0.1); color: var(--accent); }
+
+    /* ── Content Layout ── */
+    .content-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 292px;
+      gap: 48px;
+      align-items: start;
+    }
+
+    /* ── Post List ── */
+    .post-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .post-card {
+      background: rgba(255,255,255,0.11);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.22);
+      padding: 20px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 260ms cubic-bezier(0.34,1.56,0.64,1), box-shadow 220ms ease, border-color 200ms ease;
+    }
+
+    .post-card-main {
+      display: grid;
+      grid-template-columns: 1fr 110px;
+      gap: 16px;
+      align-items: start;
+      flex: 1;
+    }
+
+    /* ── Landscape card (for articles with a banner image) ── */
+    .post-card--landscape {
+      padding: 0;
+      overflow: hidden;
+    }
+    /* gradient topbar sits above the image */
+    .post-card--landscape::before { z-index: 2; }
+    .post-card--landscape .post-thumb-landscape {
+      width: 100%;
+      height: 176px;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .post-card--landscape .post-thumb-landscape img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      display: block;
+      transition: transform 400ms ease;
+    }
+    .post-card--landscape:hover .post-thumb-landscape img {
+      transform: scale(1.03);
+    }
+    .post-card--landscape .post-card-body {
+      padding: 18px 20px 18px;
+    }
+    .post-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #4e9968 0%, #9fc88a 52%, #d8be6b 100%);
+      opacity: 0;
+      transition: opacity 220ms ease;
+    }
+    .post-card:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(0,0,0,0.4); border-color: rgba(47,184,106,0.3); }
+    .post-card:hover::before { opacity: 1; }
+    .post-card:hover .post-title { color: var(--accent); }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: nowrap;
+    }
+
+    .post-read-inline {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      color: var(--accent);
+      text-decoration: none;
+      opacity: 0.55;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: opacity 200ms ease, transform 200ms ease;
+    }
+    .post-card:hover .post-read-inline {
+      opacity: 1;
+      transform: translateX(3px);
+    }
+    .post-read-inline.is-disabled {
+      color: rgba(160, 200, 180, 0.55);
+      opacity: 0.7;
+      pointer-events: none;
+      transform: none !important;
+    }
+
+    .post-title {
+      margin: 0 0 10px;
+      font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+      line-height: 1.22;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+      color: var(--ink);
+      transition: color 200ms ease;
+    }
+
+    .post-excerpt {
+      margin: 0;
+      font-size: 0.94rem;
+      line-height: 1.88;
+      color: var(--muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+
+    .post-thumb-wrap {
+      width: 110px;
+      min-height: 110px;
+      border-radius: 14px;
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      align-self: stretch;
+    }
+
+    /* Category-specific thumb backgrounds */
+    [data-cat="thesis"] .post-thumb-wrap {
+      background: linear-gradient(155deg, rgba(212,168,50,0.22) 0%, rgba(212,168,50,0.05) 100%);
+      border: 1px solid rgba(212,168,50,0.22);
+    }
+    [data-cat="insight"] .post-thumb-wrap {
+      background: linear-gradient(155deg, rgba(63,191,168,0.22) 0%, rgba(63,191,168,0.05) 100%);
+      border: 1px solid rgba(63,191,168,0.2);
+    }
+    [data-cat="narrative"] .post-thumb-wrap {
+      background: linear-gradient(155deg, rgba(47,184,106,0.22) 0%, rgba(47,184,106,0.05) 100%);
+      border: 1px solid rgba(47,184,106,0.2);
+    }
+
+    /* Large background letter */
+    .post-thumb-letter {
+      position: absolute;
+      bottom: -12px;
+      right: -4px;
+      font-family: "Sora", sans-serif;
+      font-size: 80px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      opacity: 0.13;
+      user-select: none;
+      pointer-events: none;
+    }
+    [data-cat="thesis"] .post-thumb-letter { color: #d4a832; }
+    [data-cat="insight"] .post-thumb-letter { color: #3fbfa8; }
+    [data-cat="narrative"] .post-thumb-letter { color: #2fb86a; }
+
+    .post-thumb-icon {
+      position: relative;
+      z-index: 2;
+      transition: transform 280ms cubic-bezier(0.34,1.56,0.64,1);
+    }
+    [data-cat="thesis"] .post-thumb-icon { color: #d4a832; }
+    [data-cat="insight"] .post-thumb-icon { color: #3fbfa8; }
+    [data-cat="narrative"] .post-thumb-icon { color: #2fb86a; }
+
+    .post-card:hover .post-thumb-icon { transform: scale(1.1) rotate(-4deg); }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      position: sticky;
+      top: 32px;
+    }
+
+    .sidebar-card {
+      background: rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.09);
+      box-shadow: 0 4px 20px rgba(17,122,67,0.06);
+      overflow: hidden;
+      transition: box-shadow 220ms ease;
+    }
+    .sidebar-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+
+    .sidebar-card-topbar {
+      height: 3px;
+      background: linear-gradient(90deg, #4e9968 0%, #9fc88a 52%, #d8be6b 100%);
+    }
+
+    .sidebar-card-body { padding: 20px 20px 22px; }
+
+    .sidebar-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 14px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .sidebar-card-title svg { color: var(--accent); }
+
+    /* ── Social Link Cards (vertical in sidebar) ── */
+    .social-links-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .social-link-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: all 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .social-link-card::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--card-accent, var(--accent));
+      opacity: 0;
+      transition: opacity 200ms ease;
+    }
+
+    .social-link-card:hover {
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(47,184,106,0.25);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .social-link-card:hover::before { opacity: 1; }
+
+    .social-link-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .social-link-card:hover .social-link-icon { transform: scale(1.1) rotate(-3deg); }
+
+    .social-link-info { flex: 1; min-width: 0; }
+
+    .social-link-platform {
+      display: block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 1px;
+      font-family: var(--font-mono);
+    }
+
+    .social-link-handle {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .social-link-arrow {
+      flex-shrink: 0;
+      color: var(--muted);
+      transition: all 220ms ease;
+    }
+
+    .social-link-card:hover .social-link-arrow {
+      color: var(--card-accent, var(--accent));
+      transform: translate(3px, -3px);
+    }
+
+    /* Topics */
+    .topics-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .topic-tag {
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      border: 1.5px solid rgba(47,184,106,0.2);
+      background: rgba(47,184,106,0.08);
+      color: var(--muted);
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 200ms cubic-bezier(0.34,1.56,0.64,1);
+      font-family: var(--font-mono);
+    }
+    .topic-tag { cursor: pointer; }
+    .topic-tag:hover, .topic-tag.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 3px 10px rgba(47,184,106,0.2); }
+
+    /* Archive */
+    .archive-list { display: flex; flex-direction: column; gap: 4px; }
+    .archive-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 0.88rem;
+      transition: all 200ms ease;
+    }
+    .archive-item:hover { color: var(--accent); background: var(--accent-light); transform: translateX(4px); }
+    .archive-item.is-disabled {
+      cursor: default;
+      pointer-events: none;
+      opacity: 0.78;
+    }
+    .archive-item.is-disabled:hover {
+      color: var(--ink);
+      background: transparent;
+      transform: none;
+    }
+    .archive-count {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-light);
+      border: 1px solid rgba(17,122,67,0.16);
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      min-width: 24px;
+      text-align: center;
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      border-top: 2px solid rgba(17,122,67,0.08);
+      padding: 44px 40px 36px;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 32px;
+    }
+
+    .footer-brand-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin: 0 0 6px;
+    }
+    .footer-brand-name span { color: var(--accent); }
+
+    .footer-tagline { font-size: 0.86rem; color: var(--muted); margin: 0; }
+
+    .footer-social { display: flex; gap: 8px; }
+
+    .footer-social-link {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      border: 1.5px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all 200ms ease;
+    }
+    .footer-social-link:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 20px;
+      margin-top: 24px;
+      border-top: 1px solid rgba(17,122,67,0.08);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .footer-copy { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.02em; font-family: var(--font-mono); }
+
+    .footer-back-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      transition: transform 180ms ease;
+    }
+    .footer-back-top:hover { transform: translateY(-2px); }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .content-layout { grid-template-columns: 1fr; gap: 40px; }
+      .sidebar { position: static; }
+    }
+
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; padding: 120px 24px 48px; gap: 32px; }
+      .hero-right-col { display: none; }
+      .hero-stats-row { display: none; }
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .nav-links-mobile {
+      display: none !important;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #1b2820;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-radius: 0 0 20px 20px;
+      padding: 16px 20px;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 50;
+      box-shadow: 0 12px 32px rgba(30,54,40,0.12);
+    }
+    .nav-links-mobile.open { display: flex !important; }
+    .nav-links-mobile .nav-link {
+      font-size: 13px;
+      padding: 8px 12px;
+      color: #cfe0d4 !important;
+      border-radius: 8px;
+      transform: none !important;
+    }
+    .nav-links-mobile .nav-link:hover { background: rgba(47,184,106,0.15); }
+    .nav-links-mobile .nav-link::after { display: none; }
+
+    @media (max-width: 1023px) {
+      .nav-links-desktop { display: none !important; }
+      .mobile-menu-btn { display: flex; }
+    }
+
+    @media (max-width: 768px) {
+      .hero-fullbleed { border-radius: 0 0 24px 24px; }
+      .header-scene { height: 136px; }
+      .brand { display: none; }
+      .header-tools { display: none; }
+      .page-wrap { padding: 40px 20px 64px; }
+      .featured-body { padding: 20px 20px 22px; }
+      .post-card-main { grid-template-columns: 1fr; gap: 12px; }
+      .post-thumb-wrap { width: 100%; min-height: 90px; border-radius: 12px; order: -1; }
+.footer-grid { grid-template-columns: 1fr; }
+      .site-footer { padding: 36px 20px 24px; }
+    }
+
+    /* ── Entrance animations ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(18px);
+      animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .delay-1 { animation-delay: 0.08s; }
+    .delay-2 { animation-delay: 0.18s; }
+    .delay-3 { animation-delay: 0.28s; }
+    .delay-4 { animation-delay: 0.38s; }
+  </style>
+</head>
+
+<body>
+  <div class="grain"></div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- HERO                                   -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="hero-fullbleed">
+    <div class="header-scene" aria-hidden="true">
+      <img src="anime_bg.jpg" alt="" />
+    </div>
+    <header class="site-header">
+      <div class="brand mono">
+        <span class="brand-star">*</span> DUIDUI
+      </div>
+
+      <!-- Desktop nav -->
+      <nav class="nav-links-desktop nav-container mono">
+        <a href="index.html" class="nav-link">HOME</a>
+        <a href="index.html#connect" class="nav-link">CONNECT</a>
+        <a href="shop.html" class="nav-link">ARTIFACTS</a>
+        <a href="blog.html" class="nav-link active">BLOG</a>
+        <a href="index.html#sns-ticker" class="nav-link">SIGNAL FEED</a>
+      </nav>
+
+      <!-- Mobile hamburger -->
+      <button class="mobile-menu-btn" onclick="document.getElementById('blogMobileNav').classList.toggle('open')" aria-label="Toggle menu">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.8">
+          <line x1="3" y1="5" x2="17" y2="5" />
+          <line x1="3" y1="10" x2="17" y2="10" />
+          <line x1="3" y1="15" x2="17" y2="15" />
+        </svg>
+      </button>
+
+      <div class="header-tools">
+        <div class="clock-display mono">UTC+7 <span id="clock">00:00:00</span></div>
+      </div>
+
+      <!-- Mobile nav dropdown -->
+      <nav id="blogMobileNav" class="nav-links-mobile mono">
+        <a href="index.html" class="nav-link" onclick="document.getElementById('blogMobileNav').classList.remove('open')">HOME</a>
+        <a href="index.html#connect" class="nav-link" onclick="document.getElementById('blogMobileNav').classList.remove('open')">CONNECT</a>
+        <a href="shop.html" class="nav-link" onclick="document.getElementById('blogMobileNav').classList.remove('open')">ARTIFACTS</a>
+        <a href="blog.html" class="nav-link active" onclick="document.getElementById('blogMobileNav').classList.remove('open')">BLOG</a>
+        <a href="index.html#sns-ticker" class="nav-link" onclick="document.getElementById('blogMobileNav').classList.remove('open')">SIGNAL FEED</a>
+      </nav>
+    </header>
+
+    <section class="hero-banner">
+      <img src="anime_bg.jpg" alt="DuiDui Journal" class="hero-bg" />
+      <div class="hero-overlay"></div>
+
+      <!-- Two-column hero: left col (text + featured card), right col (mascot) -->
+      <div class="hero-inner">
+
+        <!-- Left: Text + Featured Card stacked -->
+        <div class="hero-left-col">
+
+          <!-- Text block -->
+          <div class="hero-content">
+            <div class="hero-eyebrow fade-up">
+              <span class="hero-eyebrow-dot"></span>
+              <span class="hero-eyebrow-text">Crypto Investment Journal</span>
+            </div>
+            <h1 class="hero-headline fade-up delay-1">
+              บันทึก<br/>ตลาด <em>คริปโต</em><br/>ของ DuiDui
+            </h1>
+            <p class="hero-subline fade-up delay-2">
+              รวมบทความจาก DuiDui และ Insight ต่างๆเกี่ยวกับตลาดคริปโตและโลกการเงิน
+            </p>
+            <div class="hero-stats-row fade-up delay-3">
+              <div class="hero-article-badge">
+                <span class="hero-badge-count">4+</span>
+                <span class="hero-badge-label">บทความ</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Featured card — directly below the stats, inside the hero -->
+          <div class="featured-wrap fade-up delay-4">
+            <article class="featured-card featured-card--image" onclick="location.href='virtual-erc8183.html'" style="cursor:pointer">
+              <div class="featured-topbar"></div>
+              <img class="featured-bg-img" src="virtual_article.png" alt="" aria-hidden="true" />
+              <div class="featured-img-overlay"></div>
+              <div class="featured-body">
+                <div class="featured-meta">
+                  <span class="cat-pill featured-badge">FEATURED</span>
+                  <span class="cat-pill thesis">THESIS</span>
+                  <span class="meta-dot">·</span>
+                  <span class="meta-date">13 มี.ค. 2026</span>
+                  <span class="meta-dot">·</span>
+                  <span class="meta-read">5 นาที</span>
+                </div>
+                <h2 class="featured-title">ทำไม ERC-8183 อาจทำให้ VIRTUAL น่าสนใจอีกครั้งในปี 2026</h2>
+                <p class="featured-excerpt">
+                  วิเคราะห์การ pivot ของ Virtuals Protocol จาก AI launchpad สู่ infrastructure layer ของ agent economy บน Ethereum
+                </p>
+                <a class="featured-cta" href="virtual-erc8183.html" onclick="event.stopPropagation()">
+                  อ่านบทความ
+                  <svg class="featured-cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M13 6l6 6-6 6"/>
+                  </svg>
+                </a>
+              </div>
+            </article>
+          </div>
+
+        </div><!-- /hero-left-col -->
+
+        <!-- Right column: Mascot + Social Card -->
+        <div class="hero-right-col fade-up delay-2">
+
+          <!-- Mascot -->
+          <div class="hero-mascot-zone">
+            <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 100%;">
+              <div class="mascot-glow"></div>
+              <div class="mascot-ground-shadow"></div>
+              <div class="mascot-interactive" style="width: 100%; max-width: 320px; filter: drop-shadow(0 16px 24px rgba(0,0,0,0.18));">
+                <img src="duidui png.png" alt="DUIDUI mascot" class="mascot-img-normal" style="width: 100%; height: auto;" />
+                <img src="duidui wink.png" alt="DUIDUI winking" class="mascot-img-wink" style="width: 100%; height: auto;" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Card (glass panel, anchored at bottom of right col) -->
+          <div class="sidebar-card hero-social-panel">
+            <div class="sidebar-card-topbar"></div>
+            <div class="sidebar-card-body">
+              <h4 class="sidebar-card-title">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                ตามหา DuiDui ได้ที่
+              </h4>
+              <div class="social-links-list">
+                <a href="https://x.com/dodgeduidui" target="_blank" rel="noreferrer" class="social-link-card" style="--card-accent: #111;">
+                  <div class="social-link-icon" style="background: #111; color: #fff;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z"/></svg>
+                  </div>
+                  <div class="social-link-info">
+                    <span class="social-link-platform">X / TWITTER</span>
+                    <span class="social-link-handle">@dodgeduidui</span>
+                  </div>
+                  <svg class="social-link-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                </a>
+                <a href="https://t.me/duisnote" target="_blank" rel="noreferrer" class="social-link-card" style="--card-accent: #2aabee;">
+                  <div class="social-link-icon" style="background: #2aabee; color: #fff;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z"/></svg>
+                  </div>
+                  <div class="social-link-info">
+                    <span class="social-link-platform">TELEGRAM</span>
+                    <span class="social-link-handle">Dui's Note</span>
+                  </div>
+                  <svg class="social-link-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                </a>
+                <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" rel="noreferrer" class="social-link-card" style="--card-accent: #ff0033;">
+                  <div class="social-link-icon" style="background: #ff0033; color: #fff;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23 8.8c-.3-1.2-1.2-2.1-2.4-2.4C18.4 6 12 6 12 6s-6.4 0-8.6.4A3.3 3.3 0 0 0 1 8.8C.6 11 .6 12 .6 12s0 1 .4 3.2c.3 1.2 1.2 2.1 2.4 2.4 2.2.4 8.6.4 8.6.4s6.4 0 8.6-.4a3.3 3.3 0 0 0 2.4-2.4c.4-2.2.4-3.2.4-3.2s0-1-.4-3.2zM10 15.2V8.8l5.5 3.2L10 15.2z"/></svg>
+                  </div>
+                  <div class="social-link-info">
+                    <span class="social-link-platform">YOUTUBE</span>
+                    <span class="social-link-handle">DuiDui - เดอะคริปโตโบร</span>
+                  </div>
+                  <svg class="social-link-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                </a>
+                <a href="https://discord.gg/hdx3AteMHg" target="_blank" rel="noreferrer" class="social-link-card" style="--card-accent: #5865f2;">
+                  <div class="social-link-icon" style="background: #5865f2; color: #fff;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20.3 5.2A17 17 0 0 0 16 3.9l-.2.3c-.2.3-.4.8-.6 1.1a16.2 16.2 0 0 0-6.3 0l-.6-1.4a17 17 0 0 0-4.3 1.3C1.3 9.2.6 13.1.9 17c1.8 1.3 3.6 2 5.4 2.4l1.3-1.8c-.7-.2-1.3-.4-1.9-.7l.5-.4c3.7 1.8 7.8 1.8 11.4 0 .2.1.3.3.5.4-.6.3-1.2.5-1.9.7l1.3 1.8c1.8-.4 3.6-1.1 5.4-2.4.4-4.5-.8-8.3-2.6-11.8zM9.5 14.6c-.9 0-1.7-.8-1.7-1.8s.7-1.8 1.7-1.8c.9 0 1.7.8 1.7 1.8 0 1.1-.7 1.8-1.7 1.8zm5 0c-.9 0-1.7-.8-1.7-1.8s.7-1.8 1.7-1.8 1.7.8 1.7 1.8-.8 1.8-1.7 1.8z"/></svg>
+                  </div>
+                  <div class="social-link-info">
+                    <span class="social-link-platform">DISCORD</span>
+                    <span class="social-link-handle">Dui's Crypto Station</span>
+                  </div>
+                  <svg class="social-link-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                </a>
+                <a href="https://ko-fi.com/duiduidui/tiers" target="_blank" rel="noreferrer" class="social-link-card" style="--card-accent: #13C3FF;">
+                  <div class="social-link-icon" style="background: #13C3FF; color: #fff;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+                  </div>
+                  <div class="social-link-info">
+                    <span class="social-link-platform">KO-FI</span>
+                    <span class="social-link-handle">DUIDUI</span>
+                  </div>
+                  <svg class="social-link-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /hero-right-col -->
+
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- MAIN CONTENT                           -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="page-wrap">
+
+    <!-- ── Filter Tabs ── -->
+    <div class="filter-wrap fade-up delay-3">
+      <button class="filter-tab active" onclick="filterPosts('all', this)">
+        ALL <span class="filter-count">4</span>
+      </button>
+      <button class="filter-tab" onclick="filterPosts('thesis', this)">
+        THESIS <span class="filter-count">2</span>
+      </button>
+      <button class="filter-tab" onclick="filterPosts('insight', this)">
+        MARKET INSIGHT <span class="filter-count">1</span>
+      </button>
+      <button class="filter-tab" onclick="filterPosts('narrative', this)">
+        NARRATIVE SPOTLIGHT <span class="filter-count">1</span>
+      </button>
+    </div>
+
+    <!-- ── Two-column: Posts + Sidebar ── -->
+    <div class="content-layout fade-up delay-4">
+
+      <!-- Posts -->
+      <div class="post-list" id="post-list">
+
+        <!-- Post: VIRTUAL / ERC-8183 -->
+        <article class="post-card post-card--landscape" data-cat="thesis" onclick="location.href='virtual-erc8183.html'">
+          <div class="post-thumb-landscape">
+            <img src="virtual_article.png" alt="ทำไม ERC-8183 อาจทำให้ VIRTUAL น่าสนใจอีกครั้งในปี 2026" />
+          </div>
+          <div class="post-card-body">
+            <div class="post-meta">
+              <span class="cat-pill thesis">THESIS</span>
+              <span class="meta-date">13 มี.ค. 2026</span>
+              <span class="meta-dot">·</span>
+              <span class="meta-read">5 นาที</span>
+              <a class="post-read-inline" href="virtual-erc8183.html" onclick="event.stopPropagation()">
+                อ่านบทความ
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+            <h3 class="post-title">ทำไม ERC-8183 อาจทำให้ VIRTUAL น่าสนใจอีกครั้งในปี 2026</h3>
+            <p class="post-excerpt">
+              วิเคราะห์การ pivot ของ Virtuals Protocol จาก AI launchpad สู่ infrastructure layer ของ agent economy บน Ethereum — และตั้งคำถามว่าโทเค็น VIRTUAL จะ capture value นั้นได้จริงไหม
+            </p>
+          </div>
+        </article>
+
+        <!-- Post 1 -->
+        <article class="post-card" data-cat="narrative">
+          <div class="post-card-main">
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="cat-pill narrative">NARRATIVE SPOTLIGHT</span>
+                <span class="meta-date">08 มี.ค. 2026</span>
+                <span class="meta-dot">·</span>
+                <span class="meta-read">5 นาที</span>
+                <span class="post-read-inline is-disabled">เร็ว ๆ นี้</span>
+              </div>
+              <h3 class="post-title">เงินกำลังหมุนไปไหน เมื่อความสนใจเริ่มย้ายจากธีมเดิม</h3>
+              <p class="post-excerpt">
+                ตัวอย่างโพสต์สำหรับบันทึก market journal: มองกระแสเงิน ความสนใจของตลาด และสัญญาณว่าธีมเดิมกำลังอ่อนแรงหรือกำลังจะกลับมาอีกครั้ง เพื่อใช้เป็น reference ในการอ่าน narrative รอบถัดไป
+              </p>
+            </div>
+            <div class="post-thumb-wrap">
+              <span class="post-thumb-letter">N</span>
+              <svg class="post-thumb-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 2 -->
+        <article class="post-card" data-cat="insight">
+          <div class="post-card-main">
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="cat-pill insight">MARKET INSIGHT</span>
+                <span class="meta-date">03 มี.ค. 2026</span>
+                <span class="meta-dot">·</span>
+                <span class="meta-read">4 นาที</span>
+                <span class="post-read-inline is-disabled">เร็ว ๆ นี้</span>
+              </div>
+              <h3 class="post-title">กรอบคิดที่ช่วยให้มอง altcoin momentum ได้คมขึ้น</h3>
+              <p class="post-excerpt">
+                ตัวอย่างโพสต์สำหรับสรุปรายสัปดาห์: เกิดอะไรขึ้นในตลาด อะไรคือ signal ที่สำคัญจริง และอะไรเป็นเพียง noise ที่ควรปล่อยผ่าน เพื่อช่วยให้ตัดสินใจง่ายขึ้น
+              </p>
+            </div>
+            <div class="post-thumb-wrap">
+              <span class="post-thumb-letter">M</span>
+              <svg class="post-thumb-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+              </svg>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 3 -->
+        <article class="post-card" data-cat="thesis">
+          <div class="post-card-main">
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="cat-pill thesis">THESIS</span>
+                <span class="meta-date">26 ก.พ. 2026</span>
+                <span class="meta-dot">·</span>
+                <span class="meta-read">8 นาที</span>
+                <span class="post-read-inline is-disabled">เร็ว ๆ นี้</span>
+              </div>
+              <h3 class="post-title">เมื่อไหร่ควรหยุดตามฟีด แล้วรอ conviction ที่ชัดจริง</h3>
+              <p class="post-excerpt">
+                ตัวอย่างโพสต์สำหรับงานเขียนเชิง thesis: อธิบายมุมมองที่มีน้ำหนักมากขึ้น ว่าทำไมสถานการณ์บางช่วงควรรอ มากกว่าขยับเร็ว และเหตุผลอะไรที่ทำให้ thesis ยังใช้ได้หรือเริ่มต้องทบทวนใหม่
+              </p>
+            </div>
+            <div class="post-thumb-wrap">
+              <span class="post-thumb-letter">T</span>
+              <svg class="post-thumb-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+            </div>
+          </div>
+        </article>
+
+      </div><!-- /post-list -->
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+
+        <!-- Topics Card -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-topbar"></div>
+          <div class="sidebar-card-body">
+            <h4 class="sidebar-card-title">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+              หัวข้อยอดนิยม
+            </h4>
+            <div class="topics-wrap">
+              <span class="topic-tag" onclick="filterByTag('thesis', this)">DEFI</span>
+              <span class="topic-tag" onclick="filterByTag('insight', this)">ALTCOIN</span>
+              <span class="topic-tag" onclick="filterByTag('thesis', this)">BTC</span>
+              <span class="topic-tag" onclick="filterByTag('narrative', this)">NARRATIVE</span>
+              <span class="topic-tag" onclick="filterByTag('insight', this)">ROTATION</span>
+              <span class="topic-tag" onclick="filterByTag('insight', this)">MOMENTUM</span>
+              <span class="topic-tag" onclick="filterByTag('insight', this)">CYCLE</span>
+              <span class="topic-tag" onclick="filterByTag('thesis', this)">WEB3</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Archive Card -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-topbar"></div>
+          <div class="sidebar-card-body">
+            <h4 class="sidebar-card-title">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/>
+                <line x1="10" y1="12" x2="14" y2="12"/>
+              </svg>
+              คลังบทความ
+            </h4>
+            <div class="archive-list">
+              <div class="archive-item is-disabled">
+                <span>มีนาคม 2026</span>
+                <span class="archive-count">2</span>
+              </div>
+              <div class="archive-item is-disabled">
+                <span>กุมภาพันธ์ 2026</span>
+                <span class="archive-count">1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div><!-- /content-layout -->
+
+  </div><!-- /page-wrap -->
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- FOOTER                                 -->
+  <!-- ═══════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div>
+        <p class="footer-brand-name"><span>*</span> DUIDUI Journal</p>
+        <p class="footer-tagline">บันทึกการลงทุนคริปโต · มุมมองตลาด · Thesis · Weekly Note</p>
+      </div>
+      <div class="footer-social">
+        <a href="https://x.com/dodgeduidui" class="footer-social-link" title="X / Twitter" target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z"/>
+          </svg>
+        </a>
+        <a href="https://t.me/duisnote" class="footer-social-link" title="Telegram" target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z"/>
+          </svg>
+        </a>
+        <a href="mailto:duiduiwagmi@gmail.com" class="footer-social-link" title="Email">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 DUIDUI · All rights reserved</span>
+      <a href="#" class="footer-back-top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+        กลับด้านบน
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    // ── Clock ──
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getUTCHours() + 7).padStart(2, '0').replace(/\d+/, n => String(+n % 24).padStart(2, '0'));
+      const m = String(now.getUTCMinutes()).padStart(2, '0');
+      const s = String(now.getUTCSeconds()).padStart(2, '0');
+      const el = document.getElementById('clock');
+      if (el) el.textContent = `${h}:${m}:${s}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ── Filter posts by category ──
+    function filterPosts(cat, btn) {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      // clear any active topic tag
+      document.querySelectorAll('.topic-tag').forEach(t => t.classList.remove('active'));
+
+      const posts = document.querySelectorAll('#post-list .post-card');
+      posts.forEach((post, i) => {
+        const show = cat === 'all' || post.dataset.cat === cat;
+        if (show) {
+          post.style.display = 'flex';
+          post.style.opacity = '0';
+          post.style.transform = 'translateY(10px)';
+          setTimeout(() => {
+            post.style.transition = `opacity 0.35s ease ${i * 0.05}s, transform 0.35s cubic-bezier(0.22,1,0.36,1) ${i * 0.05}s`;
+            post.style.opacity = '1';
+            post.style.transform = 'translateY(0)';
+          }, 10);
+        } else {
+          post.style.display = 'none';
+        }
+      });
+    }
+
+    // ── Filter from sidebar topic tag ──
+    function filterByTag(cat, tagEl) {
+      // activate matching filter tab
+      const tabMap = { all: 0, thesis: 1, insight: 2, narrative: 3 };
+      const tabs = document.querySelectorAll('.filter-tab');
+      filterPosts(cat, tabs[tabMap[cat]]);
+      // highlight the clicked tag
+      document.querySelectorAll('.topic-tag').forEach(t => t.classList.remove('active'));
+      tagEl.classList.add('active');
+      // scroll post list into view
+      document.getElementById('post-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ── Scroll-reveal for post cards ──
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.post-card').forEach((card, i) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(14px)';
+      card.style.transition = `opacity 0.5s ease ${i * 0.1}s, transform 0.5s cubic-bezier(0.22,1,0.36,1) ${i * 0.1}s`;
+      revealObserver.observe(card);
+    });
+  </script>
+</body>
+
+</html>

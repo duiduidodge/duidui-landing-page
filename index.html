@@ -1,0 +1,3118 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DUIDUI | พอร์ทัลคริปโตคอนเทนต์สำหรับคนไทย</title>
+  <meta name="description" content="DUIDUI คือพอร์ทัลคอนเทนต์คริปโตสำหรับคนไทย รวมมุมมองตลาด สัญญาณที่น่าจับตา และคอนเทนต์ Web3 แบบอ่านง่าย ทั้งภาษาไทยและอังกฤษ" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="DUIDUI | พอร์ทัลคริปโตคอนเทนต์สำหรับคนไทย" />
+  <meta property="og:description" content="DUIDUI คือพอร์ทัลคอนเทนต์คริปโตสำหรับคนไทย รวมมุมมองตลาด สัญญาณที่น่าจับตา และคอนเทนต์ Web3 แบบอ่านง่าย ทั้งภาษาไทยและอังกฤษ" />
+  <meta property="og:image" content="anime_bg.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@dodgeduidui" />
+  <meta name="twitter:title" content="DUIDUI | พอร์ทัลคริปโตคอนเทนต์สำหรับคนไทย" />
+  <meta name="twitter:description" content="DUIDUI คือพอร์ทัลคอนเทนต์คริปโตสำหรับคนไทย รวมมุมมองตลาด สัญญาณที่น่าจับตา และคอนเทนต์ Web3 แบบอ่านง่าย ทั้งภาษาไทยและอังกฤษ" />
+  <meta name="twitter:image" content="anime_bg.jpg" />
+  <meta name="theme-color" content="#1a2e1e" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #f0f5f1;
+      --ink: #1a2e1e;
+      --muted: #6b8070;
+      --accent: #117a43;
+      --accent-glow: rgba(17, 122, 67, 0.35);
+      --accent-light: #e8f5ed;
+      --secondary: #0a6e5c;
+      --gold: #d4a017;
+      --line: #d4e5d8;
+      --panel: #ffffff;
+      --twitter: #1d9bf0;
+      --x: #111111;
+      --telegram: #2aabee;
+      --youtube: #ff0033;
+      --discord: #5865f2;
+      --radius: 16px;
+      --shadow-sm: 0 2px 8px rgba(17, 122, 67, 0.04);
+      --shadow-md: 0 8px 32px rgba(17, 122, 67, 0.06);
+      --shadow-lg: 0 16px 48px rgba(17, 122, 67, 0.1);
+      --font-body: "Sora", sans-serif;
+      --font-mono: "DM Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: white;
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+    }
+
+    html[lang="th"] {
+      --font-body: "Noto Sans Thai", "Sora", sans-serif;
+      --font-mono: "IBM Plex Sans Thai", "Noto Sans Thai", sans-serif;
+    }
+
+    html[lang="th"] body {
+      letter-spacing: 0;
+      text-rendering: optimizeLegibility;
+    }
+
+    html[lang="th"] p,
+    html[lang="th"] li,
+    html[lang="th"] .product-desc,
+    html[lang="th"] .launch-desc,
+    html[lang="th"] .launch-side-desc,
+    html[lang="th"] .landing-section-subtitle,
+    html[lang="th"] .collab-desc,
+    html[lang="th"] .social-link-handle,
+    html[lang="th"] .cta-primary,
+    html[lang="th"] .cta-secondary {
+      line-height: 1.82;
+    }
+
+    html[lang="th"] .mono,
+    html[lang="th"] .section-header-label,
+    html[lang="th"] .product-tag,
+    html[lang="th"] .launch-badge,
+    html[lang="th"] .launch-feature {
+      letter-spacing: 0.03em;
+    }
+
+    html[lang="th"] .landing-section-subtitle,
+    html[lang="th"] .launch-desc,
+    html[lang="th"] .launch-side-desc,
+    html[lang="th"] .collab-desc,
+    html[lang="th"] .product-desc {
+      max-width: 32em;
+    }
+
+    html[lang="th"] .landing-section-subtitle {
+      font-size: 1rem;
+      color: #65796a;
+    }
+
+    html[lang="th"] .product-desc,
+    html[lang="th"] .launch-side-desc,
+    html[lang="th"] .collab-desc {
+      font-size: 0.98rem;
+      color: #667a6b;
+    }
+
+    html[lang="th"] .launch-desc {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    html[lang="th"] .social-link-handle {
+      font-size: 0.96rem;
+    }
+
+    .frame {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Full-bleed hero wrapper */
+    .hero-fullbleed {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 0 0 40px 40px;
+      box-shadow: 0 16px 48px rgba(4, 16, 10, 0.22);
+    }
+
+    @media (max-width: 768px) {
+      .hero-fullbleed { border-radius: 0 0 24px 24px; }
+    }
+
+    .hero-fullbleed .hero-banner {
+      margin: 0 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding-bottom: 20px;
+    }
+
+    /* Floating nav over hero */
+    .site-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    @media (min-width: 640px) {
+      .site-header {
+        padding: 18px 32px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .site-header {
+        padding: 22px 48px;
+      }
+    }
+
+    .hero-fade { display: none; }
+
+    /* Grain texture — dynamic, fixed so it never pushes page height */
+    .grain {
+      position: fixed;
+      inset: 0;
+      height: 100%;
+      width: 100%;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      z-index: 999;
+      animation: grain 8s steps(10) infinite;
+    }
+
+
+    @keyframes pageLoad {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes grain {
+
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+
+      10% {
+        transform: translate(-5%, -10%);
+      }
+
+      20% {
+        transform: translate(-15%, 5%);
+      }
+
+      30% {
+        transform: translate(7%, -25%);
+      }
+
+      40% {
+        transform: translate(-5%, 25%);
+      }
+
+      50% {
+        transform: translate(-15%, 10%);
+      }
+
+      60% {
+        transform: translate(15%, 0%);
+      }
+
+      70% {
+        transform: translate(0%, 15%);
+      }
+
+      80% {
+        transform: translate(3%, 35%);
+      }
+
+      90% {
+        transform: translate(-10%, 10%);
+      }
+    }
+
+
+
+    .hero-title-zone {
+      position: relative;
+      text-align: center;
+      padding-top: 3.5rem;
+      padding-bottom: 1rem;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @media (min-width: 640px) {
+      .hero-title-zone {
+        padding-top: 4.5rem;
+        padding-bottom: 1.5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .hero-title-zone {
+        padding-top: 5.5rem;
+        padding-bottom: 2rem;
+      }
+    }
+
+    .name-backdrop {
+      pointer-events: none;
+      text-align: center;
+      letter-spacing: -0.03em;
+      line-height: 0.82;
+      opacity: 0.97;
+      position: relative;
+      z-index: 5;
+      padding: 0 1rem;
+    }
+
+    .name-backdrop .line-one {
+      display: block;
+      font-size: clamp(52px, 12vw, 140px);
+      font-weight: 200;
+      color: var(--accent);
+      opacity: 0.6;
+      letter-spacing: 0.04em;
+    }
+
+    .name-backdrop .line-two {
+      display: block;
+      font-size: clamp(68px, 15vw, 180px);
+      font-weight: 800;
+      color: var(--accent);
+      text-shadow: 0 10px 30px rgba(17, 122, 67, 0.18);
+    }
+
+    /* Mascot — grounded in hero, overlapping title for depth */
+    .mascot-float {
+      position: relative;
+      z-index: 15;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      margin-top: -100px;
+      margin-left: auto;
+      margin-right: auto;
+      pointer-events: none;
+      width: 100%;
+      text-align: center;
+      padding-bottom: 0;
+    }
+
+    .mascot-float img {
+      pointer-events: auto;
+    }
+
+    /* Ground shadow — elliptical shadow beneath mascot feet */
+    .mascot-ground-shadow {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      height: 24px;
+      background: radial-gradient(ellipse, rgba(0, 0, 0, 0.18) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: 19;
+      pointer-events: none;
+      filter: blur(4px);
+    }
+
+    @media (min-width: 640px) {
+      .mascot-ground-shadow {
+        width: 260px;
+        height: 28px;
+        bottom: 10px;
+      }
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      position: relative;
+      z-index: 10;
+      width: 100%;
+    }
+
+
+
+    /* Mascot glow halo — warm backlight effect */
+    .mascot-glow {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 340px;
+      height: 240px;
+      background: radial-gradient(ellipse, rgba(255, 255, 255, 0.25) 0%, rgba(17, 122, 67, 0.08) 40%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(40px);
+      pointer-events: none;
+      z-index: 10;
+      animation: glowPulse 5s ease-in-out infinite;
+    }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(17, 122, 67, 0.08);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      position: relative;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .glass-panel:hover {
+      box-shadow: var(--shadow-md);
+      border-color: rgba(17, 122, 67, 0.12);
+    }
+
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(17, 122, 67, 0.15), transparent 50%, rgba(10, 110, 92, 0.1));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    /* Navigation - Tabs */
+    .nav-links-desktop {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-container {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      padding: 3px 4px;
+      display: flex;
+      gap: 2px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .nav-link {
+      padding: 7px 14px;
+      border-radius: 50px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      position: relative;
+      font-size: 11px;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 16px;
+      height: 2px;
+      background: white;
+      border-radius: 1px;
+      transition: transform 250ms ease;
+    }
+
+    .nav-link:hover::after {
+      transform: translateX(-50%) scaleX(1);
+    }
+
+    .lang-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .lang-switch button {
+      border: 0;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.76);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+
+    .lang-switch button.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Mobile menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--ink);
+    }
+
+    .nav-links-mobile {
+      display: none !important;
+    }
+
+    /* Social cards */
+    .social-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      transition:
+        transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1),
+        background-color 200ms ease,
+        border-color 200ms ease,
+        box-shadow 200ms ease;
+    }
+
+    .social-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      opacity: 0.9;
+      transition: width 200ms ease;
+    }
+
+    .social-twitter::before {
+      background: var(--twitter);
+    }
+
+    .social-x::before {
+      background: var(--x);
+    }
+
+    .social-telegram::before {
+      background: var(--telegram);
+    }
+
+    .social-youtube::before {
+      background: var(--youtube);
+    }
+
+    .social-discord::before {
+      background: var(--discord);
+    }
+
+    .social-card:hover {
+      transform: translateY(-3px) scale(1.01);
+      border-color: transparent;
+      background: #ffffff;
+      box-shadow: var(--shadow-md);
+    }
+
+    .social-card:hover::before {
+      width: 5px;
+    }
+
+    .social-card:active {
+      transform: translateY(0px);
+    }
+
+    .social-main {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .social-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 200ms ease;
+    }
+
+    .social-card:hover .social-icon {
+      transform: scale(1.08);
+    }
+
+    .social-icon-twitter {
+      background: #e8f4fd;
+      color: var(--twitter);
+      border: 1px solid #c8e6f9;
+    }
+
+    .social-icon-x {
+      background: #f0f0f0;
+      color: var(--x);
+      border: 1px solid #ddd;
+    }
+
+    .social-icon-telegram {
+      background: #e6f6fd;
+      color: var(--telegram);
+      border: 1px solid #b8e4f7;
+    }
+
+    .social-icon-youtube {
+      background: #fde8ec;
+      color: var(--youtube);
+      border: 1px solid #f9c8d0;
+    }
+
+    .social-icon-discord {
+      background: #edeafd;
+      color: var(--discord);
+      border: 1px solid #cec8f7;
+    }
+
+    .social-arrow {
+      display: inline-flex;
+      align-items: center;
+      transition: transform 250ms ease, color 200ms ease;
+    }
+
+    .social-card:hover .social-arrow {
+      transform: translateX(4px);
+      color: var(--accent);
+    }
+
+    /* CTA Buttons */
+    .cta-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent), #0e9950);
+      color: #fff;
+      border: none;
+      transition:
+        transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 250ms ease,
+        filter 250ms ease;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      font-weight: 700;
+    }
+
+    .cta-primary::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+      transition: none;
+    }
+
+    .cta-primary:hover::after {
+      left: 100%;
+      transition: 0.6s ease-in-out;
+    }
+
+    .cta-primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 32px rgba(17, 122, 67, 0.35);
+      filter: brightness(1.1);
+    }
+
+    .cta-primary:active {
+      transform: translateY(0);
+    }
+
+    .cta-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 2px solid var(--line);
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--ink);
+      transition:
+        transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1),
+        border-color 200ms ease,
+        background 200ms ease,
+        box-shadow 200ms ease;
+      text-decoration: none;
+      font-weight: 700;
+      backdrop-filter: blur(8px);
+    }
+
+    .cta-secondary:hover {
+      transform: translateY(-3px) scale(1.02);
+      border-color: var(--accent);
+      background: var(--accent-light);
+      box-shadow: var(--shadow-md);
+    }
+
+    .tag {
+      border: 1px solid var(--line);
+      background: var(--accent-light);
+      transition: all 200ms ease;
+    }
+
+    .tag:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* Insight / Pillar cards */
+    .insight-card {
+      transition:
+        transform 200ms ease,
+        border-color 200ms ease,
+        box-shadow 200ms ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .insight-card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      opacity: 0;
+      transition: opacity 250ms ease;
+    }
+
+    .insight-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: rgba(17, 122, 67, 0.12);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .insight-card:hover::after {
+      opacity: 1;
+    }
+
+    .pillar-01::after {
+      background: var(--accent);
+    }
+
+    .pillar-02::after {
+      background: var(--secondary);
+    }
+
+    .pillar-03::after {
+      background: var(--gold);
+    }
+
+    .pillar-number {
+      position: absolute;
+      right: 12px;
+      bottom: -8px;
+      font-size: 80px;
+      font-weight: 800;
+      line-height: 1;
+      opacity: 0.06;
+      pointer-events: none;
+      color: var(--accent);
+    }
+
+    .pillar-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .insight-card:hover .pillar-icon {
+      transform: scale(1.1) rotate(-3deg);
+    }
+
+    .pillar-icon-01 {
+      background: rgba(17, 122, 67, 0.08);
+      color: var(--accent);
+    }
+
+    .pillar-icon-02 {
+      background: rgba(10, 110, 92, 0.08);
+      color: var(--secondary);
+    }
+
+    .pillar-icon-03 {
+      background: rgba(212, 160, 23, 0.1);
+      color: var(--gold);
+    }
+
+    .pillar-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 700;
+      transition: color 200ms ease, gap 200ms ease, transform 200ms ease;
+    }
+
+    .pillar-cta:hover {
+      gap: 0.55rem;
+      transform: translateX(2px);
+    }
+
+    .pillar-cta-01 {
+      color: var(--accent);
+    }
+
+    .pillar-cta-02 {
+      color: var(--secondary);
+    }
+
+    .pillar-cta-03 {
+      color: #b8860b;
+    }
+
+    /* Animations */
+    .float {
+      animation: float 5.4s ease-in-out infinite;
+    }
+
+    .rise {
+      animation: rise 700ms ease-out both;
+    }
+
+    .rise-1 {
+      animation-delay: 150ms;
+    }
+
+    .rise-2 {
+      animation-delay: 320ms;
+    }
+
+    .rise-3 {
+      animation-delay: 500ms;
+    }
+
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 600ms ease, transform 600ms ease;
+    }
+
+    .scroll-reveal.revealed {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .insight-card {
+      /* Initial state override for entrance animation */
+      transform: translateY(20px) scale(0.95);
+      opacity: 0;
+    }
+
+    .insight-card.revealed {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .scroll-reveal-1 {
+      transition-delay: 0ms;
+    }
+
+    .scroll-reveal-2 {
+      transition-delay: 150ms;
+    }
+
+    .scroll-reveal-3 {
+      transition-delay: 300ms;
+    }
+
+    .stagger-social {
+      opacity: 0;
+      transform: translateX(12px);
+      transition: opacity 400ms ease, transform 400ms ease;
+    }
+
+    .stagger-social.revealed {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Signal feed marquee */
+    .signal-track {
+      white-space: nowrap;
+      display: inline-flex;
+      gap: 0;
+      animation: marquee 30s linear infinite;
+    }
+
+    .signal-fade {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .signal-fade::before,
+    .signal-fade::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 60px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .signal-fade::before {
+      left: 0;
+      background: linear-gradient(to right, var(--paper), transparent);
+    }
+
+    .signal-fade::after {
+      right: 0;
+      background: linear-gradient(to left, var(--paper), transparent);
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+      animation: livePulse 2s ease-in-out infinite;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .signal-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-right: 8px;
+      line-height: 1.4;
+    }
+
+    .signal-item {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 8px;
+    }
+
+    /* Gradient divider */
+    .divider-texture {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--line), var(--accent), var(--line), transparent);
+      opacity: 0.5;
+      margin: 1rem 0;
+      width: 100%;
+    }
+
+    /* Sticky mobile CTA */
+    .mobile-sticky-cta {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 12px 16px;
+      background: linear-gradient(to top, var(--paper) 80%, transparent);
+      backdrop-filter: blur(8px);
+    }
+
+    @media (max-width: 1023px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .mascot-float {
+        margin-top: -70px;
+      }
+
+      .mascot-ground-shadow {
+        width: 200px;
+        height: 20px;
+      }
+
+      .mobile-menu-btn {
+        display: flex;
+      }
+
+      .nav-links-desktop {
+        display: none !important;
+      }
+
+      .nav-links-mobile {
+        display: none !important;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--paper);
+        border-bottom: 1px solid var(--line);
+        border-radius: 0 0 var(--radius) var(--radius);
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 50;
+        box-shadow: 0 12px 32px rgba(30, 54, 40, 0.12);
+      }
+
+      .nav-links-mobile.open {
+        display: flex !important;
+      }
+
+      .nav-links-mobile .nav-link {
+        font-size: 13px;
+        padding: 8px 12px;
+        color: var(--ink) !important;
+        border-radius: 8px;
+      }
+
+      .nav-links-mobile .nav-link:hover {
+        background: var(--accent-light);
+      }
+
+      .mobile-sticky-cta {
+        display: flex;
+        gap: 8px;
+      }
+
+      .mobile-sticky-cta a {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 5fr 5fr;
+        align-items: start;
+        gap: 2rem;
+      }
+
+      .mascot-float {
+        margin-top: -120px;
+      }
+
+      .mascot-glow {
+        width: 400px;
+        height: 280px;
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-11px);
+      }
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes marquee {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    @keyframes glowPulse {
+
+      0%,
+      100% {
+        opacity: 0.7;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes livePulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.85);
+      }
+    }
+
+    @keyframes letterReveal {
+      from {
+        opacity: 0;
+        transform: translateY(30px) rotateX(-60deg) scale(0.8);
+        filter: blur(4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    .letter-reveal span span {
+      display: inline-block;
+      animation: letterReveal 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* Tighten letter spacing on the reveal spans */
+    .letter-reveal .line-one {
+      word-spacing: -0.1em;
+    }
+
+    .letter-reveal .line-one span {
+      margin-right: -0.02em;
+    }
+
+    .letter-reveal .line-two span {
+      margin-right: -0.01em;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .float,
+      .rise,
+      .signal-track,
+      .letter-reveal span,
+      .live-dot,
+      .mascot-glow {
+        animation: none !important;
+      }
+
+      .scroll-reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+
+      .stagger-social {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+
+    /* Interactive Elements */
+    .mascot-interactive {
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+      /* Lift on hover applies to the whole container */
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .mascot-interactive:hover {
+      transform: scale(1.05) rotate(1.5deg) translateY(-8px);
+    }
+
+    /* Normal image: always visible underneath */
+    .mascot-img-normal {
+      display: block;
+      width: auto;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Wink image: overlaid, fades IN over the normal — never fades out together */
+    .mascot-img-wink {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity 120ms ease-in-out;
+      pointer-events: none;
+    }
+
+    /* On hover: just bring wink on top — normal stays fully visible beneath */
+    .mascot-interactive:hover .mascot-img-wink {
+      opacity: 1;
+    }
+
+    .signal-track:hover {
+      animation-play-state: paused;
+    }
+
+    .signal-item {
+      transition: all 0.2s ease;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .signal-item:hover {
+      background-color: rgba(255, 255, 255, 0.6);
+      transform: scale(1.02);
+    }
+
+    /* Scroll offset for anchor links */
+    [id] {
+      scroll-margin-top: 2rem;
+    }
+
+    /* Meadow Background Animation */
+    .meadow-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    .meadow-bg svg {
+      width: 100%;
+      height: auto;
+    }
+
+    .cloud {
+      animation: windCloud 40s linear infinite;
+    }
+
+    .cloud-slow {
+      animation: windCloud 60s linear infinite;
+    }
+
+    .wind-gust {
+      stroke: rgba(255, 255, 255, 0.45);
+      stroke-width: 2.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-dasharray: 100 2000;
+      animation: windDraw 8s linear infinite;
+    }
+
+    .wind-gust-2 {
+      stroke: rgba(255, 255, 255, 0.25);
+      stroke-width: 6;
+      fill: none;
+      stroke-linecap: round;
+      stroke-dasharray: 250 2500;
+      animation: windDraw 12s linear infinite;
+      animation-delay: -3s;
+    }
+
+    .wind-gust-3 {
+      stroke: rgba(255, 255, 255, 0.6);
+      stroke-width: 1.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-dasharray: 60 1500;
+      animation: windDraw 5s linear infinite;
+      animation-delay: -5s;
+    }
+
+    @keyframes windCloud {
+      from {
+        transform: translateX(-200px);
+      }
+
+      to {
+        transform: translateX(1200px);
+      }
+    }
+
+    @keyframes windDraw {
+      0% {
+        stroke-dashoffset: 2000;
+      }
+
+      100% {
+        stroke-dashoffset: -2000;
+      }
+    }
+
+
+    /* ── Subtle section backgrounds ── */
+    .hero-grid {
+      background: transparent;
+    }
+
+    #content-pillars {
+      background: linear-gradient(180deg, transparent, rgba(17, 122, 67, 0.015) 50%, transparent);
+      border-radius: var(--radius);
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    /* ── Scroll-down indicator ── */
+    .scroll-indicator {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      margin-bottom: 20px;
+      animation: fadeInUp 1s ease-out 1.5s both;
+    }
+
+    .scroll-indicator span {
+      font-family: "DM Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: rgba(255, 255, 255, 0.7);
+      text-transform: uppercase;
+    }
+
+    .scroll-chevron {
+      width: 24px;
+      height: 24px;
+      border-right: 2px solid rgba(255, 255, 255, 0.6);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+      transform: rotate(45deg);
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollBounce {
+
+      0%,
+      100% {
+        transform: rotate(45deg) translate(0, 0);
+        opacity: 0.6;
+      }
+
+      50% {
+        transform: rotate(45deg) translate(5px, 5px);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── Social handles bar ── */
+    .social-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 20;
+      margin-top: 0;
+      margin-bottom: 0;
+      padding: 0 1rem;
+      width: 100%;
+    }
+
+    .social-bar-inner {
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 60px;
+      padding: 8px 10px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    .social-bar-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 24px;
+      border-radius: 50px;
+      text-decoration: none;
+      color: var(--ink);
+      font-family: "DM Mono", monospace;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+
+    .social-bar-link:hover {
+      transform: translateY(-3px) scale(1.02);
+    }
+
+    .social-bar-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 250ms ease;
+    }
+
+    .social-bar-link:hover .social-bar-icon {
+      transform: scale(1.1);
+    }
+
+    .social-bar-handle {
+      letter-spacing: 0.01em;
+    }
+
+    /* Override Tailwind h-4/w-4 to bigger size */
+    .social-bar-icon svg {
+      width: 18px !important;
+      height: 18px !important;
+    }
+
+    /* Platform-specific colors */
+    .social-bar-x .social-bar-icon {
+      background: #f0f0f0;
+      color: #111;
+    }
+
+    .social-bar-x:hover {
+      background: #f0f0f0;
+    }
+
+    .social-bar-telegram .social-bar-icon {
+      background: #e6f6fd;
+      color: var(--telegram);
+    }
+
+    .social-bar-telegram:hover {
+      background: #e6f6fd;
+    }
+
+    .social-bar-youtube .social-bar-icon {
+      background: #fde8ec;
+      color: var(--youtube);
+    }
+
+    .social-bar-youtube:hover {
+      background: #fde8ec;
+    }
+
+    .social-bar-discord .social-bar-icon {
+      background: #edeafd;
+      color: var(--discord);
+    }
+
+    .social-bar-discord:hover {
+      background: #edeafd;
+    }
+
+    .social-bar-kofi .social-bar-icon {
+      background: #e6f8ff;
+      color: #13C3FF;
+    }
+
+    .social-bar-kofi:hover {
+      background: #e6f8ff;
+    }
+
+    /* Mobile: single row, compact handles */
+    @media (max-width: 768px) {
+      .social-bar {
+        margin-top: 0;
+        padding: 0 0.75rem;
+      }
+
+      .social-bar-inner {
+        flex-wrap: nowrap;
+        justify-content: center;
+        border-radius: 60px;
+        gap: 4px;
+        padding: 5px 6px;
+        width: auto;
+        max-width: none;
+      }
+
+      .social-bar-link {
+        padding: 8px 12px;
+        font-size: 11px;
+        flex: 0 0 auto;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .social-bar-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 7px;
+      }
+
+      .social-bar-icon svg {
+        width: 13px;
+        height: 13px;
+      }
+    }
+
+    /* Small mobile: hide handle text, icon-only mode */
+    @media (max-width: 540px) {
+      .social-bar-handle {
+        display: none;
+      }
+
+      .social-bar-link {
+        padding: 8px 10px;
+      }
+
+      .social-bar-inner {
+        gap: 4px;
+        padding: 4px 6px;
+      }
+    }
+
+
+
+    /* ── Upgraded pillar cards ── */
+    .pillar-gradient-01 {
+      background: linear-gradient(135deg, rgba(17, 122, 67, 0.02) 0%, rgba(255, 255, 255, 0.9) 100%);
+    }
+
+    .pillar-gradient-02 {
+      background: linear-gradient(135deg, rgba(10, 110, 92, 0.02) 0%, rgba(255, 255, 255, 0.9) 100%);
+    }
+
+    .pillar-gradient-03 {
+      background: linear-gradient(135deg, rgba(212, 160, 23, 0.02) 0%, rgba(255, 255, 255, 0.9) 100%);
+    }
+
+    .pillar-description {
+      font-size: 14px;
+      line-height: 1.65;
+      color: #515f53;
+      margin-top: 12px;
+    }
+
+    .pillar-header-label {
+      font-family: "DM Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .pillar-header-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    /* ── Signal feed footer upgrade ── */
+    .signal-footer {
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(135deg, #1a2e1e 0%, #0d2818 100%);
+      border-radius: var(--radius);
+      padding: 1.5rem 2rem;
+      margin: 2rem 0 0.5rem;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .signal-footer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(17, 122, 67, 0.15), transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(10, 110, 92, 0.1), transparent 50%);
+      pointer-events: none;
+    }
+
+    .signal-footer .live-dot {
+      box-shadow: 0 0 12px rgba(125, 235, 176, 0.5);
+    }
+
+    .signal-footer .signal-fade::before {
+      background: linear-gradient(to right, #1a2e1e 10%, transparent);
+      width: 80px;
+    }
+
+    .signal-footer .signal-fade::after {
+      background: linear-gradient(to left, #1a2e1e 10%, transparent);
+      width: 80px;
+    }
+
+    .signal-footer .signal-tag {
+      font-size: 10px;
+    }
+
+    /* ── Section headers ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+      width: 100%;
+    }
+
+    .section-header-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--line), transparent);
+    }
+
+    .section-header-label {
+      font-family: "DM Mono", monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── Content area intro title upgrade ── */
+    .content-intro-title {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      max-width: 380px;
+    }
+
+    @media (min-width: 640px) {
+      .content-intro-title {
+        font-size: 40px;
+      }
+    }
+
+    .content-intro-desc {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 360px;
+      margin-top: 1rem;
+    }
+
+
+    /* ── Accessibility — focus states ── */
+    .nav-link:focus-visible,
+    .cta-primary:focus-visible,
+    .cta-secondary:focus-visible,
+    .social-card:focus-visible,
+    .social-bar-link:focus-visible,
+    .pillar-cta:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 8px;
+    }
+
+    a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .mobile-menu-btn:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+
+    /* ═══════════════════════════════════════════════ */
+    /* LANDING PAGE SECTIONS                          */
+    /* ═══════════════════════════════════════════════ */
+
+    .landing-section {
+      padding: 2.5rem 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .landing-section-subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      margin-top: 4px;
+      margin-bottom: 1.5rem;
+      max-width: 400px;
+    }
+
+    /* ── Social Links Grid ── */
+    .social-links-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .social-links-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+    }
+
+    .social-link-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--card-accent, var(--accent)) 10%, white) 0%, rgba(255, 255, 255, 0.92) 52%, color-mix(in srgb, var(--card-accent, var(--accent)) 8%, white) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(135, 161, 145, 0.22);
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--ink);
+      box-shadow: 0 18px 34px rgba(32, 52, 39, 0.1);
+      transition: all 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .social-link-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: var(--card-accent, var(--accent));
+    }
+
+    .social-link-card::after {
+      content: "";
+      position: absolute;
+      right: -28px;
+      top: 50%;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--card-accent, var(--accent)) 14%, white) 0%, rgba(255, 255, 255, 0) 72%);
+      transform: translateY(-50%);
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .social-link-card::selection {
+      background: var(--accent-light);
+    }
+
+    .social-link-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .social-link-card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 22px 44px rgba(32, 52, 39, 0.16);
+      border-color: color-mix(in srgb, var(--card-accent, var(--accent)) 24%, rgba(135, 161, 145, 0.22));
+    }
+
+    .social-link-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 10px 24px color-mix(in srgb, var(--card-accent, var(--accent)) 18%, rgba(32, 52, 39, 0.08));
+      transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 250ms ease;
+    }
+
+    .social-link-card:hover .social-link-icon {
+      transform: scale(1.08) rotate(-3deg);
+      box-shadow: 0 14px 30px color-mix(in srgb, var(--card-accent, var(--accent)) 28%, rgba(32, 52, 39, 0.12));
+    }
+
+    .social-link-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .social-link-platform {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: color-mix(in srgb, var(--card-accent, var(--accent)) 56%, #4d6757);
+      margin-bottom: 4px;
+    }
+
+    .social-link-handle {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      color: #23372a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .social-link-arrow {
+      flex-shrink: 0;
+      color: color-mix(in srgb, var(--card-accent, var(--accent)) 48%, #6d8576);
+      opacity: 1;
+      margin-left: 6px;
+      transition: all 250ms ease;
+    }
+
+    .social-link-card:hover .social-link-arrow {
+      color: var(--card-accent, var(--accent));
+      transform: translate(2px, -2px);
+    }
+
+    #social-hub .landing-section-subtitle {
+      color: #556a5d;
+    }
+
+    /* ── Launch Card ── */
+    .launch-card {
+      position: relative;
+      background: linear-gradient(135deg, #0d2818 0%, #1a3a24 50%, #0a4a2e 100%);
+      border-radius: 20px;
+      padding: 2.5rem;
+      overflow: hidden;
+      border: 1px solid rgba(125, 235, 176, 0.15);
+    }
+
+    .launch-glow {
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(17, 122, 67, 0.3) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(60px);
+      pointer-events: none;
+      animation: glowPulse 4s ease-in-out infinite;
+    }
+
+    .launch-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 14px;
+      background: rgba(125, 235, 176, 0.15);
+      border: 1px solid rgba(125, 235, 176, 0.25);
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #7debb0;
+      margin-bottom: 1.5rem;
+      animation: badgePulse 3s ease-in-out infinite;
+    }
+
+    .launch-shell {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 980px) {
+      .launch-shell {
+        grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.8fr);
+        align-items: center;
+      }
+    }
+
+    @keyframes badgePulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(125, 235, 176, 0.15);
+      }
+
+      50% {
+        box-shadow: 0 0 0 8px rgba(125, 235, 176, 0);
+      }
+    }
+
+    .launch-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .launch-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .launch-title {
+        font-size: 36px;
+      }
+    }
+
+    .launch-desc {
+      font-size: 15px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.65);
+      max-width: 520px;
+      margin-bottom: 1.25rem;
+    }
+
+    .launch-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .launch-feature {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #7debb0;
+      padding: 6px 14px;
+      background: rgba(125, 235, 176, 0.08);
+      border-radius: 50px;
+      border: 1px solid rgba(125, 235, 176, 0.12);
+      letter-spacing: 0.04em;
+    }
+
+    .launch-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #117a43, #0e9950);
+      color: #fff;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      transition: all 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .launch-cta:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 32px rgba(17, 122, 67, 0.4);
+    }
+
+    .launch-subnote {
+      margin-top: 0.9rem;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .launch-sidecard {
+      position: relative;
+      z-index: 2;
+      border-radius: 22px;
+      padding: 1.35rem;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.06)),
+        rgba(7, 25, 16, 0.52);
+      border: 1px solid rgba(173, 255, 205, 0.16);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .launch-sidecard::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(145deg, rgba(125, 235, 176, 0.14), transparent 55%);
+      pointer-events: none;
+    }
+
+    .launch-sidecard>* {
+      position: relative;
+      z-index: 1;
+    }
+
+    .launch-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.45rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #f3fff8;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .launch-brand svg {
+      color: #7debb0;
+      flex-shrink: 0;
+    }
+
+    .launch-brand span {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+
+    .launch-kofi {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #b8f6cf;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      margin-bottom: 0.7rem;
+    }
+
+    .launch-price {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.45rem;
+      margin-bottom: 0.35rem;
+      color: #fff;
+    }
+
+    .launch-price strong {
+      font-size: clamp(36px, 4.6vw, 52px);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .launch-price span {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.72);
+      padding-bottom: 0.45rem;
+    }
+
+    .launch-side-title {
+      margin: 0 0 0.45rem;
+      font-size: 18px;
+      font-weight: 700;
+      color: #f2fff7;
+    }
+
+    .launch-side-desc {
+      margin: 0 0 1rem;
+      font-size: 13px;
+      line-height: 1.65;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .launch-perks {
+      display: grid;
+      gap: 0.6rem;
+      margin: 0 0 1rem;
+      padding: 0;
+      list-style: none;
+    }
+
+    .launch-perks li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      font-size: 13px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .launch-perks svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: #7debb0;
+    }
+
+    .launch-side-cta {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ── Products Grid ── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 640px) {
+      .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+    }
+
+    .product-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 1.75rem;
+      transition: all 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      box-shadow: 0 10px 28px rgba(17, 122, 67, 0.04);
+    }
+
+    .product-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(17, 122, 67, 0.18), rgba(212, 160, 23, 0.1));
+      pointer-events: none;
+    }
+
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(17, 122, 67, 0.12);
+    }
+
+    .product-tag {
+      display: inline-flex;
+      align-items: center;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 6px 12px;
+      border-radius: 50px;
+      margin-bottom: 1.25rem;
+      width: fit-content;
+      border: 1px solid rgba(17, 122, 67, 0.08);
+    }
+
+    .product-tag-premium {
+      background: #f8f1cf;
+      color: #9b7410;
+      border-color: rgba(212, 160, 23, 0.16);
+    }
+
+    .product-tag-soon {
+      background: #eef2ef;
+      color: #6b8070;
+      border-color: rgba(107, 128, 112, 0.14);
+    }
+
+    .product-icon-wrap {
+      width: 68px;
+      height: 68px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--accent-light), rgba(17, 122, 67, 0.06));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+      transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .product-icon-premium {
+      background: linear-gradient(135deg, #fff8e1, #ffecb3);
+      color: #b8860b;
+    }
+
+    .product-card:hover .product-icon-wrap {
+      transform: scale(1.08) rotate(-3deg);
+    }
+
+    .product-name {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 10px;
+      letter-spacing: -0.03em;
+    }
+
+    .product-desc {
+      font-size: 14px;
+      line-height: 1.72;
+      color: var(--muted);
+      margin-bottom: 1.4rem;
+    }
+
+    .product-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffffff;
+      text-decoration: none;
+      transition: gap 200ms ease, transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
+      margin-top: auto;
+      width: fit-content;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #117a43, #0f6c3d);
+      box-shadow: 0 10px 22px rgba(17, 122, 67, 0.16);
+    }
+
+    .product-cta:hover {
+      gap: 12px;
+      transform: translateX(2px);
+      box-shadow: 0 14px 28px rgba(17, 122, 67, 0.22);
+      filter: brightness(1.02);
+    }
+
+    .product-cta-muted {
+      color: var(--muted);
+      pointer-events: none;
+      opacity: 0.95;
+      font-weight: 700;
+      background: #eef2ef;
+      box-shadow: none;
+    }
+
+    .product-cta-muted:hover {
+      gap: 8px;
+      transform: none;
+      filter: none;
+      box-shadow: none;
+    }
+
+    /* ── Collaborate Card ── */
+    .collab-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      contain: paint;
+      clip-path: inset(0 round 20px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .collab-card::before {
+      z-index: 2;
+    }
+
+    .collab-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: url("collab_bg.jpg");
+      background-size: cover;
+      background-position: center right;
+      opacity: 0.35;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.7) 65%, black 100%);
+      mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.7) 65%, black 100%);
+    }
+
+
+    .collab-mascot {
+      position: absolute;
+      top: 0; bottom: 0; right: 0;
+      width: 380px;
+      z-index: 1;
+      pointer-events: none;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding-right: 24px;
+    }
+
+
+    .collab-mascot-flip {
+      transform: scaleX(-1);
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .collab-mascot img {
+      display: block;
+      height: 100%;
+      width: auto;
+      max-width: none;
+      pointer-events: none;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .collab-mascot-wink { display: none; }
+
+    @media (max-width: 768px) {
+      .collab-mascot { display: none; }
+    }
+
+    .collab-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(to right, var(--accent), var(--secondary), var(--gold));
+      opacity: 0.7;
+    }
+
+    .collab-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin: 8px 0 12px;
+    }
+
+    @media (min-width: 640px) {
+      .collab-title {
+        font-size: 32px;
+      }
+    }
+
+    .collab-desc {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 540px;
+      margin-bottom: 1.5rem;
+    }
+
+    .collab-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* ── Footer bottom bar ── */
+    .footer-bottom {
+      text-align: center;
+      padding: 2rem 0 1.5rem;
+      position: relative;
+      z-index: 10;
+      width: 100%;
+    }
+
+    .footer-bottom p {
+      font-family: "DM Mono", monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .footer-bottom a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-bottom a:hover {
+      text-decoration: underline;
+      color: var(--accent) !important;
+    }
+  </style>
+</head>
+
+<body class="" style="animation: pageLoad 0.6s ease-out both;">
+  <!-- Full-bleed hero section -->
+  <div class="hero-fullbleed">
+    <!-- Floating header over hero -->
+    <header class="site-header text-[12px]">
+      <div class="mono font-bold tracking-tight text-[14px] text-white drop-shadow-md">
+        <span class="text-[#7debb0]">*</span> DUIDUI
+      </div>
+
+      <!-- Desktop nav -->
+      <nav class="nav-links-desktop nav-container mono flex items-center text-[11px]">
+        <a href="index.html" class="nav-link active">HOME</a>
+        <a href="#connect" class="nav-link">CONNECT</a>
+        <a href="shop.html" class="nav-link">ARTIFACTS</a>
+        <a href="blog.html" class="nav-link">BLOG</a>
+        <a href="#sns-ticker" class="nav-link">SIGNAL FEED</a>
+      </nav>
+
+      <!-- Mobile menu button -->
+      <button class="mobile-menu-btn" onclick="document.getElementById('mobileNav').classList.toggle('open')"
+        aria-label="Toggle menu">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.8">
+          <line x1="3" y1="5" x2="17" y2="5" />
+          <line x1="3" y1="10" x2="17" y2="10" />
+          <line x1="3" y1="15" x2="17" y2="15" />
+        </svg>
+      </button>
+
+      <div class="header-tools">
+        <div class="lang-switch mono" aria-label="Language switcher">
+          <button id="langTh" type="button">TH</button>
+          <button id="langEn" type="button">EN</button>
+        </div>
+        <div class="mono text-[11px] text-white/70 drop-shadow-sm">UTC+7 <span id="clock">00:00:00</span></div>
+      </div>
+
+      <!-- Mobile nav dropdown -->
+      <nav id="mobileNav" class="nav-links-mobile mono text-[#58665b]">
+        <a href="index.html" class="nav-link"
+          onclick="document.getElementById('mobileNav').classList.remove('open')">HOME</a>
+        <a href="#connect" class="nav-link"
+          onclick="document.getElementById('mobileNav').classList.remove('open')">CONNECT</a>
+        <a href="shop.html" class="nav-link"
+          onclick="document.getElementById('mobileNav').classList.remove('open')">ARTIFACTS</a>
+        <a href="blog.html" class="nav-link"
+          onclick="document.getElementById('mobileNav').classList.remove('open')">BLOG</a>
+        <a href="#sns-ticker" class="nav-link"
+          onclick="document.getElementById('mobileNav').classList.remove('open')">SIGNAL FEED</a>
+      </nav>
+    </header>
+
+    <!-- Hero Banner -->
+    <div class="hero-banner relative overflow-hidden bg-[#bce6ff]">
+      <div class="meadow-bg" style="opacity: 1;">
+        <img src="anime_bg.jpg" alt="Anime Meadow Background" class="absolute inset-0 w-full h-full object-cover" />
+        <svg viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg"
+          class="absolute bottom-0 left-0 w-full h-[60%] z-10 pointer-events-none">
+          <path class="wind-gust" d="M-100,200 C300,200 400,100 720,150 C1000,190 1200,130 1540,150" />
+          <path class="wind-gust-2" d="M-100,80 C200,120 300,50 600,100 C900,150 1100,70 1540,90" />
+          <path class="wind-gust-3" d="M-100,260 C150,220 250,280 500,240 C800,200 1000,260 1540,230" />
+          <path class="wind-gust" d="M-100,140 C200,180 400,130 800,160 C1100,180 1300,120 1540,140"
+            style="animation-delay: -4s;" />
+          <path class="wind-gust-2" d="M-100,220 C250,180 450,240 700,200 C1000,160 1200,230 1540,210"
+            style="animation-delay: -8s;" />
+          <path class="wind-gust-3" d="M-100,100 C150,140 350,70 600,110 C900,150 1100,90 1540,120"
+            style="animation-delay: -2s;" />
+        </svg>
+      </div>
+
+      <!-- Title zone -->
+      <div class="hero-title-zone rise relative z-10">
+        <p id="heroTagline"
+          class="mono relative z-20 mb-4 text-[12px] sm:text-[13px] text-white/80 font-medium tracking-[0.2em] drop-shadow-md">
+          CRYPTO KOL PORTAL <span class="text-white/40">/</span> THAI WEB3 NARRATIVE ENGINE
+        </p>
+        <h1 id="heroTitle" class="name-backdrop letter-reveal" aria-label="CRYPTO DUIDUI">
+          <span class="line-one"
+            style="color: #ffffff; opacity: 1; text-shadow: 0 4px 12px rgba(0,0,0,0.15);">CRYPTO</span>
+          <span class="line-two" style="color: #ffffff; text-shadow: 0 8px 24px rgba(17, 122, 67, 0.4);">DUIDUI</span>
+        </h1>
+      </div>
+
+      <!-- Mascot -->
+      <div class="mascot-float rise rise-1 relative z-10">
+        <div style="position: relative; display: flex; align-items: flex-end; justify-content: center;">
+          <div class="mascot-glow"></div>
+          <div class="mascot-ground-shadow"></div>
+          <!-- Mascot with hover-blink swap -->
+          <div class="mascot-interactive relative z-20 h-[320px] sm:h-[420px] lg:h-[460px]"
+            style="filter: drop-shadow(0 12px 20px rgba(0,0,0,0.15)); margin: 0 auto;">
+            <img src="duidui png.png" alt="DUIDUI mascot" class="mascot-img-normal h-full w-auto object-contain" />
+            <img src="duidui wink.png" alt="DUIDUI winking" class="mascot-img-wink" />
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Social handles bar -->
+      <div class="social-bar rise" style="animation-delay: 600ms;">
+        <div class="social-bar-inner">
+          <a href="https://x.com/dodgeduidui" target="_blank" rel="noreferrer" class="social-bar-link social-bar-x" aria-label="X/Twitter">
+            <span class="social-bar-icon">
+              <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current">
+                <path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z" />
+              </svg>
+            </span>
+            <span class="social-bar-handle">@dodgeduidui</span>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" rel="noreferrer" class="social-bar-link social-bar-telegram" aria-label="Telegram">
+            <span class="social-bar-icon">
+              <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current">
+                <path
+                  d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z" />
+              </svg>
+            </span>
+            <span class="social-bar-handle">Dui's Note</span>
+          </a>
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" rel="noreferrer" class="social-bar-link social-bar-youtube" aria-label="YouTube">
+            <span class="social-bar-icon">
+              <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current">
+                <path
+                  d="M23 8.8c-.3-1.2-1.2-2.1-2.4-2.4C18.4 6 12 6 12 6s-6.4 0-8.6.4A3.3 3.3 0 0 0 1 8.8C.6 11 .6 12 .6 12s0 1 .4 3.2c.3 1.2 1.2 2.1 2.4 2.4 2.2.4 8.6.4 8.6.4s6.4 0 8.6-.4a3.3 3.3 0 0 0 2.4-2.4c.4-2.2.4-3.2.4-3.2s0-1-.4-3.2zM10 15.2V8.8l5.5 3.2L10 15.2z" />
+              </svg>
+            </span>
+            <span class="social-bar-handle">DuiDui - เดอะคริปโตโบร</span>
+          </a>
+          <a href="https://discord.gg/hdx3AteMHg" target="_blank" rel="noreferrer" class="social-bar-link social-bar-discord" aria-label="Discord">
+            <span class="social-bar-icon">
+              <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current">
+                <path
+                  d="M20.3 5.2A17 17 0 0 0 16 3.9l-.2.3c-.2.3-.4.8-.6 1.1a16.2 16.2 0 0 0-6.3 0l-.6-1.4a17 17 0 0 0-4.3 1.3C1.3 9.2.6 13.1.9 17c1.8 1.3 3.6 2 5.4 2.4l1.3-1.8c-.7-.2-1.3-.4-1.9-.7l.5-.4c3.7 1.8 7.8 1.8 11.4 0 .2.1.3.3.5.4-.6.3-1.2.5-1.9.7l1.3 1.8c1.8-.4 3.6-1.1 5.4-2.4.4-4.5-.8-8.3-2.6-11.8zM9.5 14.6c-.9 0-1.7-.8-1.7-1.8s.7-1.8 1.7-1.8c.9 0 1.7.8 1.7 1.8 0 1.1-.7 1.8-1.7 1.8zm5 0c-.9 0-1.7-.8-1.7-1.8s.7-1.8 1.7-1.8 1.7.8 1.7 1.8-.8 1.8-1.7 1.8z" />
+              </svg>
+            </span>
+            <span class="social-bar-handle">Dui's Crypto Station</span>
+          </a>
+          <a href="https://ko-fi.com/duiduidui" target="_blank" rel="noreferrer" class="social-bar-link social-bar-kofi" aria-label="Ko-fi">
+            <span class="social-bar-icon">
+              <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current">
+                <path
+                  d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z" />
+              </svg>
+            </span>
+            <span class="social-bar-handle">DUIDUI</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="scroll-indicator">
+        <span>Scroll</span>
+        <div class="scroll-chevron"></div>
+      </div>
+      <!-- Bottom gradient fade -->
+      <div class="hero-fade"></div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <main class="frame mx-auto max-w-[1100px] px-5 pb-6 sm:px-8 sm:pb-10"
+    style="margin-top: 0; position: relative; z-index: 10;">
+    <div class="grain"></div>
+
+    <!-- ═══════════════════════════════════════════ -->
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION 2: KO-FI MEMBERSHIP                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="landing-section">
+      <div class="launch-card scroll-reveal">
+        <div class="launch-shell">
+          <div class="launch-content">
+            <div class="launch-badge mono" data-i18n="membership_badge">KO-FI MEMBERSHIP</div>
+            <h2 class="launch-title" data-i18n="membership_title">Join the Monthly Alpha Gang</h2>
+            <p class="launch-desc" data-i18n="membership_desc">สนับสนุน DuiDui ผ่าน Ko-fi แล้วรับวงจรข้อมูลที่ใกล้ขึ้นกว่าเดิม: มุมมองตลาด การวิเคราะห์เทคนิคแบบเข้าใจง่าย และอินไซต์เฉพาะเรื่องที่ควรจับตาจริง ๆ</p>
+            <div class="launch-features">
+              <span class="launch-feature mono"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg><span data-i18n="feature_market">มุมมองตลาด</span></span>
+              <span class="launch-feature mono"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5">
+                  <path d="M3 3v18h18" />
+                  <path d="m7 14 3-3 3 2 4-6" />
+                </svg><span data-i18n="feature_ta">วิเคราะห์เทคนิค</span></span>
+              <span class="launch-feature mono"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg><span data-i18n="feature_exclusive">คอนเทนต์พิเศษ</span></span>
+              <span class="launch-feature mono"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg><span data-i18n="feature_dm">คุยตรงได้</span></span>
+            </div>
+            <a href="https://ko-fi.com/duiduidui/tiers" target="_blank" rel="noreferrer" class="launch-cta mono"><span data-i18n="membership_cta">ดูแพ็กเกจสมาชิก</span> <svg width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M7 17L17 7" />
+                <path d="M8 7h9v9" />
+              </svg></a>
+            <p class="launch-subnote mono" data-i18n="membership_note">คอนเทนต์คริปโตสำหรับคนไทย พร้อมสนับสนุนครีเอเตอร์โดยตรงผ่าน Ko-fi</p>
+          </div>
+          <aside class="launch-sidecard">
+            <div class="launch-brand mono" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z" />
+              </svg>
+              <span>KO-FI</span>
+            </div>
+            <div class="launch-kofi mono">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z" />
+              </svg>
+              <span data-i18n="tier_badge">KO-FI SUBSCRIBER TIER</span>
+            </div>
+            <div class="launch-price">
+              <strong>$9.90</strong>
+              <span data-i18n="per_month">ต่อเดือน</span>
+            </div>
+            <h3 class="launch-side-title" data-i18n="tier_title">Monthly Alpha Gang</h3>
+            <p class="launch-side-desc" data-i18n="tier_desc">แพ็กเกจสมาชิกแบบกระชับสำหรับคนที่อยากได้สัญญาณต่อเนื่อง มุมมองคมขึ้น และเข้าถึงคอมมูนิตี้ของ DuiDui ได้ใกล้กว่าเดิม</p>
+            <ul class="launch-perks">
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 13 4 4L19 7" /></svg><span data-i18n="perk_one">โพสต์พิเศษและมุมมองตลาดสำหรับสมาชิกเท่านั้น</span></li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 13 4 4L19 7" /></svg><span data-i18n="perk_two">การวิเคราะห์เทคนิคที่อธิบายแบบอ่านง่ายสำหรับคนไทย</span></li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 13 4 4L19 7" /></svg><span data-i18n="perk_three">คุยตรงกับครีเอเตอร์และเข้าถึงวงในมากขึ้น</span></li>
+            </ul>
+            <a href="https://ko-fi.com/duiduidui/tiers" target="_blank" rel="noreferrer" class="launch-cta launch-side-cta mono"><span data-i18n="tier_cta">สมัครผ่าน KO-FI</span> <svg width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M7 17L17 7" />
+                <path d="M8 7h9v9" />
+              </svg></a>
+          </aside>
+        </div>
+        <div class="launch-glow"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION 3: DIGITAL PRODUCTS                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section id="content-pillars" class="landing-section">
+      <div class="section-header scroll-reveal">
+        <span class="section-header-label" data-i18n="products_label">DuiDui's Portal</span>
+        <div class="section-header-line"></div>
+      </div>
+      <p class="landing-section-subtitle scroll-reveal" data-i18n="products_subtitle">ทรัพยากรและเครื่องมือที่คัดมาแล้วสำหรับสายคริปโต</p>
+
+      <div class="products-grid">
+        <div class="product-card scroll-reveal" style="transition-delay: 0ms;">
+          <div class="product-tag mono">BLOG</div>
+          <div class="product-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+          </div>
+          <h3 class="product-name" data-i18n="product_one_title">Crypto Blog</h3>
+          <p class="product-desc" data-i18n="product_one_desc">บันทึกการลงทุนคริปโตสำหรับจดมุมมองตลาด thesis การตัดสินใจ และ insight ที่ใช้ติดตามเกมระยะยาว</p>
+          <a href="blog.html" class="product-cta mono"><span data-i18n="view_cta">Let's Go</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg></a>
+        </div>
+
+        <div class="product-card scroll-reveal" style="transition-delay: 120ms;">
+          <div class="product-tag product-tag-premium mono">PREMIUM</div>
+          <div class="product-icon-wrap product-icon-premium">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </div>
+          <h3 class="product-name" data-i18n="product_three_title">Alpha Membership</h3>
+          <p class="product-desc" data-i18n="product_three_desc">คอนเทนต์พรีเมียมรายเดือน สัญญาณก่อนใคร และสิทธิ์เข้ากลุ่มส่วนตัว</p>
+          <a href="shop.html" class="product-cta mono"><span data-i18n="view_cta">Let's Go</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg></a>
+        </div>
+
+        <div class="product-card scroll-reveal" style="transition-delay: 240ms;">
+          <div class="product-tag product-tag-soon mono">COMING SOON</div>
+          <div class="product-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M3 9h18" />
+              <path d="M9 21V9" />
+            </svg>
+          </div>
+          <h3 class="product-name" data-i18n="product_two_title">Trading Tools</h3>
+          <p class="product-desc" data-i18n="product_two_desc">ชุดเครื่องมือเทรด แดชบอร์ด และ utility สำหรับติดตามตลาด กำลังอยู่ระหว่างจัดระบบก่อนปล่อยใช้งาน</p>
+          <span class="product-cta product-cta-muted mono" data-i18n="coming_soon_cta">COMING SOON</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION 4: COLLABORATE                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section id="connect" class="landing-section">
+      <div class="collab-card scroll-reveal">
+        <div class="collab-bg" aria-hidden="true"></div>
+        <div class="collab-content" style="position:relative; z-index:1;">
+          <p class="mono text-[11px] font-bold" style="color: var(--accent); letter-spacing: 0.12em;" data-i18n="collab_badge">OPEN TO COLLABORATE</p>
+          <h2 class="collab-title" data-i18n="collab_title">Let's build something together</h2>
+          <p class="collab-desc" data-i18n="collab_desc">ถ้าคุณกำลังมองหาพาร์ตเนอร์ สปอนเซอร์ งานคอนเทนต์ร่วมกัน หรือแค่อยากทักมา คุยกันได้เสมอสำหรับทุกแบรนด์และบิลเดอร์ในโลก Web3</p>
+          <div class="collab-actions">
+            <a href="mailto:duiduiwagmi@gmail.com" class="cta-primary mono rounded-lg px-5 py-3 text-[12px] font-bold">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <span data-i18n="contact_cta">ติดต่อได้เลย</span>
+            </a>
+            <a href="https://t.me/duisnote" target="_blank" rel="noreferrer"
+              class="cta-secondary mono rounded-lg px-5 py-3 text-[12px] font-bold" style="background: #fff;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z" />
+              </svg>
+              <span data-i18n="telegram_cta">ทักทาง TELEGRAM</span>
+            </a>
+          </div>
+        </div>
+        <!-- Mascot peeking from bottom-right -->
+        <div class="collab-mascot" aria-hidden="true">
+          <div class="collab-mascot-flip">
+            <img src="duidui png.png" alt="DUIDUI mascot" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION 1: CONNECT — Social Links          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section id="social-hub" class="landing-section" style="padding-top: 2rem;">
+      <div class="section-header scroll-reveal">
+        <span class="section-header-label" data-i18n="connect_label">CONNECT</span>
+        <div class="section-header-line"></div>
+      </div>
+      <p class="landing-section-subtitle scroll-reveal" data-i18n="connect_subtitle">ตามหา DuiDui ได้ทุกที่ กดติดตามได้เลย</p>
+
+      <div class="social-links-grid">
+        <!-- X / Twitter -->
+        <a href="https://x.com/dodgeduidui" target="_blank" rel="noreferrer" class="social-link-card scroll-reveal"
+          style="--card-accent: #111; transition-delay: 0ms;">
+          <div class="social-link-icon" style="background: #111; color: #fff;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z" />
+            </svg>
+          </div>
+          <div class="social-link-info">
+            <span class="social-link-platform mono">X / TWITTER</span>
+            <span class="social-link-handle">@dodgeduidui</span>
+          </div>
+          <svg class="social-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 17L17 7M17 7H7M17 7v10" />
+          </svg>
+        </a>
+        <!-- Telegram -->
+        <a href="https://t.me/duisnote" target="_blank" rel="noreferrer" class="social-link-card scroll-reveal"
+          style="--card-accent: #2aabee; transition-delay: 80ms;">
+          <div class="social-link-icon" style="background: #2aabee; color: #fff;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z" />
+            </svg>
+          </div>
+          <div class="social-link-info">
+            <span class="social-link-platform mono">TELEGRAM</span>
+            <span class="social-link-handle" data-i18n="telegram_handle">Dui's Note</span>
+          </div>
+          <svg class="social-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 17L17 7M17 7H7M17 7v10" />
+          </svg>
+        </a>
+        <!-- YouTube -->
+        <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" rel="noreferrer" class="social-link-card scroll-reveal"
+          style="--card-accent: #ff0033; transition-delay: 160ms;">
+          <div class="social-link-icon" style="background: #ff0033; color: #fff;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M23 8.8c-.3-1.2-1.2-2.1-2.4-2.4C18.4 6 12 6 12 6s-6.4 0-8.6.4A3.3 3.3 0 0 0 1 8.8C.6 11 .6 12 .6 12s0 1 .4 3.2c.3 1.2 1.2 2.1 2.4 2.4 2.2.4 8.6.4 8.6.4s6.4 0 8.6-.4a3.3 3.3 0 0 0 2.4-2.4c.4-2.2.4-3.2.4-3.2s0-1-.4-3.2zM10 15.2V8.8l5.5 3.2L10 15.2z" />
+            </svg>
+          </div>
+          <div class="social-link-info">
+            <span class="social-link-platform mono">YOUTUBE</span>
+            <span class="social-link-handle" data-i18n="youtube_handle">DuiDui - เดอะคริปโตโบร</span>
+          </div>
+          <svg class="social-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 17L17 7M17 7H7M17 7v10" />
+          </svg>
+        </a>
+        <!-- Discord -->
+        <a href="https://discord.gg/hdx3AteMHg" target="_blank" rel="noreferrer" class="social-link-card scroll-reveal"
+          style="--card-accent: #5865f2; transition-delay: 240ms;">
+          <div class="social-link-icon" style="background: #5865f2; color: #fff;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M20.3 5.2A17 17 0 0 0 16 3.9l-.2.3c-.2.3-.4.8-.6 1.1a16.2 16.2 0 0 0-6.3 0l-.6-1.4a17 17 0 0 0-4.3 1.3C1.3 9.2.6 13.1.9 17c1.8 1.3 3.6 2 5.4 2.4l1.3-1.8c-.7-.2-1.3-.4-1.9-.7l.5-.4c3.7 1.8 7.8 1.8 11.4 0 .2.1.3.3.5.4-.6.3-1.2.5-1.9.7l1.3 1.8c1.8-.4 3.6-1.1 5.4-2.4.4-4.5-.8-8.3-2.6-11.8zM9.5 14.6c-.9 0-1.7-.8-1.7-1.8s.7-1.8 1.7-1.8c.9 0 1.7.8 1.7 1.8 0 1.1-.7 1.8-1.7 1.8zm5 0c-.9 0-1.7-.8-1.7-1.8s.7-1.8 1.7-1.8 1.7.8 1.7 1.8-.8 1.8-1.7 1.8z" />
+            </svg>
+          </div>
+          <div class="social-link-info">
+            <span class="social-link-platform mono">DISCORD</span>
+            <span class="social-link-handle" data-i18n="discord_handle">Dui's Crypto Station</span>
+          </div>
+          <svg class="social-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 17L17 7M17 7H7M17 7v10" />
+          </svg>
+        </a>
+        <!-- Ko-fi -->
+        <a href="https://ko-fi.com/duiduidui" target="_blank" rel="noreferrer" class="social-link-card scroll-reveal"
+          style="--card-accent: #13C3FF; transition-delay: 320ms;">
+          <div class="social-link-icon" style="background: #13C3FF; color: #fff;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z" />
+            </svg>
+          </div>
+          <div class="social-link-info">
+            <span class="social-link-platform mono">KO-FI</span>
+            <span class="social-link-handle">DUIDUI</span>
+          </div>
+          <svg class="social-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 17L17 7M17 7H7M17 7v10" />
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SIGNAL FEED / SNS TICKER                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <footer id="sns-ticker" class="signal-footer">
+      <div class="relative z-10 mb-3 flex items-center gap-2">
+        <span class="live-dot"></span>
+        <p class="mono text-[11px] font-bold text-[#7debb0]">FIND ME ON</p>
+        <span class="mono text-[10px] ml-auto" style="color:rgba(255,255,255,0.25);">FOLLOW</span>
+      </div>
+      <div class="signal-fade border-y border-white/10 py-3 relative z-10">
+        <div class="signal-track">
+          <a href="https://x.com/dodgeduidui" target="_blank" rel="noreferrer" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(255,255,255,0.07);color:#cfe0d4;border:1px solid rgba(255,255,255,0.12);">X</span></a>
+          <a href="https://t.me/duisnote" target="_blank" rel="noreferrer" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(72,184,232,0.12);color:#7ec8ea;border:1px solid rgba(72,184,232,0.2);">TELEGRAM</span></a>
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" rel="noreferrer" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(255,70,70,0.12);color:#ffaaaa;border:1px solid rgba(255,70,70,0.2);">YOUTUBE</span></a>
+          <a href="https://discord.gg/hdx3AteMHg" target="_blank" rel="noreferrer" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(140,150,240,0.12);color:#bbbff5;border:1px solid rgba(140,150,240,0.2);">DISCORD</span></a>
+          <a href="https://ko-fi.com/duiduidui" target="_blank" rel="noreferrer" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.12);color:#7debb0;border:1px solid rgba(47,184,106,0.2);">KO-FI</span></a>
+          <span class="signal-item" style="color:rgba(255,255,255,0.18);letter-spacing:0.2em;font-size:10px;">— — —</span>
+          <a href="index.html" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.1);color:#2fb86a;border:1px solid rgba(47,184,106,0.25);">NAV</span>HOME</a>
+          <a href="#connect" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.1);color:#2fb86a;border:1px solid rgba(47,184,106,0.25);">NAV</span>CONNECT</a>
+          <a href="shop.html" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.1);color:#2fb86a;border:1px solid rgba(47,184,106,0.25);">NAV</span>ARTIFACTS</a>
+          <a href="blog.html" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.1);color:#2fb86a;border:1px solid rgba(47,184,106,0.25);">NAV</span>BLOG</a>
+          <a href="#sns-ticker" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.1);color:#2fb86a;border:1px solid rgba(47,184,106,0.25);">NAV</span>SIGNAL FEED</a>
+          <!-- Duplicate for seamless loop -->
+          <a href="https://x.com/dodgeduidui" target="_blank" rel="noreferrer" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(255,255,255,0.07);color:#cfe0d4;border:1px solid rgba(255,255,255,0.12);">X</span></a>
+          <a href="https://t.me/duisnote" target="_blank" rel="noreferrer" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(72,184,232,0.12);color:#7ec8ea;border:1px solid rgba(72,184,232,0.2);">TELEGRAM</span></a>
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" rel="noreferrer" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(255,70,70,0.12);color:#ffaaaa;border:1px solid rgba(255,70,70,0.2);">YOUTUBE</span></a>
+          <a href="https://discord.gg/hdx3AteMHg" target="_blank" rel="noreferrer" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(140,150,240,0.12);color:#bbbff5;border:1px solid rgba(140,150,240,0.2);">DISCORD</span></a>
+          <a href="https://ko-fi.com/duiduidui" target="_blank" rel="noreferrer" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.12);color:#7debb0;border:1px solid rgba(47,184,106,0.2);">KO-FI</span></a>
+          <span class="signal-item" style="color:rgba(255,255,255,0.18);letter-spacing:0.2em;font-size:10px;">— — —</span>
+          <a href="index.html" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.1);color:#2fb86a;border:1px solid rgba(47,184,106,0.25);">NAV</span>HOME</a>
+          <a href="#connect" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.1);color:#2fb86a;border:1px solid rgba(47,184,106,0.25);">NAV</span>CONNECT</a>
+          <a href="shop.html" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.1);color:#2fb86a;border:1px solid rgba(47,184,106,0.25);">NAV</span>ARTIFACTS</a>
+          <a href="blog.html" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.1);color:#2fb86a;border:1px solid rgba(47,184,106,0.25);">NAV</span>BLOG</a>
+          <a href="#sns-ticker" class="signal-item" style="text-decoration:none;color:rgba(255,255,255,0.65);"><span class="signal-tag" style="background:rgba(47,184,106,0.1);color:#2fb86a;border:1px solid rgba(47,184,106,0.25);">NAV</span>SIGNAL FEED</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Footer bottom -->
+    <div class="footer-bottom">
+      <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 12px;">
+        <a href="https://x.com/dodgeduidui" aria-label="X/Twitter"
+          style="color: var(--muted); transition: color 200ms;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z" />
+          </svg>
+        </a>
+        <a href="https://t.me/duisnote" target="_blank" rel="noreferrer" aria-label="Telegram" style="color: var(--muted); transition: color 200ms;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z" />
+          </svg>
+        </a>
+        <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" rel="noreferrer" aria-label="YouTube" style="color: var(--muted); transition: color 200ms;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M23 8.8c-.3-1.2-1.2-2.1-2.4-2.4C18.4 6 12 6 12 6s-6.4 0-8.6.4A3.3 3.3 0 0 0 1 8.8C.6 11 .6 12 .6 12s0 1 .4 3.2c.3 1.2 1.2 2.1 2.4 2.4 2.2.4 8.6.4 8.6.4s6.4 0 8.6-.4a3.3 3.3 0 0 0 2.4-2.4c.4-2.2.4-3.2.4-3.2s0-1-.4-3.2zM10 15.2V8.8l5.5 3.2L10 15.2z" />
+          </svg>
+        </a>
+        <a href="https://discord.gg/hdx3AteMHg" target="_blank" rel="noreferrer" aria-label="Discord" style="color: var(--muted); transition: color 200ms;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M20.3 5.2A17 17 0 0 0 16 3.9l-.2.3c-.2.3-.4.8-.6 1.1a16.2 16.2 0 0 0-6.3 0l-.6-1.4a17 17 0 0 0-4.3 1.3C1.3 9.2.6 13.1.9 17c1.8 1.3 3.6 2 5.4 2.4l1.3-1.8c-.7-.2-1.3-.4-1.9-.7l.5-.4c3.7 1.8 7.8 1.8 11.4 0 .2.1.3.3.5.4-.6.3-1.2.5-1.9.7l1.3 1.8c1.8-.4 3.6-1.1 5.4-2.4.4-4.5-.8-8.3-2.6-11.8zM9.5 14.6c-.9 0-1.7-.8-1.7-1.8s.7-1.8 1.7-1.8c.9 0 1.7.8 1.7 1.8 0 1.1-.7 1.8-1.7 1.8zm5 0c-.9 0-1.7-.8-1.7-1.8s.7-1.8 1.7-1.8 1.7.8 1.7 1.8-.8 1.8-1.7 1.8z" />
+          </svg>
+        </a>
+      </div>
+      <p data-i18n="footer_copy">&copy; 2026 DUIDUI &mdash; พอร์ทัลคริปโตคอนเทนต์ที่สร้างขึ้นเพื่อคอมมูนิตี้ Web3 ไทย
+      </p>
+    </div>
+  </main>
+  <div class="mobile-sticky-cta"><a href="https://x.com/dodgeduidui" target="_blank" rel="noreferrer" class="cta-primary mono rounded-lg px-4 py-2.5 text-[11px] font-bold"><svg
+        width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z" />
+      </svg><span data-i18n="follow_x">ติดตามบน X</span> </a><a href="https://t.me/duisnote" target="_blank" rel="noreferrer" class="cta-secondary mono rounded-lg px-4 py-2.5 text-[11px] font-bold"
+      style="background: #fff;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z" />
+      </svg><span data-i18n="join_telegram">เข้าร่วม TELEGRAM</span> </a></div>
+  <script>
+    const indexTranslations = {
+      th: {
+        title: "DUIDUI | พอร์ทัลคริปโตคอนเทนต์สำหรับคนไทย",
+        description: "DUIDUI คือพอร์ทัลคอนเทนต์คริปโตสำหรับคนไทย รวมมุมมองตลาด สัญญาณที่น่าจับตา และคอนเทนต์ Web3 แบบอ่านง่าย ทั้งภาษาไทยและอังกฤษ",
+        desktop_home: "HOME",
+        desktop_connect: "CONNECT",
+        desktop_artifacts: "ARTIFACTS",
+        desktop_products: "BLOG",
+        desktop_signal: "SIGNAL FEED",
+        mobile_connect: "CONNECT",
+        mobile_content: "CONTENT",
+        mobile_signal: "SIGNAL FEED",
+        hero_tagline: "CRYPTO KOL PORTAL <span class=\"text-white/40\">/</span> THAI WEB3 NARRATIVE ENGINE",
+        hero_line_one: "CRYPTO",
+        hero_line_two: "DUIDUI",
+        hero_aria: "CRYPTO DUIDUI",
+        connect_label: "CONNECT",
+        connect_subtitle: "ตามหา DuiDui ได้ทุกที่ กดติดตามได้เลย",
+        telegram_handle: "Dui's Note",
+        youtube_handle: "DuiDui - เดอะคริปโตโบร",
+        discord_handle: "Dui's Crypto Station",
+        membership_badge: "KO-FI MEMBERSHIP",
+        membership_title: "Join the Monthly Alpha Gang",
+        membership_desc: "สนับสนุน DuiDui ผ่าน Ko-fi แล้วรับวงจรข้อมูลที่ใกล้ขึ้นกว่าเดิม: มุมมองตลาด การวิเคราะห์เทคนิคแบบเข้าใจง่าย และอินไซต์เฉพาะเรื่องที่ควรจับตาจริง ๆ",
+        feature_market: "มุมมองตลาด",
+        feature_ta: "วิเคราะห์เทคนิค",
+        feature_exclusive: "คอนเทนต์พิเศษ",
+        feature_dm: "คุยตรงได้",
+        membership_cta: "ดูแพ็กเกจสมาชิก",
+        membership_note: "คอนเทนต์คริปโตสำหรับคนไทย พร้อมสนับสนุนครีเอเตอร์โดยตรงผ่าน Ko-fi",
+        tier_badge: "KO-FI SUBSCRIBER TIER",
+        per_month: "ต่อเดือน",
+        tier_title: "Monthly Alpha Gang",
+        tier_desc: "แพ็กเกจสมาชิกแบบกระชับสำหรับคนที่อยากได้สัญญาณต่อเนื่อง มุมมองคมขึ้น และเข้าถึงคอมมูนิตี้ของ DuiDui ได้ใกล้กว่าเดิม",
+        perk_one: "โพสต์พิเศษและมุมมองตลาดสำหรับสมาชิกเท่านั้น",
+        perk_two: "การวิเคราะห์เทคนิคที่อธิบายแบบอ่านง่ายสำหรับคนไทย",
+        perk_three: "คุยตรงกับครีเอเตอร์และเข้าถึงวงในมากขึ้น",
+        tier_cta: "สมัครผ่าน KO-FI",
+        products_label: "DuiDui's Portal",
+        products_subtitle: "ทรัพยากรและเครื่องมือที่คัดมาแล้วสำหรับสายคริปโต",
+        product_one_title: "Crypto Blog",
+        product_one_desc: "บันทึกการลงทุนคริปโตสำหรับจดมุมมองตลาด thesis การตัดสินใจ และ insight ที่ใช้ติดตามเกมระยะยาว",
+        product_two_title: "Trading Tools",
+        product_two_desc: "ชุดเครื่องมือเทรด แดชบอร์ด และ utility สำหรับติดตามตลาด กำลังอยู่ระหว่างจัดระบบก่อนปล่อยใช้งาน",
+        product_three_title: "Alpha Membership",
+        product_three_desc: "คอนเทนต์พรีเมียมรายเดือน สัญญาณก่อนใคร และสิทธิ์เข้ากลุ่มส่วนตัว",
+        view_cta: "Let's Go",
+        coming_soon_cta: "เร็ว ๆ นี้",
+        collab_badge: "OPEN TO COLLABORATE",
+        collab_title: "Let's build something together",
+        collab_desc: "ถ้าคุณกำลังมองหาพาร์ตเนอร์ สปอนเซอร์ งานคอนเทนต์ร่วมกัน หรือแค่อยากทักมา คุยกันได้เสมอสำหรับทุกแบรนด์และบิลเดอร์ในโลก Web3",
+        contact_cta: "ติดต่อได้เลย",
+        telegram_cta: "ทักทาง TELEGRAM",
+        signal_title: "LIVE SIGNAL FEED",
+        footer_copy: "&copy; 2026 DUIDUI &mdash; พอร์ทัลคริปโตคอนเทนต์ที่สร้างขึ้นเพื่อคอมมูนิตี้ Web3 ไทย",
+        follow_x: "ติดตามบน X",
+        join_telegram: "เข้าร่วม TELEGRAM"
+      },
+      en: {
+        title: "DUIDUI | Crypto KOL Portal — Thai Web3 Narrative Engine",
+        description: "DUIDUI is a Thai crypto KOL portal delivering daily market context, builder signals, and community activation in Thai and English. Follow for alpha, threads, and Web3 insights.",
+        desktop_home: "HOME",
+        desktop_connect: "CONNECT",
+        desktop_artifacts: "ARTIFACTS",
+        desktop_products: "BLOG",
+        desktop_signal: "SIGNAL FEED",
+        mobile_connect: "CONNECT",
+        mobile_content: "CONTENT",
+        mobile_signal: "SIGNAL FEED",
+        hero_tagline: "CRYPTO KOL PORTAL <span class=\"text-white/40\">/</span> THAI WEB3 NARRATIVE ENGINE",
+        hero_line_one: "CRYPTO",
+        hero_line_two: "DUIDUI",
+        hero_aria: "CRYPTO DUIDUI",
+        connect_label: "CONNECT",
+        connect_subtitle: "Find me everywhere. Tap to follow.",
+        telegram_handle: "Dui's Note",
+        youtube_handle: "DuiDui - เดอะคริปโตโบร",
+        discord_handle: "Dui's Crypto Station",
+        membership_badge: "KO-FI MEMBERSHIP",
+        membership_title: "Join the Monthly Alpha Gang",
+        membership_desc: "Support DuiDui on Ko-fi and get a tighter signal loop: market perspective, technical analysis that is easy to follow, and focused insight on the stories that actually matter.",
+        feature_market: "Market View",
+        feature_ta: "Technical Analysis",
+        feature_exclusive: "Exclusive Content",
+        feature_dm: "Direct Messages",
+        membership_cta: "VIEW MEMBERSHIP TIERS",
+        membership_note: "Thai-first crypto notes with direct creator support through Ko-fi.",
+        tier_badge: "KO-FI SUBSCRIBER TIER",
+        per_month: "per month",
+        tier_title: "Monthly Alpha Gang",
+        tier_desc: "A compact membership tier for readers who want recurring signal, sharper context, and a direct line to the DuiDui community.",
+        perk_one: "Exclusive members-only posts and market commentary",
+        perk_two: "Technical analysis with Thai-friendly breakdowns",
+        perk_three: "Direct messages and closer creator access",
+        tier_cta: "JOIN ON KO-FI",
+        products_label: "DuiDui's Portal",
+        products_subtitle: "Curated resources and tools for the crypto community.",
+        product_one_title: "Crypto Blog",
+        product_one_desc: "A Substack-style reading space for market insights, weekly crypto notes, and narrative tracking.",
+        product_two_title: "Trading Tools",
+        product_two_desc: "A trading toolkit and market utilities hub that is still being prepared behind the scenes.",
+        product_three_title: "Alpha Membership",
+        product_three_desc: "Monthly premium content, priority signals, and private group access.",
+        view_cta: "Let's Go",
+        coming_soon_cta: "COMING SOON",
+        collab_badge: "OPEN TO COLLABORATE",
+        collab_title: "Let's build something together",
+        collab_desc: "Looking for partnerships, sponsorships, content collaborations, or just want to say hi? I'm always open to connecting with fellow builders and brands in the Web3 space.",
+        contact_cta: "GET IN TOUCH",
+        telegram_cta: "DM ON TELEGRAM",
+        signal_title: "LIVE SIGNAL FEED",
+        footer_copy: "&copy; 2026 DUIDUI &mdash; Crypto KOL Portal. Built with passion for the Thai Web3 community.",
+        follow_x: "FOLLOW ON X",
+        join_telegram: "JOIN TELEGRAM"
+      }
+    };
+
+    const titleEl = document.querySelector("title");
+    const metaDescriptionEl = document.querySelector('meta[name="description"]');
+    const desktopNav = document.querySelectorAll(".nav-links-desktop .nav-link");
+    const heroTaglineEl = document.getElementById("heroTagline");
+    const heroTitleEl = document.getElementById("heroTitle");
+    const langThBtn = document.getElementById("langTh");
+    const langEnBtn = document.getElementById("langEn");
+
+    function renderHeroTitle(lineOne, lineTwo) {
+      const lines = heroTitleEl.querySelectorAll(".line-one, .line-two");
+      lines[0].textContent = lineOne;
+      lines[1].textContent = lineTwo;
+      [lines[0], lines[1]].forEach(function (line) {
+        const text = line.textContent;
+        const baseDelay = line.classList.contains("line-two") ? 400 : 0;
+        line.innerHTML = text.split("").map(function (char, i) {
+          if (char === " ") return " ";
+          return '<span style="animation-delay:' + (baseDelay + i * 45) + 'ms">' + char + '</span>';
+        }).join("");
+      });
+    }
+
+    function setIndexLanguage(lang) {
+      const copy = indexTranslations[lang] || indexTranslations.th;
+      localStorage.setItem("duidui-lang", lang);
+      document.documentElement.lang = lang === "th" ? "th" : "en";
+      titleEl.textContent = copy.title;
+      metaDescriptionEl.setAttribute("content", copy.description);
+      desktopNav[0].textContent = copy.desktop_home;
+      desktopNav[1].textContent = copy.desktop_connect;
+      desktopNav[2].textContent = copy.desktop_artifacts;
+      desktopNav[3].textContent = copy.desktop_products;
+      desktopNav[4].textContent = copy.desktop_signal;
+      heroTaglineEl.innerHTML = copy.hero_tagline;
+      heroTitleEl.setAttribute("aria-label", copy.hero_aria);
+      renderHeroTitle(copy.hero_line_one, copy.hero_line_two);
+
+      document.querySelectorAll("[data-i18n]").forEach(function (el) {
+        const key = el.getAttribute("data-i18n");
+        if (copy[key]) {
+          el.innerHTML = copy[key];
+        }
+      });
+
+      langThBtn.classList.toggle("active", lang === "th");
+      langEnBtn.classList.toggle("active", lang === "en");
+    }
+
+    // Clock
+    const clockEl = document.getElementById("clock");
+    function updateClock() {
+      const now = new Date();
+      const utc7 = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+      const hh = String(utc7.getUTCHours()).padStart(2, "0");
+      const mm = String(utc7.getUTCMinutes()).padStart(2, "0");
+      const ss = String(utc7.getUTCSeconds()).padStart(2, "0");
+      clockEl.textContent = hh + ":" + mm + ":" + ss;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // Mascot blink is handled purely by CSS hover — no JS needed
+
+    // Scroll-reveal observer
+    var revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("revealed");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+
+    document.querySelectorAll(".scroll-reveal, .stagger-social").forEach(function (el) {
+      revealObserver.observe(el);
+    });
+
+    langThBtn.addEventListener("click", function () { setIndexLanguage("th"); });
+    langEnBtn.addEventListener("click", function () { setIndexLanguage("en"); });
+    setIndexLanguage(localStorage.getItem("duidui-lang") || "th");
+  </script>
+</body>
+
+</html>
