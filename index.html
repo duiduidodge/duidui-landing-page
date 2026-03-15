@@ -2426,7 +2426,7 @@
         <a href="#connect" class="nav-link">CONNECT</a>
         <a href="shop.html" class="nav-link">ARTIFACTS</a>
         <a href="blog.html" class="nav-link">BLOG</a>
-        <a href="#sns-ticker" class="nav-link">SIGNAL FEED</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault()">SIGNAL FEED</a>
       </nav>
 
       <!-- Mobile menu button -->
@@ -2457,8 +2457,8 @@
           onclick="document.getElementById('mobileNav').classList.remove('open')">ARTIFACTS</a>
         <a href="blog.html" class="nav-link"
           onclick="document.getElementById('mobileNav').classList.remove('open')">BLOG</a>
-        <a href="#sns-ticker" class="nav-link"
-          onclick="document.getElementById('mobileNav').classList.remove('open')">SIGNAL FEED</a>
+        <a href="#" class="nav-link"
+          onclick="event.preventDefault(); document.getElementById('mobileNav').classList.remove('open')">SIGNAL FEED</a>
       </nav>
     </header>
 
