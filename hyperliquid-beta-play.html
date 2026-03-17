@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3 เหรียญโปรเจกต์ Beta Play บน Hyperliquid — DUIDUI Journal</title>
+  <meta name="description" content="วิเคราะห์ KNTQ, HPL และ PURR ในฐานะ beta play ของ Hyperliquid โดยแยกให้ชัดว่าอะไรคือ fundamentals play อะไรคือ infrastructure bet และอะไรคือ reflexive ecosystem trade" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="3 เหรียญโปรเจกต์ Beta Play บน Hyperliquid — DUIDUI Journal" />
+  <meta property="og:description" content="วิเคราะห์ KNTQ, HPL และ PURR ในฐานะ beta play ของ Hyperliquid โดยแยกให้ชัดว่าอะไรคือ fundamentals play อะไรคือ infrastructure bet และอะไรคือ reflexive ecosystem trade" />
+  <meta property="og:image" content="assets/images/backgrounds/collab-bg.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="3 เหรียญโปรเจกต์ Beta Play บน Hyperliquid — DUIDUI Journal" />
+  <meta name="twitter:description" content="วิเคราะห์ KNTQ, HPL และ PURR ในฐานะ beta play ของ Hyperliquid โดยแยกให้ชัดว่าอะไรคือ fundamentals play อะไรคือ infrastructure bet และอะไรคือ reflexive ecosystem trade" />
+  <meta name="twitter:image" content="assets/images/backgrounds/collab-bg.jpg" />
+  <meta name="theme-color" content="#1b2820" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/brand/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/images/brand/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #1b2820;
+      --ink: #cfe0d4;
+      --muted: #7a9e8a;
+      --accent: #2fb86a;
+      --accent-mid: #23a35c;
+      --accent-light: rgba(47, 184, 106, 0.15);
+      --accent-glow: rgba(47, 184, 106, 0.18);
+      --secondary: #3fbfa8;
+      --gold: #d4a832;
+      --line: rgba(255, 255, 255, 0.1);
+      --panel: rgba(255, 255, 255, 0.06);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.28);
+      --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 20px 56px rgba(0, 0, 0, 0.44);
+      --font-body: "Noto Sans Thai", "Sora", sans-serif;
+      --font-mono: "IBM Plex Sans Thai", "DM Mono", monospace;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.85;
+      font-size: 16px;
+    }
+
+    a {
+      color: #8be0b0;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #b8f2cf;
+    }
+
+    ::selection { background: var(--accent); color: #fff; }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      z-index: 999;
+    }
+
+    .nav-hero {
+      position: relative;
+      width: 100%;
+      min-height: 144px;
+      overflow: hidden;
+      border-radius: 0 0 32px 32px;
+      box-shadow: 0 16px 48px rgba(4, 16, 10, 0.24);
+      margin-bottom: 24px;
+    }
+
+    .nav-hero-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .nav-hero-scene img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 18%;
+      transform: scale(1.04);
+    }
+
+    .nav-hero-scene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(12,20,15,0.08) 0%, rgba(12,20,15,0.26) 46%, rgba(12,20,15,0.82) 100%),
+        linear-gradient(90deg, rgba(8,20,12,0.12) 0%, transparent 55%, rgba(8,20,12,0.08) 100%);
+    }
+
+    .site-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    @media (min-width: 640px) {
+      .site-header { padding: 18px 32px; }
+    }
+
+    @media (min-width: 1024px) {
+      .site-header { padding: 22px 48px; }
+    }
+
+    .brand {
+      text-decoration: none;
+      color: rgba(246, 251, 247, 0.95);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+      font-family: var(--font-mono);
+    }
+
+    .brand .brand-star { color: #7debb0; }
+
+    .nav-links-desktop {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-container {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      padding: 3px 4px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .nav-link {
+      padding: 7px 14px;
+      border-radius: 50px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .clock-display {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.72);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .nav-links-mobile {
+      display: none !important;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #1b2820;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0 0 20px 20px;
+      padding: 16px 20px;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 50;
+      box-shadow: 0 12px 32px rgba(30, 54, 40, 0.12);
+    }
+
+    .nav-links-mobile.open { display: flex !important; }
+
+    .nav-links-mobile .nav-link {
+      font-size: 13px;
+      padding: 8px 12px;
+      color: var(--ink) !important;
+      border-radius: 8px;
+      transform: none !important;
+    }
+
+    .back-link {
+      position: relative;
+      z-index: 3;
+      width: min(1040px, calc(100% - 32px));
+      margin: 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .back-link:hover { color: var(--ink); }
+
+    .banner-wrap {
+      width: min(1040px, calc(100% - 32px));
+      margin: 28px auto 0;
+    }
+
+    .banner-img-wrap {
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-lg);
+      background: #101812;
+    }
+
+    .banner-img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 16 / 7;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .article-wrap {
+      width: min(840px, calc(100% - 32px));
+      margin: 28px auto 72px;
+    }
+
+    .article-meta {
+      margin-bottom: 28px;
+    }
+
+    .article-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(63, 191, 168, 0.16);
+      color: #8fe7d6;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      border: 1px solid rgba(63, 191, 168, 0.22);
+    }
+
+    .article-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1.08;
+      color: #f2faf5;
+      margin-bottom: 16px;
+      letter-spacing: -0.03em;
+    }
+
+    .article-subtitle {
+      color: rgba(207, 224, 212, 0.82);
+      font-size: 1.08rem;
+      line-height: 1.8;
+      margin-bottom: 18px;
+    }
+
+    .article-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .article-info span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .info-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.25);
+    }
+
+    .content {
+      color: rgba(224, 238, 229, 0.94);
+    }
+
+    .content p,
+    .content ul,
+    .content ol,
+    .content blockquote,
+    .content .callout,
+    .content .tldr-card,
+    .content .compare-grid,
+    .content .link-box,
+    .content .disclaimer {
+      margin-bottom: 22px;
+    }
+
+    .content h2 {
+      color: #f0f8f3;
+      font-size: clamp(1.3rem, 2.2vw, 1.9rem);
+      line-height: 1.3;
+      margin: 42px 0 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .content ul,
+    .content ol {
+      padding-left: 22px;
+    }
+
+    .content li {
+      margin-bottom: 10px;
+    }
+
+    .tldr-card,
+    .callout,
+    .link-box,
+    .disclaimer {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 22px;
+      padding: 22px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tldr-label,
+    .link-box-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    .callout {
+      border-color: rgba(47, 184, 106, 0.2);
+      background: linear-gradient(180deg, rgba(47,184,106,0.08), rgba(255,255,255,0.04));
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .compare-card {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .compare-card h3 {
+      color: #f2faf5;
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+    }
+
+    .compare-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .compare-card p {
+      margin-bottom: 0;
+      color: rgba(207, 224, 212, 0.86);
+      line-height: 1.75;
+      font-size: 0.96rem;
+    }
+
+    .link-box a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: 18px;
+      margin-bottom: 10px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 16px;
+      color: rgba(207, 224, 212, 0.84);
+      font-size: 1.03rem;
+    }
+
+    .disclaimer {
+      color: rgba(207, 224, 212, 0.72);
+      font-size: 0.95rem;
+    }
+
+    .site-footer {
+      width: min(1040px, calc(100% - 32px));
+      margin: 0 auto 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-socials a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ink);
+    }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .delay-1 { animation-delay: 80ms; }
+    .delay-2 { animation-delay: 140ms; }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 820px) {
+      .nav-links-desktop,
+      .clock-display {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: inline-flex;
+      }
+
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .article-wrap,
+      .banner-wrap,
+      .back-link,
+      .site-footer {
+        width: calc(100% - 24px);
+      }
+
+      .banner-img {
+        aspect-ratio: 4 / 3;
+      }
+
+      .article-title {
+        font-size: 2.2rem;
+      }
+
+      .article-subtitle {
+        font-size: 1rem;
+      }
+
+      .tldr-card,
+      .callout,
+      .link-box,
+      .disclaimer {
+        padding: 18px 18px;
+        border-radius: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grain"></div>
+
+  <div class="nav-hero">
+    <div class="nav-hero-scene">
+      <img src="assets/images/backgrounds/anime-bg.jpg" alt="" aria-hidden="true" />
+    </div>
+
+    <header class="site-header">
+      <a href="index.html" class="brand"><span class="brand-star">*</span> DUIDUI</a>
+
+      <nav class="nav-links-desktop" aria-label="Primary">
+        <div class="nav-container">
+          <a href="index.html" class="nav-link">HOME</a>
+          <a href="index.html#connect" class="nav-link">CONNECT</a>
+          <a href="shop.html" class="nav-link">ARTIFACTS</a>
+          <a href="blog.html" class="nav-link active">BLOG</a>
+        </div>
+      </nav>
+
+      <div class="header-tools">
+        <div class="clock-display" id="clock">--:--:--</div>
+        <button class="mobile-menu-btn" type="button" aria-label="Toggle menu" onclick="document.getElementById('articleMobileNav').classList.toggle('open')">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="nav-links-mobile" id="articleMobileNav">
+      <a href="index.html" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">HOME</a>
+      <a href="index.html#connect" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">CONNECT</a>
+      <a href="shop.html" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">ARTIFACTS</a>
+      <a href="blog.html" class="nav-link active" onclick="document.getElementById('articleMobileNav').classList.remove('open')">BLOG</a>
+    </div>
+  </div>
+
+  <a href="blog.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M12 19l-7-7 7-7" />
+    </svg>
+    Back To Journal
+  </a>
+
+  <div class="banner-wrap fade-up delay-1">
+    <div class="banner-img-wrap">
+      <img src="assets/images/backgrounds/collab-bg.jpg" alt="3 เหรียญโปรเจกต์ Beta Play บน Hyperliquid" class="banner-img" />
+    </div>
+  </div>
+
+  <article class="article-wrap">
+    <div class="article-meta fade-up delay-2">
+      <div class="article-tag">Market Insight</div>
+      <h1 class="article-title">3 เหรียญโปรเจกต์ Beta Play บน Hyperliquid</h1>
+      <p class="article-subtitle">มอง KNTQ, HPL และ PURR ให้ชัดว่าอะไรคือ fundamentals play อะไรคือ infrastructure bet และอะไรคือ reflexive ecosystem beta ถ้า Hyperliquid ยังโตต่อ</p>
+      <div class="article-info">
+        <span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          17 มี.ค. 2026
+        </span>
+        <span class="info-dot"></span>
+        <span>~9 นาที</span>
+      </div>
+    </div>
+
+    <div class="content fade-up delay-2">
+      <p>ใน ecosystem ที่กำลังโตอย่างรวดเร็ว สินทรัพย์แต่ละตัวจะอยู่คนละตำแหน่งใน value chain บางตัวเป็นตัวแทนของเศรษฐกิจโปรโตคอลโดยตรง บางตัวเป็นโครงสร้างพื้นฐานที่มี product-market fit จริง และบางตัวแทบไม่ได้มีคุณค่าจาก fundamentals เลย แต่กลับ outperform ได้เพราะกลายเป็นตัวแทนของแรงเก็งกำไรและ wealth effect ภายใน ecosystem</p>
+
+      <p>Hyperliquid ณ ตอนนี้เป็นหนึ่งใน ecosystem ที่มาแรงมากในวง Native Crypto และยังไม่ได้ขยายไปวงกว้างถึงรายย่อยขนาดนั้น สำหรับผม <strong>HYPE</strong> เป็นสินทรัพย์ core ที่ make sense มากอยู่แล้ว แต่ถ้า Hyperliquid และ HYPE ยังโตต่อ คำถามถัดไปคือ <strong>ตัวไหนคือ beta play ที่มี upside สูงกว่า HYPE</strong></p>
+
+      <div class="tldr-card">
+        <div class="tldr-label">TL;DR สำหรับคนขี้เกียจอ่าน</div>
+        <ol>
+          <li><strong>KNTQ</strong> คือ fundamentals play ที่ดีที่สุดในสามตัวนี้ เหมาะกับการถือระยะกลางถึงยาวมากที่สุด เพราะมีธุรกิจจริง มี market position ชัด และมี value-accrual framework ที่ดูสะอาดกว่าเพื่อน</li>
+          <li><strong>HPL</strong> คือโปรโตคอลจริง มีการใช้งานจริง แต่ token thesis ยังไม่โตเต็มที่ สิทธิของโทเค็นและโครงสร้างด้าน tokenomics ยังไม่ clean เท่า KNTQ</li>
+          <li><strong>PURR</strong> ไม่ใช่ fundamentals asset เลย แต่เป็น high-beta ecosystem trade ที่อาจวิ่งแรงที่สุดถ้า wealth effect ของ Hyperliquid ยังไหลต่อ</li>
+        </ol>
+      </div>
+
+      <div class="link-box">
+        <div class="link-box-label">Token Links</div>
+        <a href="https://www.coingecko.com/en/coins/kinetiq" target="_blank" rel="noopener">KNTQ / Kinetiq</a>
+        <a href="https://www.coingecko.com/en/coins/hyperlend" target="_blank" rel="noopener">HPL / HyperLend</a>
+        <a href="https://www.coingecko.com/en/coins/purr-2" target="_blank" rel="noopener">PURR</a>
+      </div>
+
+      <blockquote>คำถามที่ควรถามไม่ใช่ “ตัวไหนดีที่สุด” แต่คือ ตัวไหนเหมาะเป็นแกนหลักของการลงทุนระยะกลางถึงยาว ตัวไหนคือ infrastructure bet ที่ยังมี upside จากการ re-rate และตัวไหนคือ token ที่จะวิ่งแรงที่สุดถ้า Hyperliquid ยังโตต่อ</blockquote>
+
+      <h2>ทำไม ecosystem นี้ถึงสำคัญในตอนนี้</h2>
+
+      <p>บริบทสำคัญคือ Hyperliquid ไม่ได้เป็นแค่โปรดักต์ดีหรือมีฐานผู้ใช้เทรดเดอร์ที่ loyalty อีกต่อไป แต่ตลาดเริ่มมองมันเป็นหนึ่งใน ecosystem ที่แข็งที่สุดของรอบนี้ เพราะมันรวมองค์ประกอบที่หาได้ไม่บ่อยไว้ด้วยกัน ทั้ง usage จริง fee generation จริง retention ของผู้ใช้ที่ดูแข็งแรง incentive structure ที่สะอาด และเริ่มมี protocol layer รอบ ๆ ที่รองรับการขยายตัวได้จริง</p>
+
+      <p>เมื่อ ecosystem ข้ามจากคำว่า “น่าสนใจ” ไปสู่คำว่า <strong>self-reinforcing</strong> สินทรัพย์ชั้นรองจะเริ่มมีความหมายมากขึ้นทันที ลำดับที่มักเกิดคือ core asset ขึ้นก่อน wealth effect เกิด และเงินทุนเริ่มมองหา exposure ชั้นถัดไปที่ให้ผลตอบแทนมากกว่า</p>
+
+      <div class="callout">
+        <p>KNTQ, HPL และ PURR คือสินทรัพย์ในชั้นถัดไปนั้น แต่ทั้งสามตัวรับ capital flow คนละแบบ จึงไม่ควรถูกประเมินด้วยกรอบเดียวกัน</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <span class="compare-tag">Productive Infrastructure</span>
+          <h3>KNTQ</h3>
+          <p>ให้ exposure กับ liquid staking infrastructure ที่ดู dominant ที่สุดใน Hyperliquid และเป็น token ที่มี value-accrual framework ชัดที่สุดในชุดนี้</p>
+        </div>
+        <div class="compare-card">
+          <span class="compare-tag">Credit Layer</span>
+          <h3>HPL</h3>
+          <p>ให้ exposure กับ native lending market ที่มี usage จริง แต่ token thesis ยังอยู่ในช่วงกึ่งสุกกึ่งดิบเมื่อเทียบกับคุณภาพของโปรโตคอล</p>
+        </div>
+        <div class="compare-card">
+          <span class="compare-tag">Reflexive Beta</span>
+          <h3>PURR</h3>
+          <p>ให้ exposure กับ reflexivity และแรงเก็งกำไรของ ecosystem มากกว่าการถือสิทธิใน cash flow หรือ business model จริง</p>
+        </div>
+      </div>
+
+      <h2>1) KNTQ: fundamentals token ที่ดีที่สุดใน Hyperliquid stack</h2>
+
+      <p>ถ้าจะมีสักตัวในชุดนี้ที่ควรถูกมองเป็นการลงทุนระยะกลางถึงยาว ตัวนั้นคือ <strong>KNTQ</strong> เหตุผลง่ายมาก: มันผูกอยู่กับ financial primitive ที่มีความจำเป็นจริง และดูเหมือนจะครองหมวด liquid staking ของตัวเองใน ecosystem อยู่แล้ว</p>
+
+      <p>Kinetiq คือ liquid staking layer ของ Hyperliquid ผู้ใช้ stake HYPE แล้วรับ kHYPE ซึ่งเป็นสินทรัพย์ yield-bearing ที่ยังนำไปใช้ต่อใน DeFi ได้ บทบาทนี้สำคัญเชิงโครงสร้างมาก เพราะทุก ecosystem ที่อยากโตเกินกว่าการถือเหรียญเฉย ๆ สุดท้ายจะต้องมี liquid staking infrastructure เพื่อทำให้สินทรัพย์กลายเป็น productive collateral</p>
+
+      <p>ส่วนที่แข็งที่สุดของ KNTQ thesis คือโทเค็นนี้ไม่ได้ลอยอยู่รอบ ๆ โปรโตคอลแบบหลวม ๆ แต่มันอยู่ใน value-accrual design ที่ค่อนข้างชัด ทั้ง staking ผ่าน sKNTQ, buyback จากหลาย revenue streams, validator commission share, launch revenue share และ fee routing ที่ช่วยดึง supply ออกจากตลาด</p>
+
+      <p>อีกจุดที่น่าสนใจคือ unlock ของ insider buckets ใหญ่ ๆ ดูเหมือนจะถูกเลื่อนด้วย 1-year cliff ก่อน แล้วค่อย vest ต่อ นี่ไม่ได้ลบ risk ทิ้ง แต่ให้เวลาโปรโตคอลสร้างการเติบโตก่อนที่ supply overhang จะเริ่มกดราคา ซึ่งเป็นข้อได้เปรียบสำคัญสำหรับ token ที่กำลังสร้างฐาน</p>
+
+      <div class="callout">
+        <p><strong>สรุปมุมมอง KNTQ:</strong> ถ้าคุณต้องการ long-duration ecosystem investment ที่มี business logic รองรับมากที่สุด KNTQ คือคำตอบที่ดูมีเหตุผลที่สุดในสามตัวนี้</p>
+      </div>
+
+      <p>แน่นอน ความเสี่ยงหลักของ KNTQ คือการพึ่งพา Hyperliquid โดยตรง ถ้า Hyperliquid โตต่อ Kinetiq ก็น่าจะยิ่งสำคัญขึ้น แต่ถ้า Hyperliquid ชะลอหรือเสีย momentum มันก็น่าจะ underperform ได้แรง นอกจากนี้ยังมีความเสี่ยงแบบ liquid staking ทั่วไป เช่น smart contract complexity, validator routing issues, collateral design risk และการแข่งขันจาก staking wrapper รายอื่นในอนาคต</p>
+
+      <h2>2) HPL: โปรโตคอลจริง แต่ token thesis ยังไม่โตเต็มที่</h2>
+
+      <p>HyperLend เป็นโปรโตคอลที่เข้าใจง่ายที่สุดในชุดนี้ มันคือ credit layer ของ ecosystem หรือพูดง่าย ๆ คือ AAVE / MORPHO ของ Hyperliquid และทุก ecosystem ที่จะโตไปสู่ full financial stack จะต้องมี lending market ที่ทำงานจริง</p>
+
+      <p>จุดแข็งที่สุดของ HyperLend คือมันมี usage จริงแล้ว ไม่ใช่แค่ narrative ว่า “ถ้าโตจะดี” แต่มี TVL จริง มี borrowed value จริง มี demand จริง และมีความสำคัญจริงใน lending category ของ ecosystem นั่นทำให้มันเป็นโปรโตคอลที่ควรถูกจับตาอย่างจริงจัง</p>
+
+      <p>แต่จุดที่ HPL แพ้ KNTQ ชัดที่สุดคือ <strong>token story ยังไม่ clean เท่า</strong> แม้จะมีแนวโน้มว่าจะมี staking หรือ locking features และดูเหมือนโทเค็นน่าจะมีบทบาทในการ capture economic value บางส่วนของโปรโตคอล แต่ direction ที่ดี ไม่ได้แปลว่า thesis สมบูรณ์</p>
+
+      <p>นี่คือความต่างสำคัญเวลา underwriting เพราะโปรโตคอลดี ไม่ได้แปลว่าโทเค็นดีเสมอไป และ lending market ที่มี usage จริงก็ยังไม่พอ ถ้า token rights ยังคลุมเครือหรือเอกสารยังไม่คมพอ</p>
+
+      <p>ถึงอย่างนั้น HPL ก็ยังน่าสนใจ เพราะมันกำลังแก้ปัญหาจริงใน ecosystem จริง และถ้า Hyperliquid โตต่อ native credit จะยิ่งสำคัญขึ้น ไม่ใช่สำคัญน้อยลง โดยเฉพาะถ้ามันขยายจาก pooled lending ธรรมดาไปสู่ specialized products, institutional pools หรือ use cases เชิงโครงสร้างมากขึ้น</p>
+
+      <p>ข้อควรระวังคือ lending market เป็นตลาดที่แข่งขันกันสูง ผู้ใช้ย้ายได้ถ้าดอกเบี้ยดีกว่า incentives ดีกว่า collateral support ดีกว่า หรือ liquidation design ดีกว่า ดังนั้น HyperLend อาจมี product-market fit แล้ว แต่ยังไม่ใช่ moat ที่มั่นคงเท่า Kinetiq</p>
+
+      <h2>3) PURR: ecosystem meme trade</h2>
+
+      <p>PURR อยู่คนละหมวดกับอีกสองตัวอย่างชัดเจน มันไม่ควรถูกวิเคราะห์เหมือน productive protocol token เพราะมันไม่ใช่ PURR เริ่มต้นจากการเป็น native spot asset ตัวแรกบน Hyperliquid เพื่อพิสูจน์ว่า token issuance และ liquidity rails ของ chain ใช้งานได้จริงบน mainnet</p>
+
+      <p>Hyperliquid เองก็พูดชัดว่าไม่มี sale และไม่มี planned utility ดังนั้นถ้าจะพูดให้ตรงที่สุด PURR คือ infrastructure validation ที่ถูกห่อด้วย meme branding แต่ในคริปโต ถ้า asset ตัวหนึ่งเป็น first mover ใน ecosystem ที่กำลังชนะ มันสามารถมีมูลค่าได้จาก positioning ล้วน ๆ แม้ไม่มี cash flow หรือ governance power</p>
+
+      <p>วิธีคิดที่ดีที่สุดคือมอง PURR เป็น <strong>high-beta ของ Hyperliquid</strong> เอง ถ้า HYPE สร้าง wealth effect ต่อและ Hyperliquid ยังโตในฐานะหนึ่งใน ecosystem ที่แข็งที่สุดของรอบนี้ เงินบางส่วนจะเริ่มมองหา exposure ที่เสี่ยงกว่าแต่ยังอยู่ใน story เดิม และ PURR คือ asset ที่ตอบโจทย์นั้นได้มากที่สุด</p>
+
+      <p>จุดแข็งของ PURR คือ supply profile ค่อนข้าง clean ดูเหมือนจะมี fixed max supply ไม่มี inflation เพิ่ม ไม่มี VC overhang ชัด ไม่มี team vesting story และมี burn mechanics บางส่วนจาก trading activity ทั้งหมดนี้ไม่ได้ทำให้มันกลายเป็น fundamentals token แต่ช่วยลบเหตุผลหลายอย่างที่ทำให้ speculative assets underperform ออกไป</p>
+
+      <p>อีกจุดที่น่าสนใจคือ PURR น่าจะผ่านช่วง cleansing event ไปแล้ว passive holders ขายไป weak-conviction airdrop recipients ออกจากตลาด และ holder ที่เหลือ intentional มากขึ้น มันไม่ได้ลด volatility แต่ช่วยลด structurally forced selling ได้ระดับหนึ่ง</p>
+
+      <div class="callout">
+        <p><strong>สรุปมุมมอง PURR:</strong> ไม่ควรเป็นตัวหลักของพอร์ตถ้าคิดแบบ fundamentals แต่เป็นตัวรองที่อาจให้ capital gain สูงสุดใน regime ที่ Hyperliquid ยัง outperform</p>
+      </div>
+
+      <h2>สรุปแบบแยกบทบาท</h2>
+
+      <ul>
+        <li><strong>KNTQ</strong> = exposure ต่อ productive infrastructure และ protocol economics ที่ชัดที่สุดใน stack</li>
+        <li><strong>HPL</strong> = exposure ต่อการขยายตัวของ financial stack และการเดิมพันว่า native credit บน Hyperliquid จะยิ่งสำคัญขึ้น</li>
+        <li><strong>PURR</strong> = exposure ต่อ meme beta และแรง reflexive ภายใน ecosystem</li>
+      </ul>
+
+      <p>ดังนั้น คำถามไม่ใช่ตัวไหน “ดีที่สุด” แบบครอบจักรวาล แต่คือคุณต้องการ exposure แบบไหน ถ้าต้องการสินทรัพย์ที่เหมาะกับแกนหลักของการถือระยะกลางถึงยาว KNTQ ดูดีที่สุด ถ้าต้องการเล่น infrastructure layer ที่ยังมี upside จากการ re-rate HPL ยังมีทางไปต่อ และถ้าต้องการตัวที่วิ่งแรงที่สุดในจังหวะเสี่ยงสูง PURR คือคำตอบ</p>
+
+      <h2>ความเสี่ยงหลักของทั้งสามตัว</h2>
+
+      <p>ความเสี่ยงร่วมที่สำคัญที่สุดคือ <strong>Hyperliquid dependency</strong> ทั้งสามตัวผูกอยู่กับการที่ Hyperliquid ต้องยังชนะต่อและไปต่อให้ได้ ถ้า ecosystem สูญเสีย growth, relevance หรือ liquidity share ทั้ง stack จะโดน re-rate ลงพร้อมกัน</p>
+
+      <ul>
+        <li><strong>KNTQ:</strong> smart contract complexity, validator routing risk, ecosystem concentration และการแข่งขันจาก future staking wrappers</li>
+        <li><strong>HPL:</strong> token overhang, ความไม่ชัดของ token rights, การแข่งขันใน lending markets และ liquidation / oracle / collateral-management risk</li>
+        <li><strong>PURR:</strong> ไม่มี intrinsic value floor, liquidity เปราะ, อาจถูกแทนที่โดย token อื่นที่กลายเป็น ecosystem Schelling point และพึ่งพา reflexive market regime สูงมาก</li>
+      </ul>
+
+      <div class="disclaimer">
+        *ไม่ใช่คำแนะนำในการลงทุน ทั้งหมดนี้เป็นเพียงการแชร์มุมมองเพื่อการศึกษาเท่านั้น
+      </div>
+    </div>
+  </article>
+
+  <footer class="site-footer">
+    <div class="footer-socials">
+      <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" rel="noopener" aria-label="YouTube">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23 8.8c-.3-1.2-1.2-2.1-2.4-2.4C18.4 6 12 6 12 6s-6.4 0-8.6.4A3.3 3.3 0 0 0 1 8.8C.6 11 .6 12 .6 12s0 1 .4 3.2c.3 1.2 1.2 2.1 2.4 2.4 2.2.4 8.6.4 8.6.4s6.4 0 8.6-.4a3.3 3.3 0 0 0 2.4-2.4c.4-2.2.4-3.2.4-3.2s0-1-.4-3.2zM10 15.2V8.8l5.5 3.2L10 15.2z"/></svg>
+      </a>
+      <a href="https://x.com/dodgeduidui" target="_blank" rel="noopener" aria-label="X">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z"/></svg>
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.87v2.26h3.32l-.53 3.5h-2.8V24C19.62 23.1 24 18.1 24 12.07z"/></svg>
+      </a>
+      <a href="https://t.me/duisnote" target="_blank" rel="noopener" aria-label="Telegram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z"/></svg>
+      </a>
+    </div>
+    <div class="footer-copy">
+      &copy; 2026 <a href="blog.html">DUIDUI Journal</a> — Crypto KOL Portal
+    </div>
+  </footer>
+
+  <script>
+    const ARTICLE_PASSWORD = "memberonly";
+    const ARTICLE_ACCESS_KEY = "duidui-blog-access";
+
+    function enforceArticleAccess() {
+      const cached = localStorage.getItem(ARTICLE_ACCESS_KEY);
+      if (cached === ARTICLE_PASSWORD) {
+        return;
+      }
+
+      const entered = window.prompt("Enter password to view this article:");
+      if (entered === ARTICLE_PASSWORD) {
+        localStorage.setItem(ARTICLE_ACCESS_KEY, ARTICLE_PASSWORD);
+        return;
+      }
+
+      if (entered !== null) {
+        window.alert("Incorrect password.");
+      }
+      window.location.href = "blog.html";
+    }
+
+    enforceArticleAccess();
+
+    const clockEl = document.getElementById("clock");
+
+    function updateClock() {
+      const now = new Date();
+      const utc7 = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+      const hh = String(utc7.getUTCHours()).padStart(2, "0");
+      const mm = String(utc7.getUTCMinutes()).padStart(2, "0");
+      const ss = String(utc7.getUTCSeconds()).padStart(2, "0");
+      if (clockEl) clockEl.textContent = hh + ":" + mm + ":" + ss;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    document.addEventListener("click", function (event) {
+      const nav = document.getElementById("articleMobileNav");
+      if (nav && !nav.contains(event.target) && !event.target.closest(".mobile-menu-btn")) {
+        nav.classList.remove("open");
+      }
+    });
+  </script>
+</body>
+</html>
