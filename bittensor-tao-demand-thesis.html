@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TAO กำลังถูกตีราคาจาก Demand จริง หรือแค่ Narrative? — DUIDUI Journal</title>
+  <meta name="description" content="มุมมองเชิงลึกต่อ Bittensor และ TAO ว่าราคาปัจจุบันสะท้อนรายได้จริงของ subnet แล้วหรือยัง หรือกำลังถูกขับเคลื่อนด้วย scarcity, emissions และ AI narrative เป็นหลัก" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="TAO กำลังถูกตีราคาจาก Demand จริง หรือแค่ Narrative? — DUIDUI Journal" />
+  <meta property="og:description" content="วิเคราะห์ Bittensor, tokenomics, subsidy model และคำถามสำคัญว่าฝั่ง demand ของ TAO แข็งพอรองรับมูลค่าหลายพันล้านดอลลาร์แล้วหรือยัง" />
+  <meta property="og:image" content="assets/images/blog/bittensor.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="TAO กำลังถูกตีราคาจาก Demand จริง หรือแค่ Narrative? — DUIDUI Journal" />
+  <meta name="twitter:description" content="วิเคราะห์ Bittensor, tokenomics, subsidy model และคำถามสำคัญว่าฝั่ง demand ของ TAO แข็งพอรองรับมูลค่าหลายพันล้านดอลลาร์แล้วหรือยัง" />
+  <meta name="twitter:image" content="assets/images/blog/bittensor.png" />
+  <meta name="theme-color" content="#1b2820" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/brand/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/images/brand/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #1b2820;
+      --ink: #cfe0d4;
+      --muted: #7a9e8a;
+      --accent: #2fb86a;
+      --accent-mid: #23a35c;
+      --accent-light: rgba(47, 184, 106, 0.15);
+      --accent-glow: rgba(47, 184, 106, 0.18);
+      --secondary: #3fbfa8;
+      --gold: #d4a832;
+      --line: rgba(255, 255, 255, 0.1);
+      --panel: rgba(255, 255, 255, 0.06);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.28);
+      --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 20px 56px rgba(0, 0, 0, 0.44);
+      --font-body: "Noto Sans Thai", "Sora", sans-serif;
+      --font-mono: "IBM Plex Sans Thai", "DM Mono", monospace;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.88;
+      font-size: 16px;
+    }
+
+    a { color: #8be0b0; text-decoration: none; }
+    a:hover { color: #b8f2cf; }
+    ::selection { background: var(--accent); color: #fff; }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      z-index: 999;
+    }
+
+    .nav-hero {
+      position: relative;
+      width: 100%;
+      min-height: 144px;
+      overflow: hidden;
+      border-radius: 0 0 32px 32px;
+      box-shadow: 0 16px 48px rgba(4, 16, 10, 0.24);
+      margin-bottom: 24px;
+    }
+
+    .nav-hero-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .nav-hero-scene img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 18%;
+      transform: scale(1.04);
+    }
+
+    .nav-hero-scene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(12,20,15,0.08) 0%, rgba(12,20,15,0.26) 46%, rgba(12,20,15,0.82) 100%),
+        linear-gradient(90deg, rgba(8,20,12,0.12) 0%, transparent 55%, rgba(8,20,12,0.08) 100%);
+    }
+
+    .site-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    @media (min-width: 640px) {
+      .site-header { padding: 18px 32px; }
+    }
+
+    @media (min-width: 1024px) {
+      .site-header { padding: 22px 48px; }
+    }
+
+    .brand {
+      text-decoration: none;
+      color: rgba(246, 251, 247, 0.95);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+      font-family: var(--font-mono);
+    }
+
+    .brand .brand-star { color: #7debb0; }
+
+    .nav-links-desktop {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-container {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      padding: 3px 4px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .nav-link {
+      padding: 7px 14px;
+      border-radius: 50px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .clock-display {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.72);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .nav-links-mobile {
+      display: none !important;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #1b2820;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0 0 20px 20px;
+      padding: 16px 20px;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 50;
+      box-shadow: 0 12px 32px rgba(30, 54, 40, 0.12);
+    }
+
+    .nav-links-mobile.open { display: flex !important; }
+
+    .nav-links-mobile .nav-link {
+      font-size: 13px;
+      padding: 8px 12px;
+      color: var(--ink) !important;
+      border-radius: 8px;
+      transform: none !important;
+    }
+
+    .back-link-row {
+      width: min(1100px, calc(100% - 40px));
+      margin: 0 auto 18px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-transform: uppercase;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(47, 184, 106, 0.18);
+      background: rgba(47, 184, 106, 0.08);
+    }
+
+    .back-link:hover { transform: translateY(-1px); }
+
+    .banner-wrap,
+    .article-wrap {
+      width: min(1100px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .banner-wrap { margin-bottom: 28px; }
+
+    .banner-img-wrap {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow-lg);
+      min-height: 320px;
+    }
+
+    .banner-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 560px;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .article-wrap {
+      padding: 0 0 72px;
+      display: grid;
+      gap: 24px;
+    }
+
+    .article-meta {
+      display: grid;
+      gap: 14px;
+      max-width: 860px;
+    }
+
+    .article-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(47,184,106,0.1);
+      border: 1px solid rgba(47,184,106,0.18);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .article-title {
+      font-size: clamp(34px, 5vw, 62px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #edf7ef;
+    }
+
+    .article-subtitle {
+      font-size: clamp(17px, 2vw, 21px);
+      color: #9ac3ad;
+      max-width: 52ch;
+      line-height: 1.65;
+    }
+
+    .article-info {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .article-info span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.22);
+    }
+
+    .content {
+      max-width: 860px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .content p { color: #d5e3d8; }
+
+    .content h2 {
+      margin-top: 18px;
+      font-size: 25px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: #eff7f1;
+    }
+
+    .content ul,
+    .content ol {
+      padding-left: 20px;
+      display: grid;
+      gap: 10px;
+      color: #d5e3d8;
+    }
+
+    .content li strong { color: #f0f7f2; }
+
+    blockquote {
+      margin: 6px 0;
+      padding: 18px 20px;
+      border-left: 3px solid var(--gold);
+      background: rgba(212, 168, 50, 0.08);
+      border-radius: 0 16px 16px 0;
+      color: #f4e7ba;
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .tldr-card,
+    .callout,
+    .valuation-grid,
+    .roles-grid,
+    .compare-grid {
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      box-shadow: var(--shadow-md);
+    }
+
+    .tldr-card {
+      padding: 24px 24px 22px;
+      background: linear-gradient(155deg, rgba(47,184,106,0.12), rgba(47,184,106,0.03));
+    }
+
+    .tldr-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .callout {
+      padding: 18px 20px;
+      background: rgba(63,191,168,0.08);
+    }
+
+    .callout p { color: #dff4ee; }
+
+    .roles-grid,
+    .valuation-grid,
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .roles-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .role-card,
+    .valuation-card,
+    .compare-card {
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(11, 20, 15, 0.36);
+      padding: 18px;
+      min-height: 100%;
+    }
+
+    .role-kicker,
+    .valuation-kicker,
+    .compare-kicker {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    .role-card h3,
+    .compare-card h3 {
+      font-size: 18px;
+      line-height: 1.2;
+      margin-bottom: 8px;
+      color: #f0f7f2;
+    }
+
+    .role-card p,
+    .compare-card p {
+      color: #c7d9ce;
+      font-size: 14px;
+      line-height: 1.72;
+    }
+
+    .valuation-value {
+      font-size: clamp(26px, 4vw, 34px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: #eff7f1;
+      margin-bottom: 8px;
+    }
+
+    .valuation-card p {
+      font-size: 14px;
+      line-height: 1.72;
+      color: #c7d9ce;
+    }
+
+    .link-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px dashed rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .link-box-label {
+      width: 100%;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .link-box span {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #d8e5db;
+    }
+
+    .disclaimer {
+      margin-top: 8px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #a8beb0;
+      font-size: 14px;
+      line-height: 1.74;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .site-footer {
+      width: min(1100px, calc(100% - 40px));
+      margin: 0 auto 40px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .footer-socials a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(255,255,255,0.05);
+      transition: all 0.25s ease;
+      text-decoration: none;
+    }
+
+    .footer-socials a:hover {
+      border-color: rgba(17,122,67,0.3);
+      color: var(--accent);
+      background: var(--accent-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .footer-copy a { color: var(--accent); text-decoration: none; }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    .delay-1 { animation-delay: 0.08s; }
+    .delay-2 { animation-delay: 0.16s; }
+
+    @media (max-width: 1023px) {
+      .nav-links-desktop { display: none !important; }
+      .mobile-menu-btn { display: flex; }
+    }
+
+    @media (max-width: 900px) {
+      .roles-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 680px) {
+      body { font-size: 15px; }
+      .nav-hero { min-height: 128px; border-radius: 0 0 24px 24px; }
+      .article-wrap,
+      .banner-wrap,
+      .back-link-row,
+      .site-footer { width: min(100%, calc(100% - 36px)); }
+      .banner-img-wrap { min-height: 220px; border-radius: 22px; }
+      .content h2 { font-size: 21px; }
+      .roles-grid,
+      .valuation-grid,
+      .compare-grid { grid-template-columns: 1fr; }
+      .brand,
+      .header-tools { display: none; }
+      .tldr-card,
+      .callout,
+      .role-card,
+      .valuation-card,
+      .compare-card { padding: 18px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grain"></div>
+  <div class="nav-hero">
+    <div class="nav-hero-scene" aria-hidden="true">
+      <img src="assets/images/backgrounds/anime-bg.jpg" alt="" />
+    </div>
+    <header class="site-header">
+      <a href="index.html" class="brand">
+        <span class="brand-star">*</span> DUIDUI
+      </a>
+
+      <nav class="nav-links-desktop nav-container" aria-label="Site navigation">
+        <a href="index.html" class="nav-link">HOME</a>
+        <a href="index.html#connect" class="nav-link">CONNECT</a>
+        <a href="shop.html" class="nav-link">ARTIFACTS</a>
+        <a href="blog.html" class="nav-link active">BLOG</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault()">SIGNAL FEED</a>
+      </nav>
+
+      <button class="mobile-menu-btn" onclick="document.getElementById('articleMobileNav').classList.toggle('open')" aria-label="Toggle menu">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.8">
+          <line x1="3" y1="5" x2="17" y2="5" />
+          <line x1="3" y1="10" x2="17" y2="10" />
+          <line x1="3" y1="15" x2="17" y2="15" />
+        </svg>
+      </button>
+
+      <div class="header-tools">
+        <span class="clock-display">UTC+7 <span id="clock">00:00:00</span></span>
+      </div>
+
+      <nav id="articleMobileNav" class="nav-links-mobile" aria-label="Mobile site navigation">
+        <a href="index.html" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">HOME</a>
+        <a href="index.html#connect" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">CONNECT</a>
+        <a href="shop.html" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">ARTIFACTS</a>
+        <a href="blog.html" class="nav-link active" onclick="document.getElementById('articleMobileNav').classList.remove('open')">BLOG</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault(); document.getElementById('articleMobileNav').classList.remove('open')">SIGNAL FEED</a>
+      </nav>
+    </header>
+  </div>
+
+  <div class="back-link-row fade-up">
+    <a href="blog.html" class="back-link">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+      กลับหน้า Journal
+    </a>
+  </div>
+
+  <div class="banner-wrap fade-up delay-1">
+    <div class="banner-img-wrap">
+      <img src="assets/images/blog/bittensor.png" alt="TAO และ Bittensor demand thesis" class="banner-img" />
+    </div>
+  </div>
+
+  <article class="article-wrap">
+    <div class="article-meta fade-up delay-2">
+      <div class="article-tag">Thesis</div>
+      <h1 class="article-title">TAO กำลังถูกตีราคาจาก Demand จริง หรือแค่ Narrative?</h1>
+      <p class="article-subtitle">มุมมองต่อ Bittensor ว่าสิ่งที่ตลาดให้ premium อยู่ตอนนี้คือธุรกิจ AI services ที่พิสูจน์รายได้แล้ว หรือเป็น scarcity, halving, ETF catalyst และ optionality ของ decentralized AI มากกว่ากัน</p>
+      <div class="article-info">
+        <span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          25 มี.ค. 2026
+        </span>
+        <span class="info-dot"></span>
+        <span>~13 นาที</span>
+      </div>
+    </div>
+
+    <div class="content fade-up delay-2">
+      <p>ตอนคอมมูคอลรอบล่าสุดมีคนให้ความสนใจกับ <strong>TAO</strong> อยู่พอสมควร ผมเลยกลับไป research ให้ลึกขึ้นอีกหน่อย แล้วเขียนสรุปมุมมองออกมาเป็นบทความนี้ เพราะยิ่งดู ผมยิ่งรู้สึกว่า Bittensor เป็นสินทรัพย์ที่ตลาดอาจกำลัง price ด้วยกรอบที่ผิดอยู่พอสมควร</p>
+
+      <p>ในตลาดคริปโต สินทรัพย์บางประเภทถูกขับเคลื่อนด้วยรายได้ บางประเภทถูกขับเคลื่อนด้วยการเติบโตของผู้ใช้งาน และบางประเภทถูกขับเคลื่อนด้วย <strong>narrative</strong> ที่ทรงพลังพอจะทำให้ตลาดยอมมองข้ามคำถามยาก ๆ ไปก่อน สำหรับผม TAO ดูจะอยู่ในหมวดหลังมากกว่าอย่างค่อนข้างชัด</p>
+
+      <blockquote>Disclaim: นี่คือ midcurve view แบบสุด ๆ ส่วนตัวได้กำไรจากเหรียญนี้ไปแล้ว และเริ่มทยอยขายไปบางส่วนแล้ว ถ้าย่อลึกมากก็อาจกลับไปเล่นต่อ แต่ต้องดู regime ของตลาดตอนนั้นอีกที</blockquote>
+
+      <div class="tldr-card">
+        <div class="tldr-label">TL;DR สำหรับคนขี้เกียจอ่าน</div>
+        <ol>
+          <li>ฝั่ง supply ของ Bittensor โปร่งใสและสวยมาก ทั้ง hard cap 21 ล้าน, halving, on-chain emissions และ stake flows แต่ฝั่ง demand จากลูกค้าจริงยังคลุมเครืออย่างมีนัยสำคัญ</li>
+          <li>เคสของ <strong>Chutes</strong> ชี้ว่าหลาย subnet อาจยังแข่งขันได้เพราะ subsidy จาก emissions มากกว่าความได้เปรียบเชิงต้นทุนที่แท้จริง</li>
+          <li>ดังนั้น TAO วันนี้อาจเป็น thesis แบบ <strong>scarcity + narrative + optionality</strong> มากกว่าจะเป็น thesis แบบ proven AI-services cash flow</li>
+        </ol>
+      </div>
+
+      <p>ในทาง theory ทุกอย่างของโปรเจกต์นี้ดูน่าดึงดูดมาก: โทเค็นมี hard cap 21 ล้านเหรียญคล้าย Bitcoin, มี halving schedule ชัด, มีแรงหนุนเชิงสถาบัน, มี symbolic endorsement จากฝั่ง AI และยังมีพัฒนาการใน ecosystem ที่ดูจับต้องได้จริง ทั้งจำนวน subnets ที่โตเร็วและผลงานด้าน decentralized training/inference ที่เริ่มถูกพูดถึงมากขึ้น</p>
+
+      <p>ปัญหาคือข้อเท็จจริงทั้งหมดนี้ยังไม่ตอบคำถามที่สำคัญที่สุดในเชิงมูลค่า: <strong>TAO สร้าง demand จากลูกค้าจริงได้มากพอหรือยัง จนรองรับมูลค่าตลาดระดับหลายพันล้านดอลลาร์ได้อย่างสมเหตุสมผล</strong></p>
+
+      <div class="callout">
+        <p>ระหว่าง “tokenomics ที่สวย” กับ “ธุรกิจที่มีคนยอมจ่ายเงินจริง” เป็นคนละเรื่องกัน และตลาดคริปโตมักจะรีบผสมสองอย่างนี้เข้าด้วยกันเร็วกว่าที่ควร</p>
+      </div>
+
+      <h2>Bittensor ทำงานอย่างไร และมูลค่าไหลผ่านระบบแบบไหน</h2>
+
+      <p>Bittensor มีผู้เล่นหลักอยู่ 4 กลุ่ม และทั้งระบบถูกออกแบบให้แข่งขันกันแย่งความสนใจ เงินทุน และ emissions ภายใต้โมเดล Taoflow</p>
+
+      <div class="roles-grid">
+        <div class="role-card">
+          <div class="role-kicker">Role 01</div>
+          <h3>Subnet Owners</h3>
+          <p>ทีมที่สร้างตลาดเฉพาะทางด้าน AI บนเครือข่าย ไม่ว่าจะเป็น inference, training, data processing หรือ compute services ประเภทอื่น</p>
+        </div>
+        <div class="role-card">
+          <div class="role-kicker">Role 02</div>
+          <h3>Miners</h3>
+          <p>ผู้ให้แรงประมวลผลจริงและส่งมอบ output ที่ subnet ต้องการ ไม่ว่าจะแบบ compute, model serving หรือ training jobs</p>
+        </div>
+        <div class="role-card">
+          <div class="role-kicker">Role 03</div>
+          <h3>Validators</h3>
+          <p>ทำหน้าที่ประเมินคุณภาพผลลัพธ์จาก miners และมีบทบาทกำหนดว่าใครควรได้รับ reward มากน้อยแค่ไหน</p>
+        </div>
+        <div class="role-card">
+          <div class="role-kicker">Role 04</div>
+          <h3>Stakers</h3>
+          <p>นำ TAO ไปลงใน subnet liquidity pools เพื่อรับ subnet-specific alpha tokens และช่วยกำหนดกระแสเงินทุนที่จะไหลเข้าระบบ</p>
+        </div>
+      </div>
+
+      <p>ในทางทฤษฎี กลไกนี้ดูดีมาก เพราะ TAO กลายเป็นสกุลเงินกลางของทั้งเครือข่าย ใครจะ mining, validator staking, ซื้อ subnet tokens หรือจ่ายค่าบริการ ต่างก็ต้องใช้ TAO จึงเกิดภาพจำว่า ถ้า activity บน subnet โตขึ้น demand ของโทเค็นก็ควรโตตามไปด้วย</p>
+
+      <p>แต่ปัญหาจริงอยู่ตรงคำว่า <strong>What if</strong> ถ้า activity ที่เราเห็นในระบบไม่ได้สะท้อน demand จากลูกค้าจริงมากพอ หรือถ้าการเติบโตส่วนใหญ่เกิดจากแรงอุดหนุนภายใน token economy เอง</p>
+
+      <h2>Supply ชัด แต่ Demand ยังไม่ชัด</h2>
+
+      <p>หลัง halving ครั้งแรกในเดือนธันวาคม 2025 ปริมาณ emission ต่อวันลดจาก 7,200 TAO เหลือ 3,600 TAO และถูกแจกอย่างค่อนข้างตรงไปตรงมา 41% ไปที่ miners, 41% ไปที่ validators และ 18% ไปที่ subnet owners ข้อมูล stake ratios, flows, emissions และ subnet concentration ต่าง ๆ ก็ดูได้ on-chain เกือบทั้งหมด</p>
+
+      <p>พูดอีกแบบคือ <strong>ฝั่ง supply ของ Bittensor โปร่งใส</strong> นักลงทุนเห็นได้ชัดว่ามีการปล่อยเหรียญเท่าไร ใครได้เท่าไร และ subnet ใดกำลังได้ประโยชน์จากระบบมากที่สุด</p>
+
+      <p>แต่พอข้ามมาที่ฝั่ง demand ภาพกลับเปลี่ยนทันที เพราะการส่งมอบบริการ AI จริง เช่น inference requests, compute jobs หรือ training calls เกิดขึ้น <strong>off-chain</strong> ทั้งหมด บล็อกเชนเห็นเพียงการเคลื่อนย้ายโทเค็น แต่ไม่สามารถยืนยันได้ว่ามีลูกค้าภายนอกใช้บริการจริงมากแค่ไหน หรือจ่ายเงินจริงเท่าไร</p>
+
+      <div class="link-box">
+        <div class="link-box-label">สิ่งที่ตลาดจึงต้องใช้แทนรายได้จริง</div>
+        <span>staking flows</span>
+        <span>subnet token prices</span>
+        <span>ทีมออกมาเล่ากันเอง</span>
+        <span>usage metrics ที่ไม่ผูกกับ revenue</span>
+      </div>
+
+      <p>นั่นหมายความว่า ตลาดกำลังให้มูลค่ากับระบบที่ฝั่ง supply ชัดมาก แต่ฝั่งรายได้จริงกลับยังคลุมเครืออย่างมีนัยสำคัญ และนี่ไม่ใช่ปัญหาชั่วคราว แต่มันดูเป็นปัญหาเชิงโครงสร้างของโมเดลมากกว่า</p>
+
+      <h2>กรณีศึกษา Chutes: subnet ที่ดูดีที่สุด อาจกำลังพึ่ง subsidy หนักที่สุด</h2>
+
+      <p>ถ้าต้องเลือก subnet ที่ดูดีที่สุดใน ecosystem ตอนนี้ หลายคนคงชี้ไปที่ <strong>Chutes (SN64)</strong> เพราะมันเป็น serverless inference provider สำหรับโมเดล open-source อย่าง DeepSeek, Mistral และ LLaMA และยังมีตัวเลขการใช้งานที่ดูน่าประทับใจมาก</p>
+
+      <p>Chutes มีผู้ใช้งานจำนวนมาก, request ต่อวันระดับหลายล้าน, token generation ต่อวันที่โตเร็วมาก และยังเริ่มมีชื่อในฐานะหนึ่งใน inference providers ที่ competitive บน OpenRouter ด้วย ถ้ามองเฉพาะ usage metrics ก็ดูเหมือน Bittensor กำลังพิสูจน์ product-market fit ไปแล้ว</p>
+
+      <div class="valuation-grid">
+        <div class="valuation-card">
+          <div class="valuation-kicker">Emissions Share</div>
+          <div class="valuation-value">14.4%</div>
+          <p>Chutes เป็นหนึ่งใน subnet ที่รับ emissions สูงสุดของเครือข่าย และถูก market ให้ความสนใจในฐานะตัวแทนของ “ของจริง” ใน ecosystem</p>
+        </div>
+        <div class="valuation-card">
+          <div class="valuation-kicker">Estimated Revenue</div>
+          <div class="valuation-value">$1.3M–$2.4M</div>
+          <p>รายได้ภายนอกที่ประเมินได้ต่อปีของ Chutes ยังอยู่ในช่วงที่เล็กกว่ามูลค่าการอุดหนุนจาก emissions อย่างชัดเจน และยังไม่ใช่ audited number</p>
+        </div>
+        <div class="valuation-card">
+          <div class="valuation-kicker">Subsidy Ratio</div>
+          <div class="valuation-value">22x–40x</div>
+          <p>ทุก 1 ดอลลาร์ที่ลูกค้าจ่าย ระบบอาจต้องเติมอีก 22-40 ดอลลาร์ผ่าน emissions ของ TAO เพื่อให้ subnet economics เดินต่อได้ในปัจจุบัน</p>
+        </div>
+        <div class="valuation-card">
+          <div class="valuation-kicker">No-Subsidy Pricing</div>
+          <div class="valuation-value">1.6x–3.5x</div>
+          <p>ถ้าถอด subsidy ออก ราคาของ Chutes อาจไม่ใช่แค่เลิกถูกกว่า hyperscalers แต่กลายเป็นแพงกว่าผู้เล่น centralized หลายรายทันที</p>
+        </div>
+      </div>
+
+      <p>นี่คือจุดที่ narrative เรื่อง decentralized efficiency เริ่มถูกตั้งคำถาม เพราะสิ่งที่ดูเหมือนความได้เปรียบด้านต้นทุน อาจเป็นเพียงการย้ายต้นทุนจากลูกค้าไปให้ผู้ถือ TAO รับแทนผ่าน emissions</p>
+
+      <blockquote>ดังนั้นคำว่า “ถูกกว่า AWS 85%” อาจไม่ได้สะท้อนว่า decentralized compute มีประสิทธิภาพกว่าจริง แต่อาจสะท้อนแค่ว่า TAO holders กำลังจ่ายส่วนต่างแทนลูกค้าอยู่</blockquote>
+
+      <p>ถ้าถอด subsidy ออก ความได้เปรียบด้านราคานี้ก็มีสิทธิ์หายไปทันที และนั่นทำให้คำถามแก่นของทั้ง Bittensor ชัดมากขึ้นว่า subnet ต่าง ๆ แข่งขันได้จริงเพราะมีประสิทธิภาพ หรือแข่งขันได้เพราะกำลังถูกอุดหนุนอยู่</p>
+
+      <h2>ข้อโต้แย้งฝั่ง Bull และสิ่งที่ยังไม่เหมือน Uber หรือ Shopee</h2>
+
+      <p>แน่นอน คนที่มองบวกกับ TAO สามารถโต้ได้ว่าโมเดลนี้ไม่ต่างจากบริษัทเทคยุคแรก ๆ ที่ยอมเผาเงินเพื่อดึงผู้ใช้ก่อน ซึ่งก็ไม่ผิดนักในเชิง pattern recognition</p>
+
+      <p>แต่ความต่างสำคัญคือบริษัทอย่าง Uber, Grab หรือ Shopee สร้างแพลตฟอร์มแบบปิด มี network ของผู้ให้บริการ มีพฤติกรรมผู้ใช้ที่ฝังตัว และมี integration ที่ทำให้ลูกค้าย้ายออกยากขึ้นเรื่อย ๆ</p>
+
+      <p>ขณะที่หลาย subnet บน Bittensor ยังไม่ได้มี moat แบบนั้น โมเดลที่ให้บริการส่วนมากเป็น open source, API เป็นมาตรฐานทั่วไป, สามารถหาได้จากผู้เล่นรายอื่น และลูกค้าสามารถย้าย provider ได้แทบจะทันทีเมื่อราคาเปลี่ยนหรือ subsidy ลดลง</p>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-kicker">Closed Platforms</div>
+          <h3>Switching Costs สูง</h3>
+          <p>สร้างพฤติกรรมผู้ใช้ สร้างเครือข่าย และผูก integration จนลูกค้าย้ายออกยากขึ้นเมื่อเวลาผ่านไป</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-kicker">Open AI Subnets</div>
+          <h3>Usage อาจย้ายได้ง่าย</h3>
+          <p>โมเดล open source, API คล้ายกัน, alternatives เยอะ และ friction ในการย้าย provider ต่ำมากเมื่อ subsidy หายไป</p>
+        </div>
+      </div>
+
+      <p>ในหลายกรณี subnet อาจกำลังซื้อ usage โดยยังไม่สามารถเปลี่ยน usage นั้นให้กลายเป็นความได้เปรียบระยะยาวได้จริง และนั่นคือจุดที่ TAO thesis ยังต้องพิสูจน์อีกเยอะ</p>
+
+      <h2>Targon, Templar และภาพรวมของ network</h2>
+
+      <p><strong>Targon (SN4)</strong> เป็นอีกเคสที่น่าสนใจ เพราะถูกมองว่าเป็น subnet ที่มีรายได้สูงสุดใน ecosystem ให้บริการ confidential GPU compute แก่ลูกค้าองค์กร และมีตัวเลขรายได้ annualized ที่ดูดีในเชิง narrative</p>
+
+      <p>อย่างไรก็ตาม ตัวเลขเหล่านี้ยังเป็นเพียงประมาณการที่ถูกอ้างถึง ยังไม่ใช่ audited financials และยังไม่มี dashboard รายได้แบบสดที่ตัด emissions ออกอย่างชัดเจน ความน่าเชื่อถือจึงยังไม่พอสำหรับใช้ตีมูลค่า network ทั้งระบบอย่างมั่นใจ</p>
+
+      <p>ขณะที่ <strong>Templar (SN3)</strong> ซึ่งมีผลงานเชิงเทคนิคอย่าง decentralized training ของโมเดลขนาดใหญ่ กลับยังไม่มีรายได้ภายนอกที่ชัดเจน แม้จะพิสูจน์ความเป็นไปได้เชิงวิศวกรรมได้พอสมควรแล้วก็ตาม</p>
+
+      <p>ส่วน subnet อีกมากในเครือข่ายยังไม่มีข้อมูลรายได้ที่ชัด บางรายอยู่ในช่วง pre-product บางรายดูเหมือนโฟกัสไปที่การ capture emissions มากกว่าการสร้าง demand จากลูกค้าจริง</p>
+
+      <div class="callout">
+        <p>เมื่อรวมทุกอย่างเข้าด้วยกัน ภาพรวมของ Bittensor จึงยังดูคล้ายระบบที่ activity ทางเศรษฐกิจภายในยังขับเคลื่อนด้วยการแจกแรงจูงใจเป็นหลัก มากกว่าจะเป็นเครือข่าย AI services ที่พิสูจน์รายได้ภายนอกแล้ว</p>
+      </div>
+
+      <h2>Valuation ปัจจุบันสะท้อนอะไรอยู่</h2>
+
+      <p>ถ้ารวมรายได้ฝั่ง demand ที่ “พอระบุได้” ทั้ง network ตัวเลขที่เห็นยังอยู่เพียงประมาณ <strong>3-15 ล้านดอลลาร์ต่อปี</strong> เท่านั้น ช่วงกว้างนี้สะท้อนทั้งข้อมูลที่เปิดเผยไม่เท่ากัน และความต่างระหว่างรายได้ที่มี disclosure มากพอกับตัวเลขประมาณการที่ยังไม่ได้ผ่านการตรวจสอบ</p>
+
+      <p>ตัวเลขนี้เล็กมากเมื่อเทียบกับ market cap ของ TAO ระดับหลายพันล้านดอลลาร์ และยิ่งเล็กลงไปอีกถ้าเทียบกับ FDV ดังนั้นถ้าคิดแบบง่าย ๆ TAO กำลังเทรดในระดับ multiple ที่ premium กว่าบริษัท AI infrastructure แบบ centralized หรือแม้แต่ SaaS growth names ส่วนใหญ่อย่างมาก</p>
+
+      <p>ผมไม่ได้กำลังสื่อว่า TAO ต้องลงทันที หรือไม่มีสิทธิ์มี valuation สูงแบบนี้ แต่กำลังจะบอกว่า <strong>มูลค่าปัจจุบันไม่ได้ตั้งอยู่บนฐานของ fundamentals เป็นหลัก</strong> ตลาดน่าจะกำลังให้ค่ากับปัจจัยอีกชุดหนึ่งมากกว่า</p>
+
+      <ul>
+        <li>hard cap และ halving ที่ทำให้โทเค็นมี scarcity story ชัด</li>
+        <li>สัดส่วนการ stake ที่ช่วยล็อก supply ออกจากตลาด</li>
+        <li>catalyst เชิงสถาบันและความเป็น “AI bet” ในตลาดคริปโต</li>
+        <li>narrative ว่า decentralized AI อาจกลายเป็นเทรนด์ใหญ่จริง</li>
+        <li>optionality ที่ว่า ถ้า demand ฝั่งลูกค้าจริงตามมาทันในอนาคต current valuation อาจไม่แพงอย่างที่ดู</li>
+      </ul>
+
+      <h2>แรงกดดันด้าน pricing ยังมาจากสองฝั่งพร้อมกัน</h2>
+
+      <p>ด้านหนึ่งคือ <strong>self-hosting</strong> เพราะโมเดลจำนวนมากที่รันบน Bittensor เป็น open source อยู่แล้ว องค์กรที่มี volume มากพอสามารถรันโมเดลเองบนเครื่องของตัวเองได้ด้วยต้นทุนที่ลดลงเรื่อย ๆ เครื่องมืออย่าง vLLM และ Ollama ก็ทำให้การ deploy ง่ายขึ้นมาก</p>
+
+      <p>อีกด้านหนึ่งคือแรงกดจาก <strong>hyperscalers</strong> และผู้เล่น centralized ขนาดใหญ่ที่มีทั้ง data center, access to hardware, enterprise relationships และกระแสเงินสดจากธุรกิจอื่นมาช่วยอุดหนุน AI ได้</p>
+
+      <p>ดังนั้น subnet บน Bittensor ต้องตั้งราคาอยู่ในช่องแคบมาก: ถูกพอจะสู้กับ centralized providers, ไม่แพงเกินไปจนลูกค้า enterprise เลือก self-host และยังต้องแบกรับต้นทุนพิเศษจากความเป็น decentralized ทั้ง token friction, validator overhead, subnet owner fees และ network latency อีกด้วย</p>
+
+      <h2>Moat ของ subnet ยังดูอ่อนกว่าที่ตลาดหวัง</h2>
+
+      <p>ในโลกเทค moat มักมาจาก proprietary technology, network effects, switching costs, brand หรือ distribution แต่ใน Bittensor หลายองค์ประกอบเหล่านี้กลับอ่อนกว่า เพราะเทคโนโลยีจำนวนมากเป็น open source ตั้งแต่ต้น</p>
+
+      <p>ถ้าอะไรเวิร์กจริง คู่แข่งก็สามารถเรียนรู้และทำซ้ำได้โดยไม่จำเป็นต้องเข้ามาอยู่ใน ecosystem ของ TAO ด้วยซ้ำ ขณะที่ network effects เองก็ดูเหมือนจะสะสมที่ตัวโทเค็นฐานมากกว่าที่ subnet รายตัว และเมื่อผู้ใช้ย้าย provider ได้ง่าย switching costs ก็แทบไม่เกิด</p>
+
+      <p>บางคนอาจบอกว่า moat ที่แท้จริงคือ incentive mechanism ของระบบ แต่ปัญหาคือ moat แบบนี้ยืนอยู่บนฐานของ <strong>emission budget</strong> และ budget นั้นถูกออกแบบให้ลดลงเรื่อย ๆ ผ่าน halving อยู่แล้ว</p>
+
+      <h2>แล้วตลาดกำลังตีราคาอะไรให้ TAO กันแน่</h2>
+
+      <p>สำหรับผม คำตอบค่อนข้างตรงไปตรงมา: ณ ระดับมูลค่าปัจจุบัน TAO ไม่ได้ถูกตีราคาบน fundamentals เป็นหลัก แต่น่าจะถูกตีราคาบน <strong>scarcity, narrative และ optionality</strong> มากกว่า</p>
+
+      <p>นั่นไม่ได้แปลว่าโปรเจกต์นี้ไม่มี innovation หรือไม่มีโอกาสสร้างตัวตนจริงในระยะยาว ตรงกันข้าม ผมคิดว่า Bittensor อาจเป็นหนึ่งในความพยายามที่น่าสนใจที่สุดในการสร้างพื้นฐาน AI แบบ decentralized ด้วยซ้ำ</p>
+
+      <blockquote>คำถามสำคัญที่สุดสำหรับ TAO ไม่ใช่ว่า “โปรเจกต์นี้น่าสนใจไหม” แต่คือ “ตลาดกำลังให้ราคากับสิ่งที่พิสูจน์แล้ว หรือกำลังให้ราคากับสิ่งที่หวังว่าจะเกิดขึ้น”</blockquote>
+
+      <p>ถ้าตอบคำถามนี้ได้ชัด นักลงทุนก็จะรู้ทันทีว่าตัวเองกำลังถืออะไรอยู่กันแน่ ระหว่างโครงสร้างพื้นฐาน AI ที่จะเติบโตเป็นธุรกิจจริง หรือสินทรัพย์เชิง narrative ที่อาจไปต่อได้อีกมาก แต่ยังต้องพิสูจน์ฝั่ง demand อีกพอสมควร</p>
+
+      <div class="disclaimer">
+        *ไม่ใช่คำแนะนำในการลงทุน เป็นเพียงเนื้อหาเพื่อการศึกษาเท่านั้น
+      </div>
+    </div>
+  </article>
+
+  <footer class="site-footer">
+    <div class="footer-socials">
+      <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" rel="noopener" aria-label="YouTube">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23 8.8c-.3-1.2-1.2-2.1-2.4-2.4C18.4 6 12 6 12 6s-6.4 0-8.6.4A3.3 3.3 0 0 0 1 8.8C.6 11 .6 12 .6 12s0 1 .4 3.2c.3 1.2 1.2 2.1 2.4 2.4 2.2.4 8.6.4 8.6.4s6.4 0 8.6-.4a3.3 3.3 0 0 0 2.4-2.4c.4-2.2.4-3.2.4-3.2s0-1-.4-3.2zM10 15.2V8.8l5.5 3.2L10 15.2z"/></svg>
+      </a>
+      <a href="https://x.com/dodgeduidui" target="_blank" rel="noopener" aria-label="X">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z"/></svg>
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.87v2.26h3.32l-.53 3.5h-2.8V24C19.62 23.1 24 18.1 24 12.07z"/></svg>
+      </a>
+      <a href="https://t.me/duisnote" target="_blank" rel="noopener" aria-label="Telegram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z"/></svg>
+      </a>
+    </div>
+    <div class="footer-copy">
+      &copy; 2026 <a href="blog.html">DUIDUI Journal</a> — Crypto KOL Portal
+    </div>
+  </footer>
+
+  <script>
+    const ARTICLE_PASSWORD = "memberonly";
+    const ARTICLE_ACCESS_KEY = "duidui-blog-access";
+
+    function enforceArticleAccess() {
+      const cached = localStorage.getItem(ARTICLE_ACCESS_KEY);
+      if (cached === ARTICLE_PASSWORD) {
+        return;
+      }
+
+      const entered = window.prompt("Enter password to view this article:");
+      if (entered === ARTICLE_PASSWORD) {
+        localStorage.setItem(ARTICLE_ACCESS_KEY, ARTICLE_PASSWORD);
+        return;
+      }
+
+      if (entered !== null) {
+        window.alert("Incorrect password.");
+      }
+      window.location.href = "blog.html";
+    }
+
+    enforceArticleAccess();
+
+    const clockEl = document.getElementById("clock");
+
+    function updateClock() {
+      const now = new Date();
+      const utc7 = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+      const hh = String(utc7.getUTCHours()).padStart(2, "0");
+      const mm = String(utc7.getUTCMinutes()).padStart(2, "0");
+      const ss = String(utc7.getUTCSeconds()).padStart(2, "0");
+      if (clockEl) clockEl.textContent = hh + ":" + mm + ":" + ss;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    document.addEventListener("click", function (event) {
+      const nav = document.getElementById("articleMobileNav");
+      if (nav && !nav.contains(event.target) && !event.target.closest(".mobile-menu-btn")) {
+        nav.classList.remove("open");
+      }
+    });
+  </script>
+</body>
+
+</html>
