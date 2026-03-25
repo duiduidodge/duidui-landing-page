@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 3: Bitcoin — เงินดิจิทัลที่เกิดมาเพื่อความขาดแคลน • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="Proof of Work, UTXO Model, Halving, SegWit, Taproot, Lightning Network — ทุกอย่างที่ต้องรู้เกี่ยวกับ Bitcoin ฉบับสมบูรณ์">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      top: 20%;
+      right: 5%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle, rgba(255, 123, 0, 0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 10;
+      padding-top: 0;
+    }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Colorful: comparison-table (Bitcoin address formats) ──────── */
+    .comparison-table thead th {
+      background: rgba(255,123,0,0.12);
+      color: #FF7B00;
+      border-bottom: 1px solid rgba(255,123,0,0.3);
+    }
+    .comparison-table tbody tr:hover td { background: rgba(255,123,0,0.05); }
+    .comparison-table tbody tr:nth-child(1) td:first-child code,
+    .comparison-table tbody tr:nth-child(1) td:first-child strong { color: #94a3b8; } /* legacy: muted */
+    .comparison-table tbody tr:nth-child(2) td:first-child code,
+    .comparison-table tbody tr:nth-child(2) td:first-child strong { color: #f5a623; } /* P2SH: amber */
+    .comparison-table tbody tr:nth-child(3) td:first-child code,
+    .comparison-table tbody tr:nth-child(3) td:first-child strong { color: #9cc9d1; } /* SegWit: teal */
+    .comparison-table tbody tr:nth-child(4) td:first-child code,
+    .comparison-table tbody tr:nth-child(4) td:first-child strong { color: #FF7B00; } /* Taproot: orange */
+
+    /* ── Halving Timeline (custom HTML) ───────────────────────────── */
+    .halving-timeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      overflow-x: auto;
+      padding: 1.5rem 0.75rem;
+    }
+
+    .halving-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .halving-box {
+      border: 2px solid;
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      text-align: center;
+      min-width: 100px;
+      white-space: nowrap;
+    }
+    .halving-box .h-year {
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.02em;
+    }
+    .halving-box .h-reward {
+      font-size: 1rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .halving-box.h0 { border-color: #FF7B00; background: rgba(255,123,0,0.12); }
+    .halving-box.h0 .h-year    { color: rgba(255,123,0,0.7); }
+    .halving-box.h0 .h-reward  { color: #FF7B00; }
+
+    .halving-box.h1 { border-color: #f5a623; background: rgba(245,166,35,0.1); }
+    .halving-box.h1 .h-year    { color: rgba(245,166,35,0.7); }
+    .halving-box.h1 .h-reward  { color: #f5a623; }
+
+    .halving-box.h2 { border-color: #e8972a; background: rgba(232,151,42,0.08); }
+    .halving-box.h2 .h-year    { color: rgba(232,151,42,0.7); }
+    .halving-box.h2 .h-reward  { color: #e8972a; }
+
+    .halving-box.h3 { border-color: #d4843a; background: rgba(212,132,58,0.08); }
+    .halving-box.h3 .h-year    { color: rgba(212,132,58,0.7); }
+    .halving-box.h3 .h-reward  { color: #d4843a; }
+
+    .halving-box.h4 { border-color: #c0764e; background: rgba(192,118,78,0.08); }
+    .halving-box.h4 .h-year    { color: rgba(192,118,78,0.7); }
+    .halving-box.h4 .h-reward  { color: #c0764e; }
+
+    .halving-box.hfuture {
+      border-color: #94736a;
+      border-style: dashed;
+      background: rgba(148,115,106,0.06);
+    }
+    .halving-box.hfuture .h-year   { color: rgba(148,115,106,0.7); }
+    .halving-box.hfuture .h-reward { color: #94736a; }
+
+    .halving-connector {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0 0.5rem;
+      color: #4a5568;
+      font-size: 0.72rem;
+      flex-shrink: 0;
+    }
+    .halving-connector .h-arrow { font-size: 1rem; color: #4a5568; }
+    .halving-connector .h-label { font-size: 0.72rem; color: #64748b; font-weight: 500; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: "loose",
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#252a32",
+        primaryTextColor: "#ede7dc",
+        primaryBorderColor: "#FF7B00",
+        lineColor: "#FF7B00",
+        tertiaryColor: "#21252c",
+        fontFamily: "Prompt, Noto Serif Thai, Kanit, sans-serif"
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 03</span>
+  <button class="chapter-picker-btn" data-current="03" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background: linear-gradient(90deg, #FF7B00, #9cc9d1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; letter-spacing: 0.16em;">Part 2 • The Assets</div>
+          <h1>บทที่ 3: Bitcoin — เงินดิจิทัลที่เกิดมาเพื่อความขาดแคลน</h1>
+          <p class="lede">
+            ในปี 2008 วิกฤตการณ์ทางการเงินโลกพิสูจน์ว่าระบบธนาคารกลางล้มเหลวได้ ปีถัดมา Satoshi Nakamoto สร้างระบบที่ไม่ต้องพึ่งพาใคร — Bitcoin คือเงินที่มีนโยบายการเงินกำหนดไว้ด้วยคณิตศาสตร์ ไม่ใช่นักการเมือง
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          The Times 03/Jan/2009 Chancellor on brink of second bailout for banks.
+          <span style="display:block; font-size: 0.85em; color: #9cc9d1; margin-top: 0.5rem; font-style: normal; font-family: 'Prompt', sans-serif;">"รัฐมนตรีคลังอังกฤษใกล้อนุมัติแผนอุ้มธนาคารรอบสอง"</span>
+          <cite>ข้อความพาดหัวข่าวจากหนังสือพิมพ์ The Times ที่ Satoshi Nakamoto ฝังไว้ใน Genesis Block — บล็อกแรกของ Bitcoin เมื่อ 3 มกราคม 2009 เป็นการประกาศเจตนารมณ์ว่า Bitcoin ถือกำเนิดขึ้นเพื่อตอบโต้ระบบธนาคารกลางที่ล้มเหลวและพึ่งพาเงินภาษีประชาชนในการอุ้มตัวเอง</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_03_bitcoin.png" alt="Chapter 3 Bitcoin Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — Mining, Proof of Work, Monetary Policy
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 03 • แนวคิดหลัก</span>
+            <h2 class="book-page-title">Mining, Proof of Work และนโยบายการเงิน</h2>
+          </div>
+          <div class="book-page-index">Bitcoin<br>Core Concepts</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Bitcoin แก้ปัญหาอะไร?</h3>
+            <p>ก่อน Bitcoin คำถามที่ยังไม่มีคำตอบคือ: จะให้คอมพิวเตอร์หลายพันเครื่องทั่วโลกตกลงกันได้ว่า "ใครเป็นเจ้าของอะไร" โดยไม่มีตัวกลางที่ไว้วางใจได้อย่างไร? คำตอบคือ Proof of Work</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Bitcoin ใช้ระบบ <strong>Proof of Work (PoW)</strong> ให้ miners พิสูจน์ว่าได้ลงทุนพลังงานจำนวนมหาศาลไปแล้ว ผ่าน hash function SHA-256 ที่รับข้อมูลแล้วแปลงเป็น output คงที่ เปลี่ยนข้อมูลนิดเดียว output เปลี่ยนทั้งหมด และย้อนกลับไม่ได้
+            </p>
+            <p>
+              Miners รวบรวม transaction เป็น block แล้วลอง nonce หลายล้านครั้งต่อวินาที เพื่อหา hash ที่ตรงเงื่อนไข — เหมือนทอยลูกเต๋าล้านด้านแล้วต้องการเลขต่ำกว่าค่าที่กำหนด network ปรับความยากทุก 2,016 blocks (ประมาณ 2 สัปดาห์) เพื่อให้เฉลี่ย <strong>10 นาทีต่อ block</strong> เสมอ เมื่อจีนแบน mining ในปี 2021 ซึ่งดูดซับ hash rate ถึง 44% network ก็ปรับตัวและกลับมาทำงานปกติโดยไม่หยุด
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Concept</span>
+              <span>Nakamoto Consensus</span>
+            </div>
+            <h3 class="callout-title">ใครถูก ใครผิด? — "Chain ที่ทำงานหนักที่สุด" ชนะ</h3>
+            <p>เมื่อ miners สองคนหา block พร้อมกัน เกิด fork ชั่วคราว ทุก node เลือก chain ที่สะสม <em>work</em> มากที่สุด (ไม่ใช่จำนวน block) เมื่อ block ถัดไปถูกสร้าง fork จบลงเอง block ที่แพ้กลายเป็น "stale block" และถูกทิ้ง ทุกอย่างจบภายในไม่กี่นาที</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Halving</strong> — รางวัล block ถูกลดครึ่งทุก 210,000 blocks (ประมาณ 4 ปี) เริ่มจาก 50 BTC → 25 → 12.5 → 6.25 → <strong>3.125 BTC</strong> (หลัง halving ปี 2024) และจะลดต่อไปเรื่อย ๆ จนสิ้นสุดราวปี 2140 ด้วยจำนวน Bitcoin สูงสุดที่จะมีอยู่คือ ~21 ล้าน BTC ณ ต้นปี 2026 ประมาณ 95% ถูก mine ไปแล้ว
+            </p>
+            <p>
+              รายได้ miner มาจาก 2 แหล่ง: block subsidy (การสร้าง BTC ใหม่) และ transaction fees ในปี 2024 block subsidy ยังคิดเป็น ~94% ของรายได้ รวมกันเรียกว่า <strong>security budget</strong> — ยิ่งสูง ยิ่งแพงสำหรับผู้โจมตีที่ต้องการ rewrite ประวัติ
+            </p>
+          </div>
+
+          <div class="mermaid-shell">
+            <div class="mermaid-toolbar">
+              <div class="mermaid-title">Figure 1 • Bitcoin Halving Schedule</div>
+              <span class="status-pill info">Diagram</span>
+            </div>
+            <div class="mermaid-frame">
+              <div class="halving-timeline">
+
+                <div class="halving-node">
+                  <div class="halving-box h0">
+                    <div class="h-year">2009</div>
+                    <div class="h-reward">50 BTC</div>
+                  </div>
+                </div>
+
+                <div class="halving-connector">
+                  <span class="h-label">2012</span>
+                  <span class="h-arrow">→</span>
+                </div>
+
+                <div class="halving-node">
+                  <div class="halving-box h1">
+                    <div class="h-year">Halving 1</div>
+                    <div class="h-reward">25 BTC</div>
+                  </div>
+                </div>
+
+                <div class="halving-connector">
+                  <span class="h-label">2016</span>
+                  <span class="h-arrow">→</span>
+                </div>
+
+                <div class="halving-node">
+                  <div class="halving-box h2">
+                    <div class="h-year">Halving 2</div>
+                    <div class="h-reward">12.5 BTC</div>
+                  </div>
+                </div>
+
+                <div class="halving-connector">
+                  <span class="h-label">2020</span>
+                  <span class="h-arrow">→</span>
+                </div>
+
+                <div class="halving-node">
+                  <div class="halving-box h3">
+                    <div class="h-year">Halving 3</div>
+                    <div class="h-reward">6.25 BTC</div>
+                  </div>
+                </div>
+
+                <div class="halving-connector">
+                  <span class="h-label">2024</span>
+                  <span class="h-arrow">→</span>
+                </div>
+
+                <div class="halving-node">
+                  <div class="halving-box h4">
+                    <div class="h-year">Halving 4</div>
+                    <div class="h-reward">3.125 BTC</div>
+                  </div>
+                </div>
+
+                <div class="halving-connector">
+                  <span class="h-label">2028</span>
+                  <span class="h-arrow">→</span>
+                </div>
+
+                <div class="halving-node">
+                  <div class="halving-box hfuture">
+                    <div class="h-year">Halving 5</div>
+                    <div class="h-reward">1.5625 BTC</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="figure-caption">
+            <span class="figure-caption-title">Figure Caption</span>
+            รางวัล block ลดครึ่งทุก ~4 ปี ทำให้ Bitcoin มีอัตราเงินเฟ้อที่ลดลงเรื่อย ๆ และเข้าใกล้ศูนย์ นโยบายการเงินนี้ถูกกำหนดไว้ในโค้ดล่วงหน้า ไม่มีใครเปลี่ยนได้
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Bitcoin · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — UTXO Model, Address Types, Privacy
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 03 • สถาปัตยกรรมเทคนิค</span>
+            <h2 class="book-page-title">UTXO, Address Types และ Privacy Model</h2>
+          </div>
+          <div class="book-page-index">Bitcoin<br>Architecture</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Bitcoin ไม่มี "ยอดเงินในบัญชี"</h3>
+            <p>ต่างจากธนาคารที่เก็บยอดเงินเป็นตัวเลขในระบบ Bitcoin เก็บข้อมูลเป็น "เหรียญย่อย" หลายอัน ที่รอถูกใช้จ่าย — นี่คือแนวคิด UTXO</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>UTXO (Unspent Transaction Output)</strong> คือ "แบงค์" แต่ละใบใน wallet ของคุณ เหมือนมีแบงค์ 100 บาท 2 ใบ กับแบงค์ 50 บาท 1 ใบ รวม 250 บาท เมื่อซื้อของ 180 บาท คุณหยิบ 100+100 ออกมา ใบเก่าถูกทำลาย (spent) แล้วสร้างใบใหม่ 180 บาทให้คนขาย และ 20 บาทเป็น "ทอน" กลับมาคุณ ระบบนี้ป้องกัน double-spending ได้ เพราะ UTXO ที่ถูกใช้แล้วหายไปจาก global UTXO set ทันที
+            </p>
+            <p>
+              ความเป็นเจ้าของ UTXO พิสูจน์ด้วย <strong>private key</strong> ถ้าเสียกุญแจ เหรียญหายถาวร ถ้ากุญแจปลอดภัย ไม่มีใครแตะสินทรัพย์ได้ กฎการใช้จ่าย UTXO กำหนดด้วย <strong>Bitcoin Script</strong> ซึ่งรองรับ timelocks ทำให้สร้างสัญญาซับซ้อนอย่าง Lightning channels หรือ escrow ได้
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Reference</span>
+              <span>Bitcoin Address Formats</span>
+            </div>
+            <h3 class="callout-title">รูปแบบ Address ที่พบเจอบ่อย</h3>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Format</th>
+                    <th>ขึ้นต้นด้วย</th>
+                    <th>หมายเหตุ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Legacy</strong></td>
+                    <td><code>1...</code></td>
+                    <td>ต้นฉบับ ค่าธรรมเนียมสูงกว่า</td>
+                  </tr>
+                  <tr>
+                    <td><strong>P2SH</strong></td>
+                    <td><code>3...</code></td>
+                    <td>multisig, compat SegWit</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Native SegWit</strong></td>
+                    <td><code>bc1q...</code></td>
+                    <td>ค่าธรรมเนียมต่ำ, แนะนำ</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Taproot</strong></td>
+                    <td><code>bc1p...</code></td>
+                    <td>ใหม่ที่สุด privacy ดีที่สุด</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Transaction Fees</strong> — ค่าธรรมเนียมคือผลต่างระหว่าง input รวมและ output รวม Miners เลือก transaction ตาม <em>fee rate</em> (sats/vB) ไม่ใช่ค่าธรรมเนียมรวม ช่วง network ยุ่ง ต้องจ่ายสูงขึ้น ช่วงเงียบจ่ายน้อย ถ้า transaction ค้าง ใช้ <strong>RBF</strong> (Replace-by-Fee) เพื่อส่ง transaction ใหม่ค่าธรรมเนียมสูงขึ้น หรือใช้ <strong>CPFP</strong> (Child Pays for Parent) ให้ transaction ลูกดึง transaction แม่ขึ้นมาพร้อมกัน
+            </p>
+            <p>
+              <strong>Privacy บน Bitcoin</strong> — Bitcoin เป็น <em>pseudonymous</em> ไม่ใช่ anonymous Address ไม่มีชื่อ แต่ทุก transaction บันทึกสาธารณะบน blockchain บริษัทอย่าง Chainalysis ทำธุรกิจมูลค่าหลายพันล้านจากการ cluster addresses วิธีป้องกัน: ใช้ address ใหม่ทุกครั้ง หลีกเลี่ยงการรวม UTXO ต่างแหล่ง และเครื่องมืออย่าง CoinJoin ผสม input จากหลายคนให้แยกไม่ออกว่าใครโอนให้ใคร
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Bitcoin · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — Upgrades: SegWit, Taproot, Forks
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 03 • การอัปเกรดและธรรมาภิบาล</span>
+            <h2 class="book-page-title">SegWit, Taproot และสงคราม Block Size</h2>
+          </div>
+          <div class="book-page-index">Bitcoin<br>Governance</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ระบบที่ "ไม่มีเจ้าของ" อัปเกรดอย่างไร?</h3>
+            <p>Bitcoin ไม่มี CEO ไม่มีคณะกรรมการ การเปลี่ยนแปลงโปรโตคอลต้องผ่านกระบวนการที่ซับซ้อนและพิสูจน์แล้วว่าทำงานได้จริง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              การเปลี่ยนแปลงเสนอผ่าน <strong>BIP (Bitcoin Improvement Proposal)</strong> มีสองประเภทใหญ่: <strong>Hard Fork</strong> เปลี่ยน consensus rules แบบที่ node เก่าไม่ยอมรับ ต้องให้ทุกคน upgrade พร้อมกัน เสี่ยงแยก chain ถาวร (เช่น Bitcoin Cash ในปี 2017 ที่เพิ่ม block size แล้วแยกออกมาเป็น chain ใหม่) — <strong>Soft Fork</strong> เข้ากันได้ย้อนหลัง node เก่ายังเห็น block ใหม่ว่า valid แต่ไม่ enforce rule ใหม่ ปลอดภัยกว่ามาก
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Case Study</span>
+              <span>Blocksize Wars (2015–2017)</span>
+            </div>
+            <h3 class="callout-title">SegWit: ชัยชนะของ Node ผู้ใช้เหนือ Miners</h3>
+            <p><strong>SegWit (2017)</strong> แก้ปัญหา transaction malleability (signature แก้ได้ก่อน confirm ทำให้ Lightning ไม่ปลอดภัย) และเพิ่ม block capacity ด้วยระบบ <em>block weight</em> 4M units miners บางกลุ่มขัดขวางการ activate ด้วย BIP9 (ต้องการ 95%) แม้ developers, exchanges และ users ส่วนใหญ่เห็นด้วย BIP148 (UASF) บังคับให้ miners เลือก: signal SegWit หรือ mine chain ที่ตลาดจะไม่รับ — <strong>users ชนะ</strong> SegWit activate ปี 2017</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Taproot (2021)</strong> activate ด้วยความเป็นเอกฉันท์โดยไม่มีการต่อสู้ ใช้ Speedy Trial (90% miner signaling ใน 2,016 blocks) lock in มิถุนายน activate พฤศจิกายน 2021 ที่ block 709,632 การปรับปรุงหลัก:
+            </p>
+            <ul style="margin-left: 1.5rem; color: #ede7dc; line-height: 1.9;">
+              <li><strong>Schnorr Signatures</strong> — รวม signature หลายอันให้เป็น signature เดียวบน chain ช่วยทั้ง privacy และ efficiency</li>
+              <li><strong>MAST (Merkleized Abstract Syntax Trees)</strong> — สัญญาซับซ้อนซ่อนเงื่อนไขที่ไม่ได้ใช้ไว้ทั้งหมด เปิดเผยเฉพาะเส้นทางที่ถูกเลือก</li>
+              <li><strong>Taproot Addresses (bc1p)</strong> — สัญญาซับซ้อนดูเหมือน single-key payment ทั่วไป เพิ่ม privacy อย่างมีนัยสำคัญ</li>
+            </ul>
+            <p>
+              Bitcoin โดยเจตนาเปลี่ยนแปลงได้ยาก นักพัฒนาบางส่วนสนับสนุน <strong>Protocol Ossification</strong> — ให้ base layer นิ่งสนิทเหมือนชั้นหิน นวัตกรรมเกิดบน layer 2 แทน Bitcoin สินทรัพย์มูลค่าหลายล้านล้านดอลลาร์ไม่ควรเป็น platform สำหรับทดลอง
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Bitcoin · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — Security Model & 51% Attack
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 03 • โมเดลความปลอดภัย</span>
+            <h2 class="book-page-title">51% Attack, Security Budget และความยืดหยุ่น</h2>
+          </div>
+          <div class="book-page-index">Bitcoin<br>Security</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Bitcoin ปลอดภัยเพราะการโจมตีแพงกว่ากำไรที่ได้</h3>
+            <p>ความปลอดภัยของ Bitcoin ไม่ได้มาจากกฎหมาย แต่มาจากเศรษฐศาสตร์ — ผู้โจมตีต้องลงทุนมหาศาล และยังทำลายมูลค่าของ BTC ที่ตัวเองถืออยู่ด้วย</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>51% Attack</strong> — ผู้ที่ควบคุม hashrate มากกว่า 50% สามารถ rewrite ประวัติ transaction ล่าสุดหรือ double-spend เงินของตัวเองได้ แต่ทำไม่ได้: สร้าง BTC ใหม่นอกกฎ, ขโมยเงินจาก wallet ของคนอื่น หรือ reverse transaction เก่า ๆ ค่าใช้จ่ายในการ rent hashrate เพียงพอมีหลายร้อยล้านดอลลาร์ต่อชั่วโมง และถ้าโจมตีสำเร็จ BTC จะตกราคา ทำให้ผู้โจมตีขาดทุนทั้งคู่
+            </p>
+            <p>
+              ภัยคุกคามที่น่ากลัวกว่าคือ <strong>รัฐบาล</strong> ที่ไม่สนใจผลกำไรและโจมตีเพื่อเหตุผลทางการเมือง แต่ก็ต้องเผชิญอุปสรรคทางปฏิบัติ: หา ASIC เพียงพอไม่ได้, ถ้าโจมตีสำเร็จชุมชนสามารถ change mining algorithm เพื่อทำให้ hardware เดิมใช้งานไม่ได้ทันที, และ Bitcoin มี nodes กระจายทั่วโลกที่ยืนยันกฎอยู่เสมอ
+            </p>
+          </div>
+
+          <div class="callout warning-box">
+            <div class="callout-meta">
+              <span class="status-pill warning">Long-term Risk</span>
+              <span>Security Budget Problem</span>
+            </div>
+            <h3 class="callout-title">ปัญหา Security Budget ระยะยาว</h3>
+            <p>เมื่อ block subsidy ลดลงเรื่อย ๆ จนเหลือศูนย์ราวปี 2140 miner จะต้องพึ่ง transaction fees ล้วน ๆ แต่ Bitcoin ถูกถือไว้มากกว่าถูกใช้จ่าย ถ้า fee ไม่เพิ่มตาม USD security budget จะหดตัว และการโจมตีจะถูกลง นี่คือคำถามที่ยังไม่มีคำตอบชัดเจน: จะมี fee demand จาก L2, inscriptions หรือ settlement payments มากพอหรือไม่?</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Bitcoin ออกแบบมาให้ <strong>Antifragile</strong> — แข็งแกร่งขึ้นจากความเครียด node กระจายทางภูมิศาสตร์ป้องกันการปิดกั้นในพื้นที่ protocol ossification ลด attack surface การออกแบบ assume ว่ามีผู้โจมตีอยู่เสมอ Bitcoin ผ่านมา: Mt. Gox ล้ม, China แบน mining, หลายประเทศแบน — แต่ network ยังทำงานต่อเนื่องทุกวัน
+            </p>
+            <p>
+              Node มีหลายประเภท: <strong>Full Node</strong> ตรวจสอบทุก transaction และ block ด้วยตัวเอง <strong>Pruned Node</strong> ทำงานเหมือน full node แต่ลบ block เก่าทิ้งเพื่อประหยัด disk <strong>SPV Client</strong> (พบใน mobile wallet) โหลดแค่ block headers และพึ่ง full node สำหรับการตรวจสอบ — สะดวกกว่าแต่ trust model ต่างกัน
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Bitcoin · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — Lightning Network, L2, Ordinals
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 03 • Layer 2 และส่วนขยาย</span>
+            <h2 class="book-page-title">Lightning Network, L2 และ Ordinals</h2>
+          </div>
+          <div class="book-page-index">Bitcoin<br>Extensions</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Bitcoin Base Layer ออกแบบมาสำหรับ settlement ไม่ใช่กาแฟ</h3>
+            <p>ค่าธรรมเนียมสูง block ทุก 10 นาที ทำให้ microtransaction บน L1 ไม่คุ้มค่า Layer 2 แก้ปัญหานี้โดยย้าย transaction ออกนอก blockchain โดยยังคงรับประกันด้วย L1</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Lightning Network</strong> สร้าง payment channel โดย lock เงินใน on-chain transaction ที่ต้องการ signature ทั้งสองฝ่าย จากนั้นสองคนแลกเปลี่ยนยอดเงิน off-chain ได้เร็วและถูกมาก เมื่อเสร็จ close channel แล้วบันทึกยอดสุดท้ายบน L1 ถ้า Alice → Bob → Carol มี channel เชื่อมกัน Alice จ่ายเงินให้ Carol ผ่าน Bob ได้โดยไม่ต้องเปิด channel ตรง
+            </p>
+            <p>
+              Lightning ทำงานได้ดีเมื่อ: ทั้งสองฝ่าย online, มี liquidity พอในทิศทางที่ถูกต้อง, และ channel ไม่แพงเกินไปในการเปิดปิด แต่ข้อจำกัดสำคัญคือ <strong>liquidity management</strong> — เงินต้องอยู่ถูกที่ถูกเวลา ทำให้ผู้ใช้ทั่วไปหันหา custodial Lightning wallet ที่จัดการให้ แต่กลับมาสู่การพึ่งพา third party อีกครั้ง
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Concept</span>
+              <span>L2 Trust Spectrum</span>
+            </div>
+            <h3 class="callout-title">L2 บน Bitcoin — เรื่องของ Trust Model</h3>
+            <p>L2 ที่แท้จริงต้องให้ user <em>unilaterally exit</em> กลับ L1 ได้โดยไม่ต้องขออนุญาตใคร ปัจจุบัน Bitcoin Script ไม่สามารถตรวจสอบ state ซับซ้อนของ L2 ได้โดยตรง ทำให้ L2 ส่วนใหญ่ต้องพึ่ง federation ของ signers แทน — มีความปลอดภัยกว่า CEX แต่ยังไม่ใช่ trustless 100% ข้อเสนอ covenant opcodes (OP_CAT, CTV) อาจแก้ปัญหานี้ได้ในอนาคต แต่ยังไม่ active</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Ordinals และ Inscriptions (2023)</strong> — Ordinal theory กำหนดหมายเลขให้ satoshi แต่ละอันตามลำดับที่ถูก mine เพื่อ track การเคลื่อนที่ Inscriptions ฝัง data (รูปภาพ, ข้อความ) ไว้ใน witness data ของ transaction — Bitcoin-native NFT ที่ content อยู่บน blockchain โดยตรง ต่างจาก Ethereum NFT ที่มักชี้ไปยัง IPFS ภายนอก
+            </p>
+            <p>
+              <strong>BRC-20</strong> ใช้ JSON inscriptions สร้าง fungible tokens บน Bitcoin โดยไม่ต้องมี smart contract แต่ validity ขึ้นอยู่กับ indexers ที่ตีความ JSON ต่างกันได้ — เป็น "social convention" ไม่ใช่ cryptographic enforcement ชุมชน Bitcoin แตกออกเป็นสองฝ่าย: ฝ่ายหนึ่งเห็นว่า inscriptions คือการใช้ block space อย่างถูกต้องและสร้าง fee revenue ให้ miners อีกฝ่ายเห็นว่ากิน block space ของ financial transactions และทำให้ค่าธรรมเนียมแพงขึ้นโดยไม่จำเป็น
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Bitcoin · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-02-wallets-custody-security.html">
+          <span>Previous</span>
+          <strong>บทที่ 2: กระเป๋าเงิน การเก็บรักษา และความปลอดภัย</strong>
+        </a>
+        <a class="nav-card" href="./chapter-04-ethereum.html">
+          <span>Next</span>
+          <strong>บทที่ 4: Ethereum — คอมพิวเตอร์การเงินของโลก</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        canvas.style.display = 'none';
+        return;
+      }
+      const scene    = new THREE.Scene();
+      const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const COUNT   = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT * 3; i++) posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+
+      const makeTexture = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16,16,0,16,16,16);
+        g.addColorStop(0,   'rgba(156,201,209,1)');
+        g.addColorStop(0.2, 'rgba(156,201,209,0.8)');
+        g.addColorStop(1,   'rgba(156,201,209,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
+        const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+      };
+
+      const mat = new THREE.PointsMaterial({ size: 0.05, map: makeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 });
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh);
+      camera.position.z = 4;
+
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', e => { mouseX = e.clientX - window.innerWidth/2; mouseY = e.clientY - window.innerHeight/2; });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        mesh.rotation.y += 0.0008; mesh.rotation.x += 0.0004;
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) { const i3 = i*3; pos[i3+1] = posOrig[i3+1] + Math.sin(t*0.3 + posOrig[i3]) * 0.18; }
+        geo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    });
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

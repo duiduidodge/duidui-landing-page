@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 10: Stablecoins & RWA — เงินที่ไม่ผันผวน • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="USDT, USDC, DAI, Algorithmic Stablecoins, UST Collapse, Tokenized Treasuries, RWA — ทำความเข้าใจ Stablecoins และ Real World Assets ฉบับสมบูรณ์">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      top: 20%;
+      right: 5%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 10;
+      padding-top: 0;
+    }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Colorful: accent = sky #38bdf8 ─────────────────────────────── */
+    .digest-list .digest-index {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .info-chip {
+      border-left: 3px solid rgba(56, 189, 248, 0.45);
+      background: rgba(56, 189, 248, 0.05) !important;
+    }
+    .info-chip strong { color: #38bdf8; }
+
+    .table-shell thead th {
+      background: rgba(56, 189, 248, 0.1);
+      color: #38bdf8;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .table-shell tbody tr:nth-child(odd) td { background: rgba(56, 189, 248, 0.02); }
+    .table-shell tbody tr:hover td { background: rgba(56, 189, 248, 0.06); }
+
+    /* ── Stablecoin type grid ────────────────────────────────────────── */
+    .stable-type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    @media (max-width: 640px) { .stable-type-grid { grid-template-columns: 1fr; } }
+
+    .stable-type-card {
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .stable-type-label {
+      font-size: 0.70rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+    .stable-type-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 0.3rem;
+    }
+    .stable-type-card p { font-size: 0.79rem; color: #8a9aaa; margin: 0; line-height: 1.55; }
+
+    /* ── Issuer comparison cards ─────────────────────────────────────── */
+    .issuer-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    @media (max-width: 580px) { .issuer-pair { grid-template-columns: 1fr; } }
+
+    .issuer-card {
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .issuer-name { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.1rem; }
+    .issuer-sub  { font-size: 0.7rem; color: #64748b; margin-bottom: 0.6rem; }
+    .issuer-row  { display: flex; justify-content: space-between; font-size: 0.84rem; margin-bottom: 0.2rem; }
+    .issuer-row span:first-child { color: #64748b; }
+    .issuer-row span:last-child  { color: #ede7dc; font-weight: 500; }
+
+    /* ── Collapse timeline ───────────────────────────────────────────── */
+    .collapse-timeline {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(248, 113, 113, 0.2);
+      margin: 1.25rem 0;
+    }
+    .collapse-event {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .collapse-event:last-child { border-bottom: none; }
+    .collapse-event:nth-child(odd)  { background: rgba(248,113,113,0.03); }
+    .collapse-event:nth-child(even) { background: rgba(255,255,255,0.015); }
+    .collapse-date {
+      min-width: 64px;
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: #f87171;
+      font-family: monospace;
+      padding-top: 0.1rem;
+      flex-shrink: 0;
+    }
+    .collapse-title { font-size: 0.83rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.15rem; }
+    .collapse-desc  { font-size: 0.83rem; color: #8a9aaa; line-height: 1.5; }
+
+    /* ── RWA category grid ───────────────────────────────────────────── */
+    .rwa-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    @media (max-width: 600px) { .rwa-grid { grid-template-columns: 1fr; } }
+
+    .rwa-card {
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .rwa-card-label {
+      font-size: 0.70rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    .rwa-card-title { font-size: 0.88rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.25rem; }
+    .rwa-card p { font-size: 0.78rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+
+    /* ── PayFi flow ──────────────────────────────────────────────────── */
+    .payfi-flow {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 1.25rem 0;
+      flex-wrap: wrap;
+    }
+    .payfi-node {
+      flex: 1;
+      min-width: 90px;
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      text-align: center;
+      border: 1px solid;
+    }
+    .payfi-node-label {
+      font-size: 0.63rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.1rem;
+    }
+    .payfi-node-title { font-size: 0.8rem; font-weight: 700; color: #e2e8f0; }
+    .payfi-node-sub   { font-size: 0.73rem; color: #8a9aaa; margin-top: 0.1rem; }
+    .payfi-arrow { color: #374151; font-size: 1.1rem; flex-shrink: 0; }
+
+    .nav-card--disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 10</span>
+  <button class="chapter-picker-btn" data-current="10" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background: linear-gradient(90deg, #38bdf8, #9cc9d1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; letter-spacing: 0.16em;">Part 3 • Markets & Infrastructure</div>
+          <h1>บทที่ 10: Stablecoins & RWA</h1>
+          <p class="lede">
+            คริปโตที่ไม่ผันผวน — Stablecoins คือสะพานระหว่างโลก TradFi กับ DeFi และ Real World Assets กำลังนำทรัพย์สินจริงมา tokenize บน blockchain บทนี้จะอธิบายกลไก ความเสี่ยง และโอกาสของทั้งสองโลกที่กำลัง converge
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          Stablecoins are the killer app that nobody talks about — they have more daily transaction volume than Visa, move value globally in seconds, and operate 24/7 without banks.
+          <cite>— ข้อสังเกตจาก crypto researchers, 2024</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_10_stablecoins_rwas.png" alt="Chapter 10 Stablecoins and RWA Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — Stablecoins คืออะไร
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 10 • Foundations</span>
+            <h2 class="book-page-title">Stablecoins คืออะไร และทำไมถึงสำคัญ</h2>
+          </div>
+          <div class="book-page-index">Stablecoins<br>Overview</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ปัญหาของ Volatility</h3>
+            <p>Bitcoin ขึ้น 10% ใน 1 วันฟังดูดี แต่ถ้าต้องจ่ายค่าเช่าด้วย BTC พรุ่งนี้? Stablecoin แก้ปัญหานี้ด้วยการ peg มูลค่าให้อยู่ที่ราคาคงที่ — ส่วนใหญ่ 1 USD</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Stablecoin คือ cryptocurrency ที่ออกแบบมาให้ราคาคงที่ มักจะอยู่ที่ $1 USD ผ่าน mechanism ต่างๆ ตั้งแต่การถือ USD จริงในธนาคาร ไปจนถึงการใช้ algorithm ควบคุม supply ความสำคัญของ stablecoin ไม่ได้อยู่แค่การ "เก็บมูลค่า" แต่มันคือ <strong>infrastructure</strong> ที่ทำให้ DeFi ทำงานได้จริง
+            </p>
+            <p>
+              ปัจจุบัน stablecoin มี daily transaction volume มากกว่า Visa — ตัวเลขนี้ไม่ใช่แค่ trading แต่รวมถึง cross-border payments, DeFi lending, payroll, และการซื้อขายสินทรัพย์ ใน 2024 Tether รายงาน net profit กว่า $13B จากการถือ US Treasuries — มากกว่า Goldman Sachs ในไตรมาสเดียวกัน
+            </p>
+          </div>
+
+          <div class="stable-type-grid">
+            <div class="stable-type-card" style="border-color: rgba(56,189,248,0.3);">
+              <div class="stable-type-label" style="color: #38bdf8;">Fiat-backed</div>
+              <div class="stable-type-title">Custodial</div>
+              <p>มี USD จริงใน bank 1:1 ตัวอย่าง: USDT, USDC, PYUSD ง่ายและเสถียรที่สุด แต่ต้องเชื่อใจ issuer</p>
+            </div>
+            <div class="stable-type-card" style="border-color: rgba(98,126,234,0.3);">
+              <div class="stable-type-label" style="color: #8da4f5;">Crypto-backed</div>
+              <div class="stable-type-title">Over-collateralized</div>
+              <p>วาง ETH เกิน 150% เพื่อ mint DAI ไม่ต้อง trust บุคคล แต่ capital-inefficient และมี liquidation risk</p>
+            </div>
+            <div class="stable-type-card" style="border-color: rgba(248,113,113,0.3);">
+              <div class="stable-type-label" style="color: #f87171;">Algorithmic</div>
+              <div class="stable-type-title">High Risk</div>
+              <p>ใช้ algorithm และ token incentive รักษา peg UST/Luna collapse 2022 พิสูจน์ความอันตรายของ model นี้</p>
+            </div>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Market Size 2025:</strong> Stablecoin market cap รวมกันเกิน $220 billion โดย USDT และ USDC ครองส่วนใหญ่กว่า 85% — ใหญ่กว่า GDP ของหลายประเทศ
+          </div>
+
+          <div class="table-shell" style="margin-top: 1.25rem;">
+            <div class="table-topbar">
+              <div>
+                <h3>Stablecoin Landscape</h3>
+                <p class="caption">ภาพรวมของ stablecoin สำคัญในตลาด</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Stablecoin</th>
+                    <th>ประเภท</th>
+                    <th>Market Cap</th>
+                    <th>Chain หลัก</th>
+                    <th>Risk</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong style="color:#38bdf8;">USDT</strong></td>
+                    <td>Fiat-backed</td>
+                    <td>~$140B</td>
+                    <td>Tron, ETH, SOL</td>
+                    <td style="color:#f5a623;">Counterparty</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#38bdf8;">USDC</strong></td>
+                    <td>Fiat-backed</td>
+                    <td>~$55B</td>
+                    <td>ETH, SOL, Base</td>
+                    <td style="color:#4ade80;">ต่ำ (regulated)</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#8da4f5;">DAI / USDS</strong></td>
+                    <td>Crypto-backed</td>
+                    <td>~$8B</td>
+                    <td>Ethereum</td>
+                    <td style="color:#f5a623;">Liquidation</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#f87171;">UST (ตาย)</strong></td>
+                    <td>Algorithmic</td>
+                    <td>$0</td>
+                    <td>Terra (ตาย)</td>
+                    <td style="color:#f87171;">Death spiral</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#4ade80;">USDY / OUSG</strong></td>
+                    <td>RWA-backed</td>
+                    <td>~$600M</td>
+                    <td>ETH, SOL</td>
+                    <td style="color:#4ade80;">ต่ำ (T-Bill)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Stablecoins · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — USDT vs USDC
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 10 • Fiat-Backed</span>
+            <h2 class="book-page-title">USDT vs USDC — สองราชาของตลาด</h2>
+          </div>
+          <div class="book-page-index">Stablecoins<br>Fiat-Backed</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Custodial หมายความว่าอะไร</h3>
+            <p>Fiat-backed stablecoin ทำงานง่ายมาก — issuer รับ USD แล้ว mint token 1:1 เงินจริงนอนอยู่ในบัญชีธนาคาร ความเสี่ยงหลักคือคุณต้องเชื่อใจ issuer ว่า reserve มีจริง และรัฐบาลไม่สั่งปิด</p>
+          </div>
+
+          <div class="issuer-pair">
+            <div class="issuer-card">
+              <div class="issuer-name" style="color:#38bdf8;">Tether (USDT)</div>
+              <div class="issuer-sub">ก่อตั้ง 2014 · ใหญ่ที่สุดในโลก</div>
+              <div class="issuer-row"><span>Reserve</span><span>T-bills, cash, commercial paper</span></div>
+              <div class="issuer-row"><span>Audit</span><span style="color:#f5a623;">Attestation บางส่วน</span></div>
+              <div class="issuer-row"><span>Blacklist</span><span>Freeze address ได้</span></div>
+              <div class="issuer-row"><span>Domicile</span><span>BVI, El Salvador</span></div>
+              <div class="issuer-row"><span>โปร่งใส</span><span style="color:#f5a623;">Medium</span></div>
+            </div>
+            <div class="issuer-card">
+              <div class="issuer-name" style="color:#4ade80;">Circle (USDC)</div>
+              <div class="issuer-sub">ก่อตั้ง 2018 · regulated มากกว่า</div>
+              <div class="issuer-row"><span>Reserve</span><span>US Treasury bills + cash เท่านั้น</span></div>
+              <div class="issuer-row"><span>Audit</span><span style="color:#4ade80;">Monthly attestation (Deloitte)</span></div>
+              <div class="issuer-row"><span>Blacklist</span><span>Freeze address ได้เช่นกัน</span></div>
+              <div class="issuer-row"><span>Domicile</span><span>USA · EU MiCA compliant</span></div>
+              <div class="issuer-row"><span>โปร่งใส</span><span style="color:#4ade80;">High</span></div>
+            </div>
+          </div>
+
+          <div class="callout warning-box">
+            <div class="callout-meta">
+              <span class="status-pill warning">Risk</span>
+              <span>สิ่งที่คนมักมองข้าม</span>
+            </div>
+            <h3 class="callout-title">ความเสี่ยงของ Fiat-backed ที่ต้องรู้</h3>
+            <div class="book-prose">
+              <p>
+                <strong>Bank Run:</strong> ถ้า reserve bank ล้ม stablecoin อาจ depeg — USDC depeg ไปที่ $0.87 ในมี.ค. 2023 เมื่อ Silicon Valley Bank (ที่ Circle ฝากเงิน $3.3B) ล้มสลาย ก่อนจะ recover หลัง FDIC เข้าค้ำประกัน
+              </p>
+              <p>
+                <strong>Censorship:</strong> Issuer สามารถ blacklist address ได้ตามคำสั่งรัฐ USDC และ USDT เคย freeze addresses ที่เกี่ยวข้องกับ Tornado Cash ตามคำสั่งของ OFAC
+              </p>
+            </div>
+          </div>
+
+          <div class="section-intro" style="margin-top: 1.25rem;">
+            <h3>Yield-Bearing Stablecoins — คลื่นลูกใหม่</h3>
+            <p>Stablecoin รุ่นใหม่จ่าย yield ให้ holder โดยตรง — ทำไมต้องเก็บ USDC ที่ไม่ให้ดอกเบี้ยเลย เมื่อมีทางเลือกที่ดีกว่า?</p>
+          </div>
+
+          <div class="stable-type-grid">
+            <div class="stable-type-card" style="border-color: rgba(56,189,248,0.3);">
+              <div class="stable-type-label" style="color: #38bdf8;">USDY — Ondo</div>
+              <div class="stable-type-title">~5% APY</div>
+              <p>Backed โดย US Treasury Bills yield ส่งตรงให้ holder โดยไม่ต้อง stake</p>
+            </div>
+            <div class="stable-type-card" style="border-color: rgba(98,126,234,0.3);">
+              <div class="stable-type-label" style="color: #8da4f5;">sUSDe — Ethena</div>
+              <div class="stable-type-title">~10–25% APY</div>
+              <p>Delta-neutral position บน ETH/BTC futures เก็บ funding rate เป็น yield สูงแต่ risky กว่า</p>
+            </div>
+            <div class="stable-type-card" style="border-color: rgba(74,222,128,0.3);">
+              <div class="stable-type-label" style="color: #4ade80;">USDM — Mountain</div>
+              <div class="stable-type-title">~5% APY</div>
+              <p>Rebasing token — balance เพิ่มขึ้นทุกวันอัตโนมัติ ไม่ต้อง stake หรือ claim</p>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Stablecoins · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — DAI & UST Collapse
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 10 • Decentralized</span>
+            <h2 class="book-page-title">DAI และบทเรียนจาก UST Collapse</h2>
+          </div>
+          <div class="book-page-index">Stablecoins<br>Crypto-backed</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>DAI — Over-Collateralized Stablecoin</h3>
+            <p>MakerDAO ให้ user วาง collateral เกินมูลค่า เช่น วาง ETH $150 เพื่อ mint DAI $100 (150% collateralization ratio) ถ้าราคา ETH ตกต่ำกว่า threshold — position ถูก liquidate อัตโนมัติ ไม่ต้องเชื่อใจใคร code ทำงานเอง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              DAI เป็น decentralized stablecoin ที่เสถียรที่สุดที่ผ่านมา ผ่านมาหลาย market crash รวมถึง "Black Thursday" มีนาคม 2020 ที่ ETH ตก 50%+ ใน 24 ชั่วโมง แม้ DAI จะ depeg ชั่วคราว แต่ system ยังทำงานได้ เพราะ collateral จริงยังอยู่ MakerDAO ยังปรับ model โดยรับ Real World Assets (US Treasuries) เป็น collateral เพิ่ม yield ให้ protocol
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Concept</span>
+              <span>Collateralization Ratio</span>
+            </div>
+            <h3 class="callout-title">ยิ่ง over-collateralized มาก ยิ่งปลอดภัย — แต่ยิ่ง inefficient</h3>
+            <p>วาง ETH $300 mint DAI ได้แค่ $100 หมายความว่าใช้เงิน $300 เพื่อได้ stablecoin $100 capital efficiency ต่ำมาก แต่แลกกับ security ที่สูง — ถ้า ETH ตก 50% collateral ยังมีมูลค่า $150 ซึ่งมากกว่า $100 DAI ที่ mint ไป</p>
+          </div>
+
+          <div class="section-intro" style="margin-top: 1.25rem;">
+            <h3>UST/Luna — Death Spiral ใน 72 ชั่วโมง</h3>
+            <p>พ.ค. 2022 — Terra Luna เครือข่ายมูลค่า $60 billion ล่มสลายเกือบ overnight บทเรียนที่ทั้งตลาดยังจำได้</p>
+          </div>
+
+          <div class="collapse-timeline">
+            <div class="collapse-event">
+              <div class="collapse-date">7 พ.ค.</div>
+              <div>
+                <div class="collapse-title">Large UST withdrawal จาก Anchor Protocol</div>
+                <div class="collapse-desc">มีการถอน UST $2B+ จาก Anchor ซึ่งจ่าย yield 20% APY — ทำให้ราคา UST เริ่ม slip ต่ำกว่า $1</div>
+              </div>
+            </div>
+            <div class="collapse-event">
+              <div class="collapse-date">9 พ.ค.</div>
+              <div>
+                <div class="collapse-title">Death spiral เริ่มต้น — Burn UST → Mint LUNA</div>
+                <div class="collapse-desc">Algorithm สั่ง mint LUNA เพิ่มเพื่อรักษา peg → supply LUNA เพิ่มมหาศาล → ราคา LUNA ตก → ความเชื่อมั่นหาย → คนรีบขาย UST → spiral ต่อไปเรื่อยๆ</div>
+              </div>
+            </div>
+            <div class="collapse-event">
+              <div class="collapse-date">10 พ.ค.</div>
+              <div>
+                <div class="collapse-title">Luna Foundation Guard ขาย BTC reserve $3.5B</div>
+                <div class="collapse-desc">พยายาม defend peg แต่ไม่พอ และยังกดราคา BTC ทั้งตลาดไปด้วย กระตุ้นให้ crypto อื่นๆ ตกตามกัน</div>
+              </div>
+            </div>
+            <div class="collapse-event">
+              <div class="collapse-date">13 พ.ค.</div>
+              <div>
+                <div class="collapse-title">UST = $0.10 · LUNA = $0.0001</div>
+                <div class="collapse-desc">สูญเสียมูลค่า $60B+ ใน 1 สัปดาห์ บทเรียน: algorithmic stablecoin ที่ไม่มี hard collateral คือ Ponzi ที่รอวันล่ม ยิ่ง yield สูงผิดปกติยิ่งต้องระวัง</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>กฎ:</strong> ถ้า stablecoin จ่าย yield สูงมากผิดปกติ (20%+ โดยไม่มี external revenue) ให้ถามว่า yield มาจากไหน — ถ้าตอบไม่ได้ คือ user คนหลังๆ กำลังจ่ายให้ user คนแรกๆ
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Stablecoins · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — Real World Assets
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 10 • Real World Assets</span>
+            <h2 class="book-page-title">Tokenizing ทรัพย์สินจริงบน Blockchain</h2>
+          </div>
+          <div class="book-page-index">Stablecoins<br>RWA</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>RWA คืออะไร</h3>
+            <p>Real World Assets (RWA) คือการนำทรัพย์สินจากโลกจริง — พันธบัตร, อสังหาริมทรัพย์, private credit, สินค้าโภคภัณฑ์ — มาสร้างเป็น token บน blockchain ทำให้ programmable, tradable 24/7 และ composable กับ DeFi</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              RWA ไม่ใช่แนวคิดใหม่ — แต่ใน 2024 มันกลายเป็น narrative ที่ใหญ่ที่สุดในคริปโต เมื่อ BlackRock ซึ่งเป็น asset manager ใหญ่ที่สุดในโลก ($10T+ AUM) เปิดตัว BUIDL Fund บน Ethereum — tokenized US Treasury fund สำหรับ institutional investors ภายใน 3 เดือน AUM แตะ $500M+ สัญญาณชัดว่า RWA ไม่ใช่ crypto experiment อีกต่อไป
+            </p>
+          </div>
+
+          <div class="rwa-grid">
+            <div class="rwa-card" style="border-color: rgba(56,189,248,0.25);">
+              <div class="rwa-card-label" style="color: #38bdf8;">US Treasuries</div>
+              <div class="rwa-card-title">Tokenized T-Bills</div>
+              <p>BlackRock BUIDL, Ondo OUSG, Franklin OnChain — yield 4–5%+ จาก US government bond บน blockchain ตลาดโต $4B+ ใน 2024</p>
+            </div>
+            <div class="rwa-card" style="border-color: rgba(74,222,128,0.25);">
+              <div class="rwa-card-label" style="color: #4ade80;">Real Estate</div>
+              <div class="rwa-card-title">Fractional Property</div>
+              <p>RealT tokenize บ้านในสหรัฐฯ ให้ถือสิทธิ์และรับค่าเช่า on-chain แบ่งเป็น token เล็กๆ ลงทุนได้ทุกคน</p>
+            </div>
+            <div class="rwa-card" style="border-color: rgba(245,166,35,0.25);">
+              <div class="rwa-card-label" style="color: #f5a623;">Private Credit</div>
+              <div class="rwa-card-title">On-chain Lending</div>
+              <p>Maple Finance, Goldfinch ให้กู้กับบริษัทจริงผ่าน smart contract yield สูงกว่า DeFi ทั่วไปแต่มี default risk</p>
+            </div>
+            <div class="rwa-card" style="border-color: rgba(156,201,209,0.25);">
+              <div class="rwa-card-label" style="color: #9cc9d1;">Commodities & Carbon</div>
+              <div class="rwa-card-title">Gold & Carbon Credits</div>
+              <p>PAXG tokenize ทองคำ 1:1 Toucan Protocol tokenize carbon credits ให้ trade บน DeFi ได้โดยตรง</p>
+            </div>
+          </div>
+
+          <div class="table-shell">
+            <div class="table-topbar">
+              <div>
+                <h3>RWA Protocols ที่สำคัญ</h3>
+                <p class="caption">ข้อมูล TVL โดยประมาณ ณ ปี 2025</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Protocol</th>
+                    <th>Asset Type</th>
+                    <th>TVL</th>
+                    <th>Chain</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong style="color:#38bdf8;">BlackRock BUIDL</strong></td>
+                    <td>US Treasuries</td>
+                    <td>$500M+</td>
+                    <td>Ethereum</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#38bdf8;">Ondo Finance</strong></td>
+                    <td>T-Bills, Bonds</td>
+                    <td>$700M+</td>
+                    <td>ETH, SOL</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#8da4f5;">Maple Finance</strong></td>
+                    <td>Private Credit</td>
+                    <td>$200M+</td>
+                    <td>Ethereum</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#4ade80;">RealT</strong></td>
+                    <td>Real Estate</td>
+                    <td>$100M+</td>
+                    <td>Ethereum</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#f5a623;">Paxos (PAXG)</strong></td>
+                    <td>Gold</td>
+                    <td>$700M+</td>
+                    <td>Ethereum</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Stablecoins · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — PayFi & อนาคต
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 10 • The Future</span>
+            <h2 class="book-page-title">PayFi, CBDC และอนาคตของ Stablecoins</h2>
+          </div>
+          <div class="book-page-index">Stablecoins<br>PayFi & Future</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>PayFi — เงินที่ทำงานขณะเดินทาง</h3>
+            <p>PayFi คือ intersection ระหว่าง stablecoin กับ payment infrastructure — ให้เงินสร้าง yield ขณะที่กำลัง settle เช่น ส่งเงินเดือน real-time ทุกวินาที หรือ cross-border payment ที่ถูกกว่า SWIFT 100x</p>
+          </div>
+
+          <div class="payfi-flow">
+            <div class="payfi-node" style="border-color: rgba(56,189,248,0.4); background: rgba(56,189,248,0.07);">
+              <div class="payfi-node-label" style="color:#38bdf8;">ผู้ส่ง</div>
+              <div class="payfi-node-title">Company</div>
+              <div class="payfi-node-sub">Thailand · THB</div>
+            </div>
+            <div class="payfi-arrow">›</div>
+            <div class="payfi-node" style="border-color: rgba(98,126,234,0.4); background: rgba(98,126,234,0.07);">
+              <div class="payfi-node-label" style="color:#8da4f5;">Rail</div>
+              <div class="payfi-node-title">USDC on Solana</div>
+              <div class="payfi-node-sub">&lt;1 วินาที · &lt;$0.01</div>
+            </div>
+            <div class="payfi-arrow">›</div>
+            <div class="payfi-node" style="border-color: rgba(245,166,35,0.4); background: rgba(245,166,35,0.06);">
+              <div class="payfi-node-label" style="color:#f5a623;">Yield</div>
+              <div class="payfi-node-title">Earn ~5% APY</div>
+              <div class="payfi-node-sub">ขณะ settle อยู่</div>
+            </div>
+            <div class="payfi-arrow">›</div>
+            <div class="payfi-node" style="border-color: rgba(74,222,128,0.4); background: rgba(74,222,128,0.07);">
+              <div class="payfi-node-label" style="color:#4ade80;">ผู้รับ</div>
+              <div class="payfi-node-title">Freelancer</div>
+              <div class="payfi-node-sub">Philippines · PHP</div>
+            </div>
+          </div>
+
+          <div class="table-shell">
+            <div class="table-topbar">
+              <div>
+                <h3>CBDC vs Stablecoin</h3>
+                <p class="caption">ไม่ใช่สิ่งเดียวกัน — trade-offs ต่างกันอย่างชัดเจน</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr><th>Feature</th><th>CBDC</th><th>Stablecoin (USDC)</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>ผู้ออก</strong></td>
+                    <td>ธนาคารกลาง (รัฐ)</td>
+                    <td>Private company (Circle)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>DeFi Composable</strong></td>
+                    <td style="color:#f87171;">ไม่ได้ (design ของรัฐ)</td>
+                    <td style="color:#4ade80;">ใช้ได้ทุก DeFi protocol</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Privacy</strong></td>
+                    <td style="color:#f87171;">รัฐเห็นทุก transaction</td>
+                    <td style="color:#f5a623;">Issuer เห็น · public chain</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Censorship</strong></td>
+                    <td style="color:#f87171;">รัฐ freeze ได้ทันที</td>
+                    <td style="color:#f5a623;">Issuer blacklist ได้</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Status</strong></td>
+                    <td>50+ ประเทศกำลัง pilot</td>
+                    <td>$220B+ in circulation แล้ว</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="callout concept-card" style="margin-top: 1.25rem;">
+            <div class="callout-meta">
+              <span class="term-chip">Regulatory Trend</span>
+              <span>2025–2026</span>
+            </div>
+            <h3 class="callout-title">Stablecoin กำลังถูก Regulate ทั่วโลก</h3>
+            <ol class="digest-list">
+              <li>
+                <span class="digest-index">🇺🇸</span>
+                <div>
+                  <strong>USA — GENIUS Act</strong>
+                  <p>กฎหมาย stablecoin กำลังผ่านสภา กำหนด reserve 1:1, audit บังคับ และ Federal Reserve oversight สำหรับ issuer ขนาดใหญ่</p>
+                </div>
+              </li>
+              <li>
+                <span class="digest-index">🇪🇺</span>
+                <div>
+                  <strong>EU — MiCA (บังคับใช้แล้ว)</strong>
+                  <p>Stablecoin issuer ต้องมี license ใน EU, reserve ในธนาคาร European และ limit transaction volume สำหรับ non-EUR stablecoins</p>
+                </div>
+              </li>
+              <li>
+                <span class="digest-index">🌏</span>
+                <div>
+                  <strong>Singapore & Hong Kong — Asia Hub</strong>
+                  <p>MAS Singapore ออก stablecoin framework ที่ชัดเจน ดึง issuer มา domicile ในภูมิภาค Asia กลายเป็น hub สำคัญ</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="callout pro-tip">
+            <div class="callout-meta">
+              <span class="status-pill success">Big Picture</span>
+              <span>ภาพรวม 2030</span>
+            </div>
+            <h3 class="callout-title">RWA คาดเติบโตเป็น $16 Trillion ภายใน 2030</h3>
+            <p>ตาม BCG และ 21Shares ตลาด tokenized assets จะโตจาก $4B ในปี 2024 เป็น $16T ภายใน 2030 — นำโดย bonds, real estate, และ private equity สถาบันการเงินใหญ่ทั้ง BlackRock, JPMorgan, Fidelity ล้วนมี tokenization project ดำเนินอยู่แล้ว</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Stablecoins · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-09-mev.html">
+          <span>Previous</span>
+          <strong>บทที่ 9: MEV — มูลค่าที่ซ่อนอยู่ใน Mempool</strong>
+        </a>
+        <a class="nav-card" href="./chapter-11-hyperliquid.html">
+          <span>Next</span>
+          <strong>บทที่ 11: Hyperliquid — DEX ที่เร็วที่สุด</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        canvas.style.display = 'none';
+        return;
+      }
+      const scene    = new THREE.Scene();
+      const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const COUNT   = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT * 3; i++) posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+
+      const makeTexture = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16,16,0,16,16,16);
+        g.addColorStop(0,   'rgba(56,189,248,1)');
+        g.addColorStop(0.2, 'rgba(56,189,248,0.8)');
+        g.addColorStop(1,   'rgba(56,189,248,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
+        const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+      };
+
+      const mat = new THREE.PointsMaterial({ size: 0.05, map: makeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 });
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh);
+      camera.position.z = 4;
+
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', e => { mouseX = e.clientX - window.innerWidth/2; mouseY = e.clientY - window.innerHeight/2; });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        mesh.rotation.y += 0.0008; mesh.rotation.x += 0.0004;
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) { const i3 = i*3; pos[i3+1] = posOrig[i3+1] + Math.sin(t*0.3 + posOrig[i3]) * 0.18; }
+        geo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    });
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 14: DePIN — โครงสร้างพื้นฐานกายภาพแบบกระจายอำนาจ • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="Helium, Hivemapper, Filecoin, Render Network — ทำความเข้าใจ DePIN (Decentralized Physical Infrastructure Networks) ฉบับสมบูรณ์สำหรับนักลงทุนไทย">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed; inset: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none; opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed; top: 20%; right: 5%;
+      width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(52,211,153,0.05) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page-shell { position: relative; z-index: 10; padding-top: 0; }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Accent: emerald #34d399 ───────────────────────────────────── */
+    .digest-list .digest-index {
+      background: rgba(52,211,153,0.15); color: #34d399;
+      border: 1px solid rgba(52,211,153,0.35);
+    }
+    .info-chip {
+      border-left: 3px solid rgba(52,211,153,0.45);
+      background: rgba(52,211,153,0.05) !important;
+    }
+    .info-chip strong { color: #34d399; }
+    .table-shell thead th {
+      background: rgba(52,211,153,0.1); color: #34d399;
+      border-bottom: 1px solid rgba(52,211,153,0.3);
+    }
+    .table-shell tbody tr:nth-child(odd) td  { background: rgba(52,211,153,0.02); }
+    .table-shell tbody tr:hover td           { background: rgba(52,211,153,0.06); }
+
+    /* ── Stats row ────────────────────────────────────────────────── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:580px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+    .stat-card {
+      border-radius: 10px; padding: 0.8rem 0.85rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(52,211,153,0.2);
+      text-align: center;
+    }
+    .stat-value { font-size: 1.25rem; font-weight: 800; color: #34d399; letter-spacing: -0.02em; line-height: 1.1; }
+    .stat-label { font-size: 0.70rem; color: #64748b; margin-top: 0.2rem; font-weight: 500; }
+
+    /* ── Flywheel Diagram ─────────────────────────────────────────── */
+    .flywheel-diagram {
+      border-radius: 14px; border: 1px solid rgba(52,211,153,0.18);
+      background: rgba(255,255,255,0.02); margin: 1.25rem 0; padding: 1.1rem;
+      overflow: hidden;
+    }
+    .flywheel-diagram-title {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: #34d399; margin-bottom: 0.9rem; text-align: center;
+    }
+    .flywheel-track {
+      display: flex; flex-wrap: wrap; gap: 0; align-items: center; justify-content: center;
+    }
+    .flywheel-step {
+      display: flex; align-items: center; gap: 0;
+    }
+    .flywheel-step-box {
+      border-radius: 8px; padding: 0.55rem 0.75rem;
+      background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.22);
+      text-align: center; min-width: 90px;
+    }
+    .flywheel-step-icon { font-size: 1rem; line-height: 1; margin-bottom: 0.2rem; }
+    .flywheel-step-label { font-size: 0.67rem; font-weight: 700; color: #e2e8f0; line-height: 1.3; }
+    .flywheel-step-sub   { font-size: 0.63rem; color: #64748b; margin-top: 0.12rem; line-height: 1.3; }
+    .flywheel-arrow {
+      font-size: 0.9rem; color: rgba(52,211,153,0.5); padding: 0 0.25rem; flex-shrink: 0;
+    }
+    @media (max-width:640px) {
+      .flywheel-track { flex-direction: column; align-items: flex-start; gap: 0; }
+      .flywheel-arrow { transform: rotate(90deg); padding: 0.1rem 0; align-self: center; }
+      .flywheel-step  { flex-direction: column; align-items: center; gap: 0; }
+      .flywheel-step-box { min-width: 160px; }
+    }
+
+    /* ── Arch Diagram ─────────────────────────────────────────────── */
+    .arch-diagram { border-radius: 12px; overflow: hidden; border: 1px solid rgba(52,211,153,0.15); margin: 1.25rem 0; }
+    .arch-layer { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.7rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .arch-layer:last-child { border-bottom: none; }
+    .arch-badge {
+      min-width: 90px; font-size: 0.63rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.22rem 0.5rem; border-radius: 5px; text-align: center; flex-shrink: 0; margin-top: 0.15rem;
+    }
+    .arch-body h4 { font-size: 0.83rem; font-weight: 700; color: #e2e8f0; margin: 0 0 0.12rem; }
+    .arch-body p  { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.45; }
+
+    /* ── Warning callout variant ──────────────────────────────────── */
+    .callout.warning-box {
+      border-left-color: rgba(248,113,113,0.55) !important;
+      background: rgba(248,113,113,0.05) !important;
+    }
+    .callout.warning-box strong { color: #f87171 !important; }
+
+    .nav-card--disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 14</span>
+  <button class="chapter-picker-btn" data-current="14" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background:linear-gradient(90deg,#34d399,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;letter-spacing:0.16em;">Part 4 • Ownership, Community &amp; Real-World Networks</div>
+          <h1>บทที่ 14: DePIN</h1>
+          <p class="lede">
+            โครงสร้างพื้นฐานในโลกกายภาพ — เสาสัญญาณ, กล้อง dashcam, hard drive, GPU — ถูก build และ operate โดยบริษัทยักษ์ใหญ่มาตลอด แต่ DePIN (Decentralized Physical Infrastructure Networks) กำลังพลิกโมเดลนี้ด้วยการใช้ token incentives ดึงดูดคนนับแสนมาช่วยกันสร้าง network ที่ไม่มีศูนย์กลาง Helium เปลี่ยนโฉมเครือข่าย wireless ด้วย hotspot กว่า 900,000 เครื่องใน 200 ประเทศ ขณะที่ Hivemapper แมปถนนกว่า 500 ล้านกิโลเมตรทั่วโลกด้วย dashcam ของผู้ขับขี่ธรรมดา และนี่คือก้าวแรกของการ disrupt อุตสาหกรรมโครงสร้างพื้นฐานมูลค่าหลายล้านล้านดอลลาร์
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          The most powerful infrastructure company of the future will be a protocol that owns nothing and coordinates everyone.
+          <cite>— Messari Research, DePIN Sector Report</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_14_depin.png" alt="Chapter 14 DePIN Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — What is DePIN
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 14 • Foundations</span>
+            <h2 class="book-page-title">DePIN คืออะไร — เมื่อ Protocol แทน Corporate Capital</h2>
+          </div>
+          <div class="book-page-index">DePIN<br>Overview</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>DePIN = Decentralized Physical Infrastructure Networks</h3>
+            <p>แทนที่จะให้บริษัทยักษ์ใหญ่ลงทุน build โครงสร้างพื้นฐานกายภาพเพียงฝ่ายเดียว DePIN ใช้ protocol + token incentives ประสานงานผู้คนนับแสนทั่วโลกให้ร่วมกัน deploy hardware และแบ่งรายได้จากการให้บริการจริง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ปัญหาพื้นฐานของโครงสร้างพื้นฐานแบบ centralized คือ <strong>ช่องว่างการลงทุน</strong> (infrastructure gap) AT&amp;T, AWS หรือ Google Maps ลงทุนที่ไหนก็ตามที่ <em>ทำกำไรได้</em> — เมือง dense ที่มี ROI ชัดเจน ชุมชนชนบท, พื้นที่ห่างไกล, หรือ market เล็กที่มี margin ต่ำถูกทิ้งไว้ข้างหลังอย่างเป็นระบบ ไม่ใช่เพราะเทคโนโลยีไม่พร้อม แต่เพราะโมเดลธุรกิจกำหนดให้ทรัพยากรไหลไปหาผลตอบแทนสูงสุดเท่านั้น
+            </p>
+            <p>
+              centralization trap ที่ตามมาคือ เมื่อทุกอย่างวิ่งผ่านผู้ให้บริการรายเดียว ก็เกิด single point of failure, rent-seeking, และ data monopoly — AWS ล่มทีเดียว internet ครึ่งโลกหยุด Google Maps เปลี่ยน pricing API หนึ่งครั้ง startup นับร้อยได้รับผลกระทบทันที ความเปราะบางเชิงโครงสร้างนี้ฝังอยู่ในทุก centralized infrastructure
+            </p>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-value">~900K</div>
+              <div class="stat-label">Helium hotspots ทั่วโลก</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">200+</div>
+              <div class="stat-label">ประเทศที่มี Helium coverage</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">500M+ km</div>
+              <div class="stat-label">ถนนที่ Hivemapper แมปแล้ว</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">~16M km</div>
+              <div class="stat-label">unique roads ภายในปี 2024</div>
+            </div>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Concept</span></div>
+            <h3 class="callout-title">The DePIN Inversion — การพลิกโมเดล Infrastructure</h3>
+            <p style="font-size:0.8rem;color:#c8d4e0;margin:0.5rem 0 0;line-height:1.7;">
+              แทนที่จะมีบริษัทเดียวออกแบบ fund และ build infrastructure จากบนลงล่าง DePIN protocol ประสานงาน <strong style="color:#34d399;">ผู้คนนับพัน</strong> ให้ deploy hardware ในพื้นที่ของตัวเอง โดยใช้ <strong style="color:#34d399;">token incentives</strong> แทน corporate capital budget ทุกคนที่ติดตั้ง Helium hotspot หรือ Hivemapper dashcam กลายเป็น "ผู้ถือหุ้น" ของเครือข่ายที่ตัวเองช่วยสร้าง ได้รับ token ตามสัดส่วน coverage และ usage จริง เหมือน outsource capex และ operations ไปยัง community ที่ aligned ด้วยผลประโยชน์ร่วมกัน
+            </p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong style="color:#34d399;">Helium</strong> เป็น archetype ของ DePIN wireless — ผู้คนซื้อ hotspot hardware ($500-700) ติดตั้งที่บ้านหรือออฟฟิศ แล้วรับ HNT token เป็นรางวัลสำหรับการให้บริการ LoRaWAN coverage แก่อุปกรณ์ IoT ในบริเวณใกล้เคียง network เติบโตจากศูนย์สู่ global coverage โดยบริษัท Helium Network (Nova Labs) ไม่ต้องลงทุนค่า CAPEX หลักเลย
+            </p>
+            <p>
+              <strong style="color:#34d399;">Hivemapper</strong> ทำเช่นเดียวกันกับ mapping data — ผู้ขับขี่ติดตั้ง dashcam พิเศษในรถ เมื่อขับผ่านถนนใดก็จะบันทึกภาพ 360° อัตโนมัติและอัปโหลดสู่ network ตอบแทนด้วย HONEY token ผลคือ real-time road map ที่ fresh กว่า Google Maps อย่างมาก ซึ่ง survey ทุก 1-3 ปีเท่านั้น
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">DePIN · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — The Economic Engine
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 14 • Economics</span>
+            <h2 class="book-page-title">Economic Engine — Token Emissions และ Flywheel</h2>
+          </div>
+          <div class="book-page-index">DePIN<br>Economics</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Cold-Start Problem และ Token Emissions ในฐานะ Solution</h3>
+            <p>ทุก network มีปัญหาไข่กับไก่: ถ้าไม่มี demand ทำไม operator ถึงจะ deploy hardware? แต่ถ้าไม่มี hardware demand ก็ไม่มาใช้ DePIN แก้ด้วย token emissions ที่จ่ายล่วงหน้าก่อนที่ revenue จริงจะมา</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Cold-start problem</strong> คือเหตุผลที่ network ใหม่เกือบทุกตัวล้มเหลว — ใน early stage network ยังไม่มี utility จริง ไม่มีผู้ใช้จ่ายเงินซื้อ service ดังนั้น operator ที่ deploy hardware ในวันแรกกำลัง <em>ขาดทุนทางการเงิน</em> หากดูแค่ cash flow ระยะสั้น token emissions คือ <strong>temporary subsidy</strong> ที่ทำให้ early deployment มี positive ROI แม้ยังไม่มีรายได้จาก usage — เปรียบได้ว่า early operators คือ "angel investors ที่ถูกจ่ายด้วย equity-like tokens" แทน cash พวกเขารับความเสี่ยงว่า network จะเติบโตและ token จะมีมูลค่า
+            </p>
+          </div>
+
+          <div class="flywheel-diagram">
+            <div class="flywheel-diagram-title">DePIN Economic Flywheel</div>
+            <div class="flywheel-track">
+              <div class="flywheel-step">
+                <div class="flywheel-step-box">
+                  <div class="flywheel-step-icon">🔧</div>
+                  <div class="flywheel-step-label">Hardware<br>Deployment</div>
+                  <div class="flywheel-step-sub">Operators ติดตั้ง</div>
+                </div>
+              </div>
+              <div class="flywheel-arrow">→</div>
+              <div class="flywheel-step">
+                <div class="flywheel-step-box">
+                  <div class="flywheel-step-icon">🪙</div>
+                  <div class="flywheel-step-label">Token<br>Emissions</div>
+                  <div class="flywheel-step-sub">Subsidy ระยะแรก</div>
+                </div>
+              </div>
+              <div class="flywheel-arrow">→</div>
+              <div class="flywheel-step">
+                <div class="flywheel-step-box">
+                  <div class="flywheel-step-icon">💰</div>
+                  <div class="flywheel-step-label">Operator<br>Revenue</div>
+                  <div class="flywheel-step-sub">ROI เป็นบวก</div>
+                </div>
+              </div>
+              <div class="flywheel-arrow">→</div>
+              <div class="flywheel-step">
+                <div class="flywheel-step-box">
+                  <div class="flywheel-step-icon">📡</div>
+                  <div class="flywheel-step-label">Network<br>Growth</div>
+                  <div class="flywheel-step-sub">Coverage เพิ่ม</div>
+                </div>
+              </div>
+              <div class="flywheel-arrow">→</div>
+              <div class="flywheel-step">
+                <div class="flywheel-step-box">
+                  <div class="flywheel-step-icon">📈</div>
+                  <div class="flywheel-step-label">Real<br>Demand</div>
+                  <div class="flywheel-step-sub">Users จ่ายเงินจริง</div>
+                </div>
+              </div>
+              <div class="flywheel-arrow">→</div>
+              <div class="flywheel-step">
+                <div class="flywheel-step-box" style="border-color:rgba(52,211,153,0.45);background:rgba(52,211,153,0.1);">
+                  <div class="flywheel-step-icon">🔥</div>
+                  <div class="flywheel-step-label">Token<br>Burns</div>
+                  <div class="flywheel-step-sub">Supply ลด</div>
+                </div>
+              </div>
+              <div class="flywheel-arrow">→</div>
+              <div class="flywheel-step">
+                <div class="flywheel-step-box" style="border-color:rgba(52,211,153,0.45);background:rgba(52,211,153,0.1);">
+                  <div class="flywheel-step-icon">🚀</div>
+                  <div class="flywheel-step-label">Token<br>Value</div>
+                  <div class="flywheel-step-sub">Rewards มีค่ามากขึ้น</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Emission schedule mechanics</strong> ออกแบบคล้าย Bitcoin ที่มี halving schedule — Helium เดิมลด HNT rewards ทุก 2 ปีเพื่อ create scarcity ตามเวลา ขณะที่หลาย DePIN protocols ใช้ <strong>geographic multipliers</strong> สำหรับพื้นที่ที่ underserved เช่น ชนบทหรือประเทศกำลังพัฒนา ให้ rewards สูงกว่าเพื่อดึง deployment ไปยังที่ที่ต้องการ Helium ใช้ <strong>hexagonal grid</strong> (Uber's H3 system) แบ่งพื้นที่ทั่วโลกเป็น hex เท่า ๆ กัน เพื่อป้องกัน operator หลายรายแย่งกัน claim rewards ในพื้นที่เดียวกัน
+            </p>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Helium Burn-and-Mint Equilibrium:</strong> Helium ใช้ <em>Data Credits (DC)</em> — token พิเศษที่โอนไม่ได้และมีราคาคงที่ในดอลลาร์ ($0.00001 ต่อ 24 bytes) DC สร้างขึ้นโดยการ burn HNT โดยตรง ทุกครั้งที่อุปกรณ์ IoT ส่ง data packet ผ่าน network DC จะถูก consume ทำให้ HNT supply ถูก retire ไปอย่างถาวร กลไกนี้ทำให้ usage จริงสร้าง deflationary pressure ต่อ HNT supply โดยอัตโนมัติ ยิ่ง network ยุ่ง ยิ่ง burn มาก
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Transition to real revenue</strong> คือ holy grail ของ DePIN ทุกตัว — ระยะยาว network ต้องพิสูจน์ว่า usage-driven burns มากกว่า emissions มิฉะนั้น token supply เพิ่มขึ้นเรื่อย ๆ และ value ก็ dilute ไปเรื่อย ๆ เหมือน Ponzi scheme ที่ delay ผลลัพธ์ด้วย hype เครือข่ายที่ข้ามเส้นนี้ได้สำเร็จจะมี business model ที่แท้จริง — เครือข่ายที่ไม่ข้ามจะพึ่งราคา token เป็นสิ่งดึงดูดเดียวอย่างไม่รู้จบ
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">DePIN · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — The Trust Machine: Proof Systems
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 14 • Verification</span>
+            <h2 class="book-page-title">The Trust Machine — Proof Systems สำหรับ Physical Work</h2>
+          </div>
+          <div class="book-page-index">DePIN<br>Proofs</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ตรวจสอบ Work จาก Anonymous Actors อย่างไร</h3>
+            <p>ปัญหาพื้นฐานของ DePIN คือ protocol ต้องแน่ใจว่า operator ทำงานจริง โดยไม่ต้องไว้วางใจใคร ระบบพิสูจน์ที่ต่างกันสำหรับ physical work ต่าง ๆ</p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Concept</span></div>
+            <h3 class="callout-title">3 บทบาทหลักใน DePIN Verification</h3>
+            <ul style="margin:0.5rem 0 0;padding-left:1.2rem;font-size:0.8rem;color:#c8d4e0;line-height:1.7;">
+              <li><strong style="color:#34d399;">Service Providers</strong> — Hardware operators ที่ deploy อุปกรณ์จริง ๆ (Helium hotspot, Hivemapper camera, Filecoin storage miner) รับ token ตามงานที่ทำได้รับการ verify</li>
+              <li><strong style="color:#10b981;">Validators &amp; Oracles</strong> — ยืนยันว่า work ที่อ้างว่าทำจริง ๆ ถูกต้อง ใน wireless network คือ neighbor hotspot ที่เป็น witness ใน storage คือ smart contract ที่ run cryptographic challenge</li>
+              <li><strong style="color:#6ee7b7;">Challenge Generators + Witness Networks</strong> — สุ่ม challenge hotspot ให้พิสูจน์ตัวเองและเก็บ witness responses ป้องกัน Sybil attacks</li>
+            </ul>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Proof-of-Coverage (PoC)</strong> สำหรับ wireless network — Helium ใช้ระบบที่ hotspot หนึ่งส่ง "beacon" (สัญญาณวิทยุ challenge) และ hotspot เพื่อนบ้านที่ได้ยินสัญญาณจะ submit "witness receipt" กลับมา protocol ตรวจสอบว่า signal strength, timing, และ geographic relationship สอดคล้องกับฟิสิกส์จริง challenge frequency ได้รับการ tune เพื่อให้ยากต่อการ pre-plan response hexagonal grid H3 ป้องกัน co-located gaming โดยจำกัดว่า hotspot ในพื้นที่เดียวกันจะ witness กันเองได้น้อยลง
+            </p>
+            <p>
+              <strong>Proof-of-Spacetime (PoSt)</strong> สำหรับ storage — Filecoin ใช้สองชั้น: <em>Proof-of-Replication (PoRep)</em> พิสูจน์ว่า miner เข้ารหัสและเก็บ copy เฉพาะของ client's data ไว้จริง (ไม่ใช่ share กับ miner อื่น) และ <em>Window Proof-of-Spacetime (WindowPoSt)</em> ที่ sample storage แบบ probabilistic ทุกวัน กำหนดว่า miner ต้อง prove sectors ที่รับผิดชอบทุก 24 ชั่วโมง ถ้า miss proof หรือ fail จะถูก slash (ยึด collateral)
+            </p>
+          </div>
+
+          <div class="callout warning-box callout">
+            <div class="callout-meta"><span class="term-chip" style="background:rgba(248,113,113,0.15);color:#f87171;border-color:rgba(248,113,113,0.3);">Warning</span></div>
+            <h3 class="callout-title" style="color:#f87171;">GPS Spoofing Attacks — ภัยคุกคามต่อ Location Proofs</h3>
+            <p style="font-size:0.8rem;color:#c8d4e0;margin:0.5rem 0 0;line-height:1.7;">
+              การปลอม GPS location คือวิธีโกง proof-of-coverage ที่ง่ายที่สุด — virtual hotspot หลายพันตัวในพื้นที่เดียวกันสามารถสร้าง fake witness receipts ให้กันและกัน ป้องกันด้วย 3 แนวทาง: <strong style="color:#f87171;">(1) Secure Element Hardware</strong> — ชิป cryptographic ที่ forge ได้ยาก sign ทุก transmission, <strong style="color:#f87171;">(2) AI Behavioral Analysis</strong> (Hivemapper) — ตรวจ pattern ที่ผิดปกติเช่น dashcam ที่แมปถนนเดิม 50 ครั้งต่อวัน, <strong style="color:#f87171;">(3) Stake-Based Deterrence</strong> — operator ต้อง stake tokens เป็น collateral เพื่อ align incentives ไม่ให้โกงเพราะเสียมากกว่าได้
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">DePIN · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — Categories: Storage & Compute Networks
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 14 • Storage &amp; Compute</span>
+            <h2 class="book-page-title">DePIN ประเภท Storage และ Compute Networks</h2>
+          </div>
+          <div class="book-page-index">DePIN<br>Storage</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>DePIN กับ Data Persistence และ Computation</h3>
+            <p>นอกจาก wireless และ mapping DePIN ยังครอบคลุม storage และ compute — สองอุตสาหกรรมที่ AWS/Google ครองมูลค่ารวมหลายแสนล้านดอลลาร์</p>
+          </div>
+
+          <div class="table-shell">
+            <div class="table-topbar"><div>
+              <h3>Storage Network Comparison</h3>
+              <p class="caption">สามโมเดลหลักที่แตกต่างกันด้านราคา ความถาวร และ use case</p>
+            </div></div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Network</th>
+                    <th>โมเดล</th>
+                    <th>การกำหนดราคา</th>
+                    <th>ความถาวร</th>
+                    <th>Best For</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong style="color:#34d399;">Filecoin</strong></td>
+                    <td>Open marketplace</td>
+                    <td>ต่อรองได้ ~$1-5/TB/ปี</td>
+                    <td>ตามสัญญา (renewable)</td>
+                    <td>Large-scale, cost-sensitive</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#10b981;">Arweave</strong></td>
+                    <td>Endowment model</td>
+                    <td>จ่ายครั้งเดียว ~$3-10/GB</td>
+                    <td>Permanent (permaweb)</td>
+                    <td>Archival, NFT metadata</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#6ee7b7;">IPFS</strong></td>
+                    <td>Content-addressed P2P</td>
+                    <td>ฟรี (ต้องการ pinning)</td>
+                    <td>ขึ้นกับ pinning service</td>
+                    <td>Content distribution layer</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong style="color:#34d399;">Filecoin</strong> สร้าง open marketplace สำหรับ storage — storage miners เสนอ capacity ด้วยราคาที่แข่งขันกัน clients เลือก deal ที่ต้องการและ seal data ลงไป ราคาตลาดอยู่ที่ประมาณ <strong>$1-5 ต่อ TB ต่อปี</strong> เทียบกับ AWS S3 ที่ $20-30 ต่อ TB ต่อปี ประหยัดได้ 10-20x IPFS ทำหน้าที่เป็น addressing layer โดย content-addressed hash ทำให้ verify ได้ว่าข้อมูลที่ได้รับถูกต้องโดยไม่ต้องไว้วางใจ server
+            </p>
+            <p>
+              <strong style="color:#34d399;">Arweave</strong> ใช้ endowment model ที่แตกต่างกันโดยสิ้นเชิง — จ่ายครั้งเดียว protocol เก็บ endowment ไว้และใช้ดอกผลจาก endowment จ่าย miners ไปเรื่อย ๆ ตลอดกาล เรียกว่า "permaweb" เหมาะสำหรับ archival ที่ต้องการ guaranteed permanence เช่น NFT metadata, historical records, หรือ censorship-resistant publications ต้นทุน single-digit dollars per GB สำหรับ permanent storage
+            </p>
+            <p>
+              <strong style="color:#34d399;">Render Network</strong> รวบรวม idle GPU ทั่วโลกมาให้บริการ render ภาพ 3D และ AI workloads ผู้ถือ GPU ที่ไม่ได้ใช้ส่ง compute power เข้า network รับ RENDER token เป็นค่าตอบแทน ยืนยัน work ด้วย <em>Proof-of-Render</em> — render job ส่งออกให้ multiple nodes แล้วเปรียบเทียบ output hash ตรวจจับ fraud <strong style="color:#34d399;">Akash Network</strong> ทำสิ่งเดียวกันกับ cloud compute โดยรวม — reverse-auction marketplace ที่ cloud providers เสนอราคา compute ให้ต่ำที่สุด ประหยัดได้ 80-90% เทียบกับ AWS/GCP สำหรับ workloads ที่เหมาะสม
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">DePIN · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — Reality Check
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 14 • Reality Check</span>
+            <h2 class="book-page-title">Reality Check — ช่องว่างระหว่าง Promise กับ Reality</h2>
+          </div>
+          <div class="book-page-index">DePIN<br>Risks</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>DePIN ยังห่างไกลจาก Enterprise-Grade Infrastructure</h3>
+            <p>ทุก DePIN project มีเรื่องราวที่น่าตื่นเต้นในกระดาษ แต่ความจริงในปัจจุบันมี gap ขนาดใหญ่ระหว่าง potential กับ actual reliability ที่ enterprise และผู้บริโภคทั่วไปต้องการ</p>
+          </div>
+
+          <div class="callout warning-box callout">
+            <div class="callout-meta"><span class="term-chip" style="background:rgba(248,113,113,0.15);color:#f87171;border-color:rgba(248,113,113,0.3);">Challenge</span></div>
+            <h3 class="callout-title" style="color:#f87171;">Reliability Gap — Amateur Operators vs Enterprise SLA</h3>
+            <p style="font-size:0.8rem;color:#c8d4e0;margin:0.5rem 0 0;line-height:1.7;">
+              AWS, Azure ให้ <strong style="color:#f87171;">99.999% uptime</strong> (Five Nines — down ได้ไม่เกิน 5 นาทีต่อปี) พร้อม SLA ที่ชดเชยเงินถ้า breach DePIN ประกอบด้วย amateur operators ที่อาจ unplug เมื่อไหรก็ได้ ไฟดับ internet ล่ม หรือแค่ตัดสินใจเลิกทำ สำหรับ mission-critical workloads เช่น financial systems, healthcare, หรือ real-time communication DePIN ในปัจจุบัน <em>ยังไม่เหมาะสม</em> ใช้งานได้ดีที่สุดกับ fault-tolerant, non-critical workloads ที่รับ downtime บางส่วนได้
+            </p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Security vulnerabilities</strong> ใน DePIN มีสองมิติที่ unique: นอกจาก smart contract exploits แบบ DeFi ทั่วไปแล้ว ยังมี <em>hardware attack surface</em> ที่ DeFi ไม่มี firmware vulnerabilities, supply chain attacks (ชิปที่ compromise ตั้งแต่โรงงาน), และการที่ hardware standardization หมายความว่า vulnerability เดียวอาจกระทบ nodes นับหมื่นพร้อมกัน ต่างจาก software ที่ patch ได้ภายในชั่วโมง hardware fixes ต้องใช้เวลา physical replacement
+            </p>
+            <p>
+              <strong>Regulatory complexity</strong> คืออุปสรรคที่มองข้ามไม่ได้ — Helium ต้องขอใบอนุญาต spectrum ในแต่ละประเทศ (สหรัฐใช้ FCC, EU ใช้ ETSI) ซึ่ง process แตกต่างกันโดยสิ้นเชิง Hivemapper เผชิญกฎ GDPR ว่า dashcam recordings ที่เห็นใบหน้าคนหรือทะเบียนรถจะต้อง blur ก่อน upload token ของ DePIN เสี่ยง classify ว่าเป็น security ต่างจาก DeFi protocol ที่ pure software DePIN infrastructure มีราก physical ในเขตอำนาจศาลที่มีกฎหมายที่ชัดเจนและ enforce ได้
+            </p>
+          </div>
+
+          <div class="callout warning-box callout">
+            <div class="callout-meta"><span class="term-chip" style="background:rgba(248,113,113,0.15);color:#f87171;border-color:rgba(248,113,113,0.3);">Risk</span></div>
+            <h3 class="callout-title" style="color:#f87171;">Market Cyclicality — Reflexive Unwind</h3>
+            <p style="font-size:0.8rem;color:#c8d4e0;margin:0.5rem 0 0;line-height:1.7;">
+              Token crash สามารถทำให้ rewards ตกต่ำกว่าต้นทุน operation ข้ามคืน เมื่อเกิดขึ้น operators จะ unplug hardware → network service แย่ลง → demand ลด → token ราคาต่ำลงอีก → operators เพิ่มเติม unplug วนซ้ำ reflexive unwind นี้เป็นความเสี่ยงเชิงโครงสร้างที่ทุก DePIN มีตราบใดที่ rewards ยังผูกกับราคา token แทน real revenue
+            </p>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Key Long-Term Metric ที่ต้องติดตาม:</strong> เมื่อใดที่ <em>usage-driven burns เริ่มมากกว่า emissions</em> นั่นคือสัญญาณที่ network ข้าม threshold ไปสู่ sustainable business model คนส่วนใหญ่ใน industry ยอมรับว่า networks ส่วนใหญ่ในปัจจุบัน <strong>ยังไม่ข้าม threshold นี้</strong> และยังคง token-price dependent อยู่
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">DePIN · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 06 — Categories Comparison & Key Takeaways
+           ============================================================ -->
+      <article class="book-page" id="page-06">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 14 • Summary</span>
+            <h2 class="book-page-title">ตารางเปรียบเทียบ DePIN และสรุปสิ่งที่ต้องจำ</h2>
+          </div>
+          <div class="book-page-index">DePIN<br>Takeaways</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ภาพรวม DePIN ทั้ง 4 หมวดหมู่</h3>
+            <p>แต่ละหมวดหมู่ของ DePIN มีระบบพิสูจน์ โมเดลรายได้ และความท้าทายที่แตกต่างกัน — การเข้าใจ mapping นี้ช่วยประเมิน projects ได้เร็วขึ้น</p>
+          </div>
+
+          <div class="table-shell">
+            <div class="table-topbar"><div>
+              <h3>DePIN Category Comparison</h3>
+              <p class="caption">4 หมวดหมู่หลักที่มีพื้นฐานเทคนิคและ economics แตกต่างกัน</p>
+            </div></div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>หมวดหมู่</th>
+                    <th>ตัวอย่าง</th>
+                    <th>Proof System</th>
+                    <th>Revenue Model</th>
+                    <th>Biggest Challenge</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong style="color:#34d399;">Wireless Coverage</strong></td>
+                    <td>Helium, XNET</td>
+                    <td>Proof-of-Coverage (radio witness)</td>
+                    <td>Data Credits burn</td>
+                    <td>Spectrum licensing, device adoption</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#10b981;">Mapping</strong></td>
+                    <td>Hivemapper, FOAM</td>
+                    <td>AI verification + GPS secure element</td>
+                    <td>API subscriptions, map data sales</td>
+                    <td>Data quality, GPS spoofing</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#6ee7b7;">Storage</strong></td>
+                    <td>Filecoin, Arweave</td>
+                    <td>PoRep + WindowPoSt / VDF proofs</td>
+                    <td>Storage deal fees</td>
+                    <td>Price vs AWS, retrieval speed</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#a7f3d0;">Compute</strong></td>
+                    <td>Render, Akash</td>
+                    <td>Redundant output hash comparison</td>
+                    <td>GPU/CPU compute fees</td>
+                    <td>Reliability SLA, cold start</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Path forward</strong> สำหรับ DePIN ต้องการความก้าวหน้า 4 ด้านพร้อมกัน: <strong style="color:#34d399;">(1) Enterprise-grade SLAs</strong> — ผ่าน decentralized SLA enforcement และ insurance mechanisms ที่ชดเชย downtime อัตโนมัติ, <strong style="color:#34d399;">(2) Better governance</strong> — parameter tuning ที่ responsive ต่อ market conditions โดยไม่ต้องรอ slow DAO votes, <strong style="color:#34d399;">(3) Regulatory clarity</strong> — engagement เชิงรุกกับ regulators ก่อนถูก regulate แบบไม่เหมาะสม, <strong style="color:#34d399;">(4) Frictionless UX</strong> สำหรับ demand side — ปัจจุบัน การซื้อ Filecoin storage ยังซับซ้อนกว่า drag-and-drop ไปที่ Dropbox มาก ถ้าจะ mainstream ได้ user ต้องไม่รู้ว่ากำลังใช้ crypto
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Key Takeaways</span></div>
+            <h3 class="callout-title">สรุปสิ่งที่ต้องจำจาก DePIN</h3>
+            <ol class="digest-list">
+              <li>
+                <span class="digest-index">01</span>
+                <div><strong>DePIN พลิกโมเดล infrastructure deployment</strong>
+                <p>Protocol + token incentives แทน corporate capex ทำให้ coverage ครอบคลุมพื้นที่ที่บริษัทใหญ่ไม่สนใจลงทุน เพราะทุกคนสามารถเป็น infrastructure operator ได้</p></div>
+              </li>
+              <li>
+                <span class="digest-index">02</span>
+                <div><strong>Token emissions แก้ cold-start แต่ไม่ใช่ business model</strong>
+                <p>Emissions คือ subsidy ชั่วคราวเพื่อดึง early adopters network ที่ดีต้องมีแผนชัดเจนว่าจะ transition ไปสู่ usage-driven revenue เมื่อไหรและอย่างไร</p></div>
+              </li>
+              <li>
+                <span class="digest-index">03</span>
+                <div><strong>แต่ละหมวดหมู่ต้องการ proof system ที่แตกต่างกัน</strong>
+                <p>PoC สำหรับ wireless, PoSt สำหรับ storage, deterministic output comparison สำหรับ compute ไม่มี one-size-fits-all — proof quality กำหนด economic integrity ของ network</p></div>
+              </li>
+              <li>
+                <span class="digest-index">04</span>
+                <div><strong>Reliability, Security, Regulation = 3 อุปสรรคหลักสู่ mainstream</strong>
+                <p>Amateur operators, hardware attack surface, และ physical jurisdiction ทำให้ DePIN complex กว่า pure DeFi ทุก project ที่ break through ต้องแก้ทั้ง 3 ด้านพร้อมกัน</p></div>
+              </li>
+              <li>
+                <span class="digest-index">05</span>
+                <div><strong>Sustainability = burns เกิน emissions — ส่วนใหญ่ยังไม่ถึง</strong>
+                <p>Metric นี้คือความแตกต่างระหว่าง real business กับ tokenomics shell Networks ที่ยังพึ่ง token price เพื่อดึง operators มีความเสี่ยง reflexive unwind เมื่อ bear market</p></div>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">DePIN · Page 06</span>
+          <span class="page-number">06</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-13-governance-tokenomics.html">
+          <span>Previous</span>
+          <strong>บทที่ 13: DAO &amp; Governance — Tokenomics</strong>
+        </a>
+        <a class="nav-card" href="./chapter-15-prediction-markets.html">
+          <span>Next</span>
+          <strong>บทที่ 15: Prediction Markets — ตลาดที่เดิมพันกับความจริง</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="../assets/js/mermaid-init.js"></script>
+  <script>
+    // Particle background
+    (function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W, H, dots;
+      const COLOR = '52,211,153';
+      const COUNT = 55;
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function init() {
+        dots = Array.from({ length: COUNT }, () => ({
+          x: Math.random() * W, y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.5 + 0.5,
+        }));
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        dots.forEach(d => {
+          d.x += d.vx; d.y += d.vy;
+          if (d.x < 0 || d.x > W) d.vx *= -1;
+          if (d.y < 0 || d.y > H) d.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${COLOR},0.55)`;
+          ctx.fill();
+        });
+        dots.forEach((a, i) => {
+          for (let j = i + 1; j < dots.length; j++) {
+            const b = dots[j];
+            const dist = Math.hypot(a.x - b.x, a.y - b.y);
+            if (dist < 110) {
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = `rgba(${COLOR},${0.12 * (1 - dist / 110)})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
+        });
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', () => { resize(); init(); });
+      resize(); init(); draw();
+    })();
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

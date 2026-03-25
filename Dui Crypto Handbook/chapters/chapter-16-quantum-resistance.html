@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 16: Quantum Resistance — อนาคตที่ทดสอบรากฐานของ Blockchain • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="Shor's Algorithm, NIST PQC 2024, P2PK exposure, Ethereum/Solana migration strategies — ทำความเข้าใจภัยคุกคามควอนตัมต่อ blockchain ฉบับสมบูรณ์สำหรับนักลงทุนไทย">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed; inset: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none; opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed; top: 20%; right: 5%;
+      width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(251,146,60,0.05) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page-shell { position: relative; z-index: 10; padding-top: 0; }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Accent: orange #fb923c ───────────────────────────────────── */
+    .digest-list .digest-index {
+      background: rgba(251,146,60,0.15); color: #fb923c;
+      border: 1px solid rgba(251,146,60,0.35);
+    }
+    .info-chip {
+      border-left: 3px solid rgba(251,146,60,0.45);
+      background: rgba(251,146,60,0.05) !important;
+    }
+    .info-chip strong { color: #fb923c; }
+    .table-shell thead th {
+      background: rgba(251,146,60,0.1); color: #fb923c;
+      border-bottom: 1px solid rgba(251,146,60,0.3);
+    }
+    .table-shell tbody tr:nth-child(odd) td  { background: rgba(251,146,60,0.02); }
+    .table-shell tbody tr:hover td           { background: rgba(251,146,60,0.06); }
+
+    /* ── Stats row ────────────────────────────────────────────────── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:580px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+    .stat-card {
+      border-radius: 10px; padding: 0.8rem 0.85rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(251,146,60,0.2);
+      text-align: center;
+    }
+    .stat-value { font-size: 1.25rem; font-weight: 800; color: #fb923c; letter-spacing: -0.02em; line-height: 1.1; }
+    .stat-label { font-size: 0.70rem; color: #64748b; margin-top: 0.2rem; font-weight: 500; }
+
+    /* ── Vulnerability table ─────────────────────────────────────── */
+    .vuln-badge {
+      display: inline-block; font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.18rem 0.45rem; border-radius: 4px;
+    }
+    .vuln-high   { background: rgba(248,113,113,0.18); color: #f87171; }
+    .vuln-medium { background: rgba(251,191,36,0.18); color: #fbbf24; }
+    .vuln-low    { background: rgba(74,222,128,0.18); color: #4ade80; }
+    .vuln-none   { background: rgba(100,116,139,0.18); color: #94a3b8; }
+
+    /* ── Chain migration grid ─────────────────────────────────────── */
+    .chain-migration {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 0.75rem; margin: 1.25rem 0;
+    }
+    @media (max-width:680px) { .chain-migration { grid-template-columns: 1fr; } }
+
+    .migration-card {
+      border-radius: 12px; padding: 1rem 1.1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex; flex-direction: column; gap: 0.55rem;
+    }
+    .migration-card-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    }
+    .migration-chain-name {
+      font-size: 0.95rem; font-weight: 800; color: #e2e8f0;
+    }
+    .migration-status {
+      font-size: 0.63rem; font-weight: 700; letter-spacing: 0.09em;
+      text-transform: uppercase; padding: 0.18rem 0.5rem; border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .status-research   { background: rgba(251,146,60,0.15); color: #fb923c; }
+    .status-draft      { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .status-prototype  { background: rgba(74,222,128,0.15); color: #4ade80; }
+
+    .migration-card h4 {
+      font-size: 0.82rem; font-weight: 700; color: #94a3b8;
+      margin: 0; text-transform: uppercase; letter-spacing: 0.09em;
+    }
+    .migration-card ul {
+      margin: 0; padding-left: 1.1rem;
+      font-size: 0.83rem; color: #8a9aaa; line-height: 1.65;
+    }
+    .migration-card li { margin-bottom: 0.2rem; }
+    .migration-card strong { color: #e2e8f0; }
+
+    /* ── Timeline uncertainty ─────────────────────────────────────── */
+    .timeline-uncertainty {
+      border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08); margin: 1.25rem 0;
+    }
+    .timeline-row {
+      display: flex; align-items: flex-start; gap: 0.85rem;
+      padding: 0.8rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .timeline-row:last-child { border-bottom: none; }
+    .timeline-scenario {
+      min-width: 100px; font-size: 0.73rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; flex-shrink: 0;
+      padding-top: 0.1rem;
+    }
+    .scenario-optimistic { color: #4ade80; }
+    .scenario-base       { color: #fbbf24; }
+    .scenario-aggressive { color: #f87171; }
+    .timeline-row-body h4 {
+      font-size: 0.82rem; font-weight: 700; color: #e2e8f0; margin: 0 0 0.15rem;
+    }
+    .timeline-row-body p {
+      font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.5;
+    }
+    .timeline-row:nth-child(odd)  { background: rgba(251,146,60,0.03); }
+    .timeline-row:nth-child(even) { background: rgba(255,255,255,0.015); }
+
+    /* ── Arch diagram (chain exposure layers) ─────────────────────── */
+    .arch-diagram { border-radius: 12px; overflow: hidden; border: 1px solid rgba(251,146,60,0.15); margin: 1.25rem 0; }
+    .arch-layer { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.7rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .arch-layer:last-child { border-bottom: none; }
+    .arch-badge {
+      min-width: 88px; font-size: 0.63rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.22rem 0.5rem; border-radius: 5px; text-align: center; flex-shrink: 0; margin-top: 0.15rem;
+    }
+    .arch-body h4 { font-size: 0.83rem; font-weight: 700; color: #e2e8f0; margin: 0 0 0.12rem; }
+    .arch-body p  { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.45; }
+
+    .nav-card--disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 16</span>
+  <button class="chapter-picker-btn" data-current="16" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background:linear-gradient(90deg,#fb923c,#f97316);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;letter-spacing:0.16em;">Part 5 • Advanced Themes &amp; Future Risks</div>
+          <h1>บทที่ 16: Quantum Resistance</h1>
+          <p class="lede">
+            คอมพิวเตอร์ควอนตัม (quantum computer) ไม่ใช่แค่เครื่องคำนวณที่เร็วขึ้น — มันใช้หลักการทางฟิสิกส์ควอนตัมเพื่อทำลายระบบ cryptography ที่ปกป้อง blockchain ได้ในเวลาอันสั้น อัลกอริทึม Shor's Algorithm สามารถถอดรหัส public key cryptography อย่าง RSA และ ECDSA ที่ Bitcoin และ Ethereum ใช้ได้อย่างสมบูรณ์ หาก quantum computer ทรงพลังพอเกิดขึ้นโดยไม่มีการเตรียมรับมือ ทรัพย์สินดิจิทัลมูลค่ามหาศาลที่ซ่อนอยู่หลัง exposed public keys ทั่วทุก blockchain ล้วนเสี่ยงถูกขโมยได้
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          Quantum computers are a storm on the horizon — not close enough to drench us yet, but anyone who isn't already building an ark is taking a gamble with civilization's financial infrastructure.
+          <cite>— ภัยคุกคามที่ไม่รีบร้อน แต่ไม่หยุดเคลื่อนที่</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_16_quantum_resistance.png" alt="Chapter 16 Quantum Resistance Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — Quantum Computing Basics
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 16 • Foundations</span>
+            <h2 class="book-page-title">คอมพิวเตอร์ควอนตัมคืออะไร และทำไมถึงน่ากลัว</h2>
+          </div>
+          <div class="book-page-index">Quantum<br>Basics</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>คอมพิวเตอร์ควอนตัม (quantum computer) คืออะไร</h3>
+            <p>คอมพิวเตอร์ทั่วไปทำงานด้วย bit ที่เป็น 0 หรือ 1 เท่านั้น คอมพิวเตอร์ควอนตัมใช้ qubit ที่อยู่ใน "superposition" — เป็นทั้ง 0 และ 1 พร้อมกันได้ในเวลาเดียว ทำให้สามารถทดสอบคำตอบเป็นจำนวนมหาศาลพร้อมกันแทนที่จะทำทีละอัน</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ลองนึกภาพการค้นหาเข็มในกองหญ้า คอมพิวเตอร์ทั่วไปต้องหยิบฟาง<strong>ทีละอัน</strong>ตรวจดูว่าใช่เข็มไหม ซึ่งอาจใช้เวลานับล้านปีสำหรับกองหญ้าที่ใหญ่พอ คอมพิวเตอร์ควอนตัมทำงานเหมือน<strong>แม่เหล็กที่ดึงดูดเข็มโดยตรง</strong> ไม่ต้องค้นทีละอัน ด้วยเหตุนี้มันจึงทำลายระบบ cryptography ที่อาศัยความยากในการค้นหาคำตอบที่ถูกต้องในจำนวนมหาศาลได้
+            </p>
+            <p>
+              <strong style="color:#fb923c;">Quantum-resistant cryptography</strong> (การเข้ารหัสที่ทนทานต่อควอนตัม) คือการ "เปลี่ยนเข็มเป็นอะลูมิเนียม" — ใช้ระบบที่แม่เหล็กควอนตัมไม่มีประสิทธิภาพในการโจมตี เช่น lattice-based cryptography ที่อาศัยปัญหาทางคณิตศาสตร์ที่ยากแม้แต่กับควอนตัม
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Concept</span></div>
+            <h3 class="callout-title">Shor's Algorithm vs Grover's Algorithm — ภัยสองระดับ</h3>
+            <ul style="margin:0.5rem 0 0;padding-left:1.2rem;font-size:0.8rem;color:#c8d4e0;line-height:1.7;">
+              <li><strong style="color:#f87171;">Shor's Algorithm</strong> — ทำลาย public key cryptography อย่าง RSA, ECC (Elliptic Curve Cryptography) และ ECDSA ที่ Bitcoin/Ethereum ใช้ได้<em>อย่างสมบูรณ์</em> ถ้ามี qubit เพียงพอ สามารถคำนวณ private key จาก public key ได้ในเวลาสั้น — ภัยคุกคามระดับทำลายล้าง</li>
+              <li><strong style="color:#fbbf24;">Grover's Algorithm</strong> — เร่งความเร็วการค้นหา hash functions และ symmetric keys ได้แค่<em>ครึ่งหนึ่ง</em> (กล่าวคือ AES-128 ลดลงเป็น security เทียบเท่า AES-64) แก้ได้ง่าย ๆ ด้วยการใช้ key ที่ยาวขึ้น — ภัยคุกคามที่จัดการได้</li>
+            </ul>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-value">~1M</div>
+              <div class="stat-label">Qubits ที่ต้องการทำลาย RSA-2048</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">2024</div>
+              <div class="stat-label">NIST ประกาศ PQC standards ชุดแรก</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">2030s</div>
+              <div class="stat-label">ภัยคุกคามควอนตัมที่เป็นจริงเร็วที่สุด</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">$100B+</div>
+              <div class="stat-label">BTC ใน exposed legacy addresses</div>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Timeline ของปัญหา:</strong> ในเดือนตุลาคม 2025 Google ประกาศ milestone "quantum echoes" ที่ก้าวหน้าอีกขั้น แต่การทำลาย cryptography ระดับ Bitcoin ต้องการ <strong style="color:#fb923c;">qubits ที่เสถียรกว่า 1 ล้านตัว</strong> — ในขณะที่ระบบปัจจุบันยังห่างไกลจากตัวเลขนั้นมาก Vitalik Buterin ผู้ก่อตั้ง Ethereum เคยคาดการณ์ว่าภัยคุกคามควอนตัมที่แท้จริงอาจมาถึงก่อนปี 2028 ในสถานการณ์เร่ง
+            </p>
+            <p>
+              ความเสี่ยงที่น่ากังวลที่สุดในปัจจุบันไม่ใช่การโจมตีทันที แต่คือ <strong>"steal now, decrypt later"</strong> (ขโมยตอนนี้ แล้วถอดรหัสทีหลัง) — ผู้ไม่ประสงค์ดีบันทึก encrypted transactions ทุกวันนี้ไว้ รอจนกว่าจะมีควอนตัมทรงพลังพอแล้วค่อยถอดรหัสย้อนหลัง ทำให้ข้อมูลที่ถูก expose แล้วในวันนี้มีความเสี่ยงในอนาคต
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Quantum Resistance · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — What's Vulnerable in Blockchain
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 16 • Vulnerability Analysis</span>
+            <h2 class="book-page-title">อะไรใน Blockchain ที่ Quantum ทำลายได้จริง</h2>
+          </div>
+          <div class="book-page-index">Quantum<br>Vulnerability</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ไม่ใช่ทุกอย่างที่ quantum ทำลายได้เท่ากัน</h3>
+            <p>ความเสี่ยงหลักอยู่ที่ public key exposure ไม่ใช่ตัว blockchain เอง ระบบที่ซ่อน public key ได้จนกว่าจำเป็นต้อง spend มีความปลอดภัยสูงกว่ามาก</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ปัญหาหลักของ quantum คือ <strong>public key exposure</strong> — การเปิดเผย public key ต่อสาธารณะ ลองนึกถึง Bitcoin address เหมือนตู้เซฟที่มี combination lock ในระบบปัจจุบัน ตัวเลข combination (public key) <strong>ไม่ถูกเปิดเผยจนกว่าคุณจะเปิดตู้เซฟ</strong> (ใช้จ่าย Bitcoin ออกจาก address นั้น) ตราบใดที่ไม่เคย spend ออก public key ยังซ่อนอยู่
+            </p>
+            <p>
+              แต่เมื่อไรก็ตามที่คุณ <em>เปิดตู้เซฟ</em> (ส่ง transaction ออก) ทุกคนที่บันทึก combination ไว้สามารถรอจนมีควอนตัมทรงพลังพอแล้วใช้มันเข้าตู้เซฟในอนาคต ถ้ายังเหลือ Bitcoin ใน address นั้นหลังจาก spend ครั้งแรก ยอดคงเหลือนั้นเสี่ยงต่อการถูกขโมยในยุคควอนตัม
+            </p>
+          </div>
+
+          <div class="table-shell">
+            <div class="table-topbar"><div>
+              <h3>Vulnerability Matrix — ประเภท Address กับความเสี่ยง Quantum</h3>
+              <p class="caption">ระดับความเสี่ยงและกลยุทธ์การป้องกันสำหรับแต่ละประเภท</p>
+            </div></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Address Type</th><th>Public Key Exposed?</th><th>Quantum Risk</th><th>กลยุทธ์ป้องกัน</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><strong style="color:#fb923c;">P2PK (Bitcoin 2009–2012)</strong></td>
+                    <td>ใช่ — ตลอดเวลา</td>
+                    <td><span class="vuln-badge vuln-high">สูงมาก</span></td>
+                    <td>ย้ายออกทันที</td>
+                  </tr>
+                  <tr>
+                    <td><strong>P2PKH / SegWit (Bitcoin)</strong></td>
+                    <td>เฉพาะตอน spend</td>
+                    <td><span class="vuln-badge vuln-medium">กลาง</span></td>
+                    <td>ไม่ reuse address</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Taproot (Bitcoin)</strong></td>
+                    <td>Key-path spend เปิด public key</td>
+                    <td><span class="vuln-badge vuln-medium">กลาง</span></td>
+                    <td>ใช้ script-path แทน key-path</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Ethereum EOA</strong></td>
+                    <td>ทุก transaction ที่ส่งออก</td>
+                    <td><span class="vuln-badge vuln-high">สูง</span></td>
+                    <td>ย้ายไป fresh address หรือ smart contract wallet</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Smart Contract Wallets</strong></td>
+                    <td>ขึ้นอยู่กับ implementation</td>
+                    <td><span class="vuln-badge vuln-low">ต่ำ</span></td>
+                    <td>Upgrade signature scheme ได้</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Hash Functions / AES</strong></td>
+                    <td>ไม่มี public key</td>
+                    <td><span class="vuln-badge vuln-none">น้อยมาก</span></td>
+                    <td>ใช้ key ยาวขึ้น (Grover ลด security ครึ่งหนึ่ง)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong style="color:#fb923c;">P2PK outputs (ปี 2009–2012)</strong> คือความเสี่ยงเฉียบพลันที่สุดใน Bitcoin — มี Bitcoin มากกว่า <strong>1.5 ล้าน BTC</strong> (ประมาณ 8.7% ของ total supply) อยู่ใน outputs ประเภทนี้ที่เปิดเผย public key โดยตรงตลอดเวลา เหรียญที่ Satoshi Nakamoto ขุดในยุคแรกส่วนใหญ่อยู่ในรูปแบบนี้
+            </p>
+          </div>
+
+          <div class="callout" style="border-left:3px solid rgba(248,113,113,0.5);background:rgba(248,113,113,0.05);padding:1rem 1.2rem;border-radius:0 8px 8px 0;margin:1rem 0;">
+            <strong style="color:#f87171;">Address Reuse — ช่องโหว่ที่ผู้ใช้สร้างเอง:</strong>
+            <p style="font-size:0.8rem;color:#c8d4e0;margin:0.5rem 0 0;line-height:1.65;">การ spend ครั้งแรกจาก P2PKH address เปิดเผย public key ถาวร ยอดเงินที่เหลือหลัง spend ครั้งแรกใน address เดิม = <strong style="color:#f87171;">เป้าหมายที่ถูกทำเครื่องหมายล่วงหน้าสำหรับการโจมตีควอนตัมในอนาคต</strong> ผู้ใช้รุ่นแรก ๆ ที่เก็บยอดเงินจำนวนมากใน address เดิมหลายปีหลัง spend ครั้งแรกมีความเสี่ยงสูงที่สุด</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Quantum Resistance · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — Chain-Specific Exposure
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 16 • Chain Analysis</span>
+            <h2 class="book-page-title">Bitcoin, Ethereum, Solana — ความเสี่ยงที่ต่างกัน</h2>
+          </div>
+          <div class="book-page-index">Quantum<br>Per Chain</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Bitcoin, Ethereum, Solana แต่ละเครือข่ายเผชิญ risk ต่างกัน</h3>
+            <p>โครงสร้าง address และวิธีที่ public key ถูกจัดการแตกต่างกันอย่างมีนัยสำคัญในแต่ละ blockchain ทำให้บางเครือข่ายเสี่ยงโดยธรรมชาติมากกว่า</p>
+          </div>
+
+          <div class="callout info-chip" style="margin-bottom:1rem;">
+            <strong>Bitcoin — ระบบที่ออกแบบมาดีที่สุด แต่มีจุดอ่อนจากอดีต:</strong>
+            <p style="font-size:0.8rem;color:#c8d4e0;margin:0.5rem 0 0;line-height:1.65;">P2PKH และ SegWit addresses ปกป้อง public key โดยซ่อนไว้ใน hash จนกว่าจะ spend ครั้งแรก Taproot ใช้ key-path spend ที่ฝัง public key ไว้ใน output โดยตรง (จัดอยู่ในกลุ่ม exposed) <strong>กุญแจสำคัญ: ไม่ reuse address เด็ดขาด</strong> — เมื่อ spend ครั้งแรกแล้ว ยอดคงเหลือใน address เดิมถือว่าเสี่ยง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong style="color:#fb923c;">Ethereum</strong> มีปัญหาโครงสร้างที่แตกต่าง — ทุก EOA (Externally Owned Account หรือ wallet ธรรมดา) ที่เคยส่ง transaction ออกจะ<strong>เปิดเผย public key อย่างถาวร</strong> บนสาธารณะ addresses ที่ไม่เคยส่ง transaction เลย (เฉพาะรับ) ยังได้รับการปกป้องอยู่ แต่ทันทีที่ส่ง transaction ครั้งแรก ทุก deposit ในอนาคตไปยัง address เดิมถือว่าเสี่ยง Smart contract wallets เป็นทางออก เพราะสามารถ upgrade signature scheme ได้โดยไม่ต้องเปลี่ยน address — แต่ PQ signatures ยังมีค่า gas แพงมากในปัจจุบัน
+            </p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong style="color:#f87171;">Solana คือ blockchain ที่ exposed มากที่สุด</strong> ในบรรดาเครือข่ายหลัก — Solana addresses เปิดเผย public key ตั้งแต่<em>วินาทีที่สร้าง address</em> โดยไม่ต้องรอ transaction แม้แต่รายการเดียว ทุก Solana address ที่มีอยู่บนโลกนี้ถือว่า "ถูกทำเครื่องหมาย" สำหรับผู้โจมตีควอนตัมในอนาคตแล้ว ในเดือนธันวาคม 2025 Solana Foundation ร่วมกับ Project Eleven เปิดตัว testnet prototype ที่ใช้ PQ signatures — เป็นการทดสอบความเป็นไปได้ระยะแรก
+            </p>
+          </div>
+
+          <div class="arch-diagram">
+            <div class="arch-layer" style="background:rgba(251,146,60,0.06);">
+              <div class="arch-badge" style="background:rgba(74,222,128,0.15);color:#4ade80;">Bitcoin</div>
+              <div class="arch-body">
+                <h4>ปกป้องได้ถ้าไม่ reuse address</h4>
+                <p>P2PKH/SegWit ซ่อน public key จนกว่าจะ spend • P2PK legacy (2009–2012) exposed ตลอดเวลา • Taproot key-path = exposed ทันทีที่ spend • 1.5M+ BTC ใน P2PK ต้องย้ายโดยเร่งด่วน</p>
+              </div>
+            </div>
+            <div class="arch-layer">
+              <div class="arch-badge" style="background:rgba(251,191,36,0.15);color:#fbbf24;">Ethereum</div>
+              <div class="arch-body">
+                <h4>Exposed ทุก address ที่เคยส่ง transaction</h4>
+                <p>EOA ที่ไม่เคยส่งออก = ยังปลอดภัย • ส่งครั้งแรกแล้ว = public key เปิดถาวร • Smart contract wallets upgrade ได้ • PQ gas cost สูงมากในปัจจุบัน</p>
+              </div>
+            </div>
+            <div class="arch-layer" style="background:rgba(248,113,113,0.04);">
+              <div class="arch-badge" style="background:rgba(248,113,113,0.15);color:#f87171;">Solana</div>
+              <div class="arch-body">
+                <h4>ทุก address exposed ตั้งแต่สร้าง</h4>
+                <p>Solana address = public key โดยตรง ไม่มีการซ่อนใด ๆ • ทุก address ที่มีอยู่ถือว่าถูก expose แล้ว • Project Eleven testnet Dec 2025 = ก้าวแรกในการแก้ปัญหา</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout" style="border-left:3px solid rgba(248,113,113,0.5);background:rgba(248,113,113,0.05);padding:1rem 1.2rem;border-radius:0 8px 8px 0;margin:1rem 0;">
+            <strong style="color:#f87171;">Multi-sig Migration Challenge:</strong>
+            <p style="font-size:0.8rem;color:#c8d4e0;margin:0.5rem 0 0;line-height:1.65;">Wallet แบบ multi-signature ต้องการให้ผู้ถือ key ทุกคน<strong>อัปเกรดพร้อมกัน</strong>ในคราวเดียว ถ้าคนหนึ่งหายไปหรือล่าช้า กระบวนการทั้งหมดหยุดชะงัก Social recovery wallets (ที่ใช้ trusted guardians แทน raw keys) เสนอเส้นทางทางเลือกที่ยืดหยุ่นกว่าสำหรับ migration</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Quantum Resistance · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — The Quantum Rush Scenario
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 16 • Threat Scenarios</span>
+            <h2 class="book-page-title">Quantum Rush — สถานการณ์ที่ทุกคนต้องรู้</h2>
+          </div>
+          <div class="book-page-index">Quantum<br>Rush</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ถ้า quantum computer ทรงพลังพอเกิดขึ้นพรุ่งนี้...</h3>
+            <p>สถานการณ์ "quantum rush" หรือการแข่งขันล้างบาง crypto wallets ไม่ใช่แค่ sci-fi — มันคือ game theory ที่มีเงินเดิมพันนับแสนล้านดอลลาร์</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ลองจินตนาการวันที่ quantum computer ทรงพลังพอปรากฏขึ้นโดยฉับพลัน ผู้ไม่ประสงค์ดีจะ<strong>แห่กันเข้าโจมตี exposed addresses</strong> แบบ P2PK legacy Bitcoin และ Ethereum EOAs ที่เคย spend ออกมาแล้ว ในขณะเดียวกัน นักพัฒนาเครือข่ายและ community จะต้องแข่งกับเวลาเพื่อ deploy <strong>emergency forks</strong> ที่อาจ freeze หรือ migrate assets ก่อนที่จะถูกขโมย <strong>ผลลัพธ์ขึ้นอยู่กับว่าฝ่ายไหนเคลื่อนไหวได้เร็วกว่า</strong>
+            </p>
+          </div>
+
+          <div class="callout" style="border-left:3px solid rgba(248,113,113,0.5);background:rgba(248,113,113,0.05);padding:1rem 1.2rem;border-radius:0 8px 8px 0;margin:1rem 0;">
+            <strong style="color:#f87171;">Nation-State Competition &amp; Strategic Race:</strong>
+            <p style="font-size:0.8rem;color:#c8d4e0;margin:0.5rem 0 0;line-height:1.65;">รางวัลสำหรับใครก็ตามที่บรรลุ quantum supremacy ที่แท้จริงก่อนคือ<strong>การเข้าถึง $100B+ ใน Bitcoin legacy addresses</strong> ก่อนที่เครือข่ายจะป้องกันได้ การพัฒนา quantum computing จึงไม่ใช่แค่การแข่งขันทางวิทยาศาสตร์อีกต่อไป แต่คือ<strong>ยุทธศาสตร์ระดับชาติ</strong> มีรายงานว่ารัฐบาลหลายประเทศลงทุนอย่างหนักในโปรแกรม quantum computing ลับ โดยมีแรงจูงใจทางการเงินที่ชัดเจนเกินกว่าจะมองข้าม</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ปัญหา <strong>"dormant wallet"</strong> หรือ wallet ที่หยุดนิ่งเป็นเวลานาน เพิ่มความซับซ้อนอีกชั้น — ไม่มีใครรู้แน่ว่า wallet ที่ไม่ active มานานคือ <em>coins ที่สูญหาย</em> (ทำกุญแจหาย) หรือ <em>coins ที่ยังมีเจ้าของ</em> (เจ้าของยังมีชีวิตแต่ไม่ได้ใช้งาน) ถ้า quantum computer สามารถ "กู้คืน" Bitcoin ที่คิดว่าสูญหายได้ จะเกิด <strong>supply shock ที่ไม่คาดคิด</strong> — Bitcoin จำนวนมหาศาลที่ตลาดคิดว่าตายไปแล้วกลับมาเดินได้ ส่งผลต่อ pricing และก่อให้เกิดข้อพิพาทความเป็นเจ้าของที่ซับซ้อน
+            </p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Bitcoin community กำลังถกเถียงโดยไม่ได้ข้อสรุป</strong>เกี่ยวกับ 3 ตัวเลือกหลัก: (1) <strong>เผา vulnerable coins</strong> ทิ้งก่อน quantum มาถึง เพื่อป้องกันไม่ให้ถูกขโมย — ถูกต่อต้านหนักในฐานะ "confiscation" ที่ละเมิดหลัก property rights (2) <strong>ไม่ทำอะไร</strong> ปล่อยให้ผู้โจมตีควอนตัมอ้างสิทธิ์ตาม "finder's keepers" (3) <strong>กำหนด transaction limits</strong> หรือ freeze addresses เสี่ยงระหว่างช่วงเปลี่ยนผ่าน — แต่ละตัวเลือกเผชิญการต่อต้านทางปรัชญา "your keys, your coins" อย่างแข็งกร้าว
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Quantum Resistance · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — Migration Strategies
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 16 • Solutions</span>
+            <h2 class="book-page-title">Migration Strategies — แต่ละ Blockchain เตรียมรับมืออย่างไร</h2>
+          </div>
+          <div class="book-page-index">Quantum<br>Migration</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>วิธีที่แต่ละ blockchain กำลังเตรียมรับมือ</h3>
+            <p>ไม่มี blockchain ใดมี solution ที่สมบูรณ์แล้ว ทุกเครือข่ายอยู่ในขั้นตอนต่างกัน ตั้งแต่การถกเถียงเชิงทฤษฎีไปจนถึง testnet prototype ที่ใช้งานได้จริง</p>
+          </div>
+
+          <div class="chain-migration">
+            <div class="migration-card">
+              <div class="migration-card-header">
+                <span class="migration-chain-name">Bitcoin</span>
+                <span class="migration-status status-research">Research</span>
+              </div>
+              <h4>แนวทางหลัก</h4>
+              <ul>
+                <li><strong>BIP-360</strong> — เสนอ address type ใหม่ที่ quantum-resistant สำหรับ Bitcoin โดยตรง</li>
+                <li><strong>Jameson Lopp's QBIP</strong> — แผน deprecation แบบ multi-year ที่ค่อย ๆ ลดการใช้ ECDSA</li>
+                <li><strong>Agustín Cruz's QRAMP</strong> — กำหนด hard deadline สำหรับ migration (ถกเถียงรุนแรง)</li>
+                <li>ปัญหา: Taproot architecture ต้องแก้ไข key-path spend ที่เปิดเผย public key</li>
+                <li>ยังไม่มี consensus ในชุมชน</li>
+              </ul>
+            </div>
+            <div class="migration-card">
+              <div class="migration-card-header">
+                <span class="migration-chain-name">Ethereum</span>
+                <span class="migration-status status-draft">Draft EIP</span>
+              </div>
+              <h4>แนวทางหลัก</h4>
+              <ul>
+                <li><strong>EIP-7932</strong> — รองรับ multiple signature algorithms ใน protocol</li>
+                <li><strong>Account Abstraction</strong> (ERC-4337) — เปิดทางให้ PQ wallets เข้ามาใน ecosystem</li>
+                <li>Trade-off: signature ปัจจุบัน 65 bytes vs PQ alternatives <strong>2,400–29,000 bytes</strong> (37x–450x ใหญ่กว่า)</li>
+                <li>Hash-based + STARK-style replacements สำหรับ KZG commitments</li>
+                <li>Emergency recovery fork protocol ถ้า quantum มาก่อนแผน</li>
+              </ul>
+            </div>
+            <div class="migration-card">
+              <div class="migration-card-header">
+                <span class="migration-chain-name">Solana</span>
+                <span class="migration-status status-prototype">Prototype</span>
+              </div>
+              <h4>แนวทางหลัก</h4>
+              <ul>
+                <li>ทุก address exposed แต่ต้นทาง ทำให้ต้องเร่งพัฒนามากที่สุด</li>
+                <li><strong>Project Eleven testnet (ธ.ค. 2025)</strong> — prototype PQ signatures ใน Solana network จริง</li>
+                <li>Opt-in hash-based one-time signatures เป็น stopgap ระยะสั้น</li>
+                <li>กำลัง stress-test throughput, compute, และ fee impact ของ PQ signatures</li>
+                <li>ความท้าทาย: Solana's high-speed architecture vs. cost ของ PQ signatures ที่สูงกว่ามาก</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="callout info-chip" style="margin-top:1rem;">
+            <strong>NIST 2024 PQC Standards — มาตรฐานสากลใหม่:</strong>
+            <p style="font-size:0.8rem;color:#c8d4e0;margin:0.5rem 0 0;line-height:1.65;">สถาบัน NIST (National Institute of Standards and Technology) ของสหรัฐฯ ประกาศมาตรฐาน Post-Quantum Cryptography (PQC) ชุดแรก 3 อัลกอริทึมในปี 2024 ประกอบด้วย: <strong>ML-KEM</strong> (lattice-based, ประสิทธิภาพสูง), <strong>ML-DSA</strong> (lattice-based signatures), และ <strong>SLH-DSA</strong> (hash-based, ความมั่นใจด้านความปลอดภัยสูงสุด) ความหลากหลายของอัลกอริทึมคือ "ประกันภัย" — ถ้า approach หนึ่งถูกทำลายโดยการค้นพบทางคณิตศาสตร์ใหม่ ยังมีทางเลือกอื่นเหลืออยู่</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Quantum Resistance · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 06 — Best Practices & Key Takeaways
+           ============================================================ -->
+      <article class="book-page" id="page-06">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 16 • Action Plan</span>
+            <h2 class="book-page-title">Best Practices &amp; Key Takeaways</h2>
+          </div>
+          <div class="book-page-index">Quantum<br>Action</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>สิ่งที่ผู้ใช้ทำได้วันนี้</h3>
+            <p>ไม่ต้องรอให้ quantum computer มาถึงถึงจะเริ่มป้องกัน หลายอย่างทำได้ทันทีด้วยนิสัยการใช้งาน blockchain ที่ดีขึ้น</p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Best Practices</span></div>
+            <h3 class="callout-title">สิ่งที่ทำได้ทันทีแยกตาม Blockchain</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-top:0.75rem;">
+              <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:0.8rem;">
+                <div style="font-size:0.75rem;font-weight:800;color:#fb923c;margin-bottom:0.45rem;">Bitcoin</div>
+                <ul style="margin:0;padding-left:1rem;font-size:0.74rem;color:#8a9aaa;line-height:1.65;">
+                  <li>ไม่ reuse addresses เด็ดขาด</li>
+                  <li>Spend UTXOs ทั้งหมดไปยัง fresh address</li>
+                  <li>หลีกเลี่ยง Taproot ถ้ากังวลเรื่องควอนตัม</li>
+                  <li>ย้าย P2PK legacy coins ออกทันที</li>
+                </ul>
+              </div>
+              <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:0.8rem;">
+                <div style="font-size:0.75rem;font-weight:800;color:#fb923c;margin-bottom:0.45rem;">Ethereum</div>
+                <ul style="margin:0;padding-left:1rem;font-size:0.74rem;color:#8a9aaa;line-height:1.65;">
+                  <li>ย้ายไป fresh address หลัง transaction แรก</li>
+                  <li>ใช้ smart contract wallet (upgrade ได้)</li>
+                  <li>ไม่ฝากจำนวนมากใน address ที่เคย send</li>
+                  <li>ติดตาม EIP-7932 progress</li>
+                </ul>
+              </div>
+              <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:0.8rem;">
+                <div style="font-size:0.75rem;font-weight:800;color:#fb923c;margin-bottom:0.45rem;">Solana</div>
+                <ul style="margin:0;padding-left:1rem;font-size:0.74rem;color:#8a9aaa;line-height:1.65;">
+                  <li>ทุก address exposed อยู่แล้ว — ติดตาม migration tools</li>
+                  <li>ใช้ hardware wallet (ป้องกัน phishing)</li>
+                  <li>ไม่ใช้ account เดิมสำหรับหลายวัตถุประสงค์</li>
+                  <li>ติดตาม Project Eleven updates</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-uncertainty">
+            <div class="timeline-row">
+              <div class="timeline-scenario scenario-optimistic">Optimistic<br>Early 2030s</div>
+              <div class="timeline-row-body">
+                <h4>Quantum threat arrives earlier than expected</h4>
+                <p>Milestones: logical qubit stability พัฒนาเร็ว, error correction breakthrough ในปี 2027–2028 — blockchain communities ต้องเร่ง migration อย่างเร่งด่วน แต่ยังมีเวลา 5+ ปีหาก deploy ทันที</p>
+              </div>
+            </div>
+            <div class="timeline-row">
+              <div class="timeline-scenario scenario-base">Base Case<br>Mid 2030s–40s</div>
+              <div class="timeline-row-body">
+                <h4>Gradual capability build-up ตาม roadmap</h4>
+                <p>Milestones: 1M+ stable qubits ราว 2035–2040, cryptographic relevance ราว 2038–2045 — มีเวลาเพียงพอสำหรับ orderly migration ถ้าเริ่มตอนนี้, NIST PQC standards deployed กว้างขวาง</p>
+              </div>
+            </div>
+            <div class="timeline-row">
+              <div class="timeline-scenario scenario-aggressive">Aggressive<br>Before 2028</div>
+              <div class="timeline-row-body">
+                <h4>Nation-state breakthrough (Vitalik's concern)</h4>
+                <p>Milestones: secret program breakthrough ไม่เปิดเผยต่อสาธารณะ, ใช้ในการโจมตีก่อนที่โลกจะรู้ตัว — scenario ที่ร้ายแรงที่สุด, ไม่มีการเตือนล่วงหน้า, assets หายไปก่อนที่ community จะ react ได้</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Key Takeaways</span></div>
+            <h3 class="callout-title">5 สิ่งที่ต้องจำจากบทนี้</h3>
+            <ol class="digest-list">
+              <li>
+                <span class="digest-index">01</span>
+                <div><strong>Shor's vs Grover's — ภัยคุกคามที่ต่างกันสิ้นเชิง</strong>
+                <p>Shor's Algorithm ทำลาย public key cryptography (RSA/ECC/ECDSA) ได้อย่างสมบูรณ์ Grover's Algorithm แค่ลด hash security ลงครึ่งหนึ่ง — แก้ง่ายด้วย key ยาวขึ้น ต้องเข้าใจความต่างนี้ก่อนประเมินความเสี่ยงที่แท้จริง</p></div>
+              </li>
+              <li>
+                <span class="digest-index">02</span>
+                <div><strong>P2PK/Address Reuse = เสี่ยงสูงสุด; P2PKH ไม่ reuse = ปลอดภัยวันนี้</strong>
+                <p>Bitcoin addresses แบบ P2PKH และ SegWit ที่ไม่เคย spend ออกยังซ่อน public key ได้อยู่ การไม่ reuse address คือการป้องกันที่ใช้ได้จริงในวันนี้โดยไม่ต้องรอ protocol upgrade</p></div>
+              </li>
+              <li>
+                <span class="digest-index">03</span>
+                <div><strong>Solana เสี่ยงโดยโครงสร้าง — ทุก address exposed ตั้งแต่สร้าง</strong>
+                <p>ไม่เหมือน Bitcoin และ Ethereum ที่ปกป้อง public key ได้บางส่วน Solana addresses เปิดเผย public key ตั้งแต่วินาทีแรก ทำให้ทุก address ที่มีอยู่ถือว่าถูกทำเครื่องหมายสำหรับการโจมตีในอนาคตแล้ว</p></div>
+              </li>
+              <li>
+                <span class="digest-index">04</span>
+                <div><strong>"Quantum Rush" Risk — ใครถึงก่อนได้ $100B+</strong>
+                <p>ผู้ที่บรรลุ quantum supremacy ก่อนมีแรงจูงใจทางการเงินมหาศาลในการโจมตี exposed legacy Bitcoin ก่อนที่ network จะป้องกันได้ ทำให้นี่เป็นปัญหาความมั่นคงระดับชาติ ไม่ใช่แค่ปัญหาเทคนิค</p></div>
+              </li>
+              <li>
+                <span class="digest-index">05</span>
+                <div><strong>NIST 2024 PQC standards พร้อมแล้ว — ปัญหาคือการ coordinate migration</strong>
+                <p>มาตรฐาน post-quantum cryptography ที่เชื่อถือได้มีอยู่แล้วตั้งแต่ปี 2024 อุปสรรคหลักไม่ใช่เทคโนโลยี แต่คือการ coordinate ชุมชนผู้ใช้ นักพัฒนา และ protocol ให้ migrate พร้อมกันก่อนที่ภัยคุกคามมาถึง</p></div>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Quantum Resistance · Page 06</span>
+          <span class="page-number">06</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-15-prediction-markets.html">
+          <span>Previous</span>
+          <strong>บทที่ 15: Prediction Markets — ตลาดที่เดิมพันกับความจริง</strong>
+        </a>
+        <a class="nav-card" href="./chapter-17-conclusion.html">
+          <span>Next</span>
+          <strong>บทที่ 17: บทสรุป — วิธีอ่านโลกคริปโตต่อจากนี้</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="../assets/js/mermaid-init.js"></script>
+  <script>
+    // Particle background
+    (function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W, H, dots;
+      const COLOR = '251,146,60';
+      const COUNT = 55;
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function init() {
+        dots = Array.from({ length: COUNT }, () => ({
+          x: Math.random() * W, y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.5 + 0.5,
+        }));
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        dots.forEach(d => {
+          d.x += d.vx; d.y += d.vy;
+          if (d.x < 0 || d.x > W) d.vx *= -1;
+          if (d.y < 0 || d.y > H) d.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${COLOR},0.55)`;
+          ctx.fill();
+        });
+        dots.forEach((a, i) => {
+          for (let j = i + 1; j < dots.length; j++) {
+            const b = dots[j];
+            const dist = Math.hypot(a.x - b.x, a.y - b.y);
+            if (dist < 110) {
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = `rgba(${COLOR},${0.12 * (1 - dist / 110)})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
+        });
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', () => { resize(); init(); });
+      resize(); init(); draw();
+    })();
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

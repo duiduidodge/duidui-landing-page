@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 12: NFTs — สินทรัพย์ดิจิทัลที่มีเอกลักษณ์ • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="ERC-721, ERC-1155, IPFS, Arweave, OpenSea, Blur, Metaplex, compressed NFTs — ทำความเข้าใจ NFTs ฉบับสมบูรณ์สำหรับนักลงทุนไทย">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed; inset: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none; opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed; top: 20%; right: 5%;
+      width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(192,132,252,0.05) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page-shell { position: relative; z-index: 10; padding-top: 0; }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Accent: violet #c084fc ───────────────────────────────────── */
+    .digest-list .digest-index {
+      background: rgba(192,132,252,0.15); color: #c084fc;
+      border: 1px solid rgba(192,132,252,0.35);
+    }
+    .info-chip {
+      border-left: 3px solid rgba(192,132,252,0.45);
+      background: rgba(192,132,252,0.05) !important;
+    }
+    .info-chip strong { color: #c084fc; }
+    .table-shell thead th {
+      background: rgba(192,132,252,0.1); color: #c084fc;
+      border-bottom: 1px solid rgba(192,132,252,0.3);
+    }
+    .table-shell tbody tr:nth-child(odd) td  { background: rgba(192,132,252,0.02); }
+    .table-shell tbody tr:hover td           { background: rgba(192,132,252,0.06); }
+
+    /* ── Stats row ────────────────────────────────────────────────── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:580px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+    .stat-card {
+      border-radius: 10px; padding: 0.8rem 0.85rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(192,132,252,0.2);
+      text-align: center;
+    }
+    .stat-value { font-size: 1.25rem; font-weight: 800; color: #c084fc; letter-spacing: -0.02em; line-height: 1.1; }
+    .stat-label { font-size: 0.70rem; color: #64748b; margin-top: 0.2rem; font-weight: 500; }
+
+    /* ── NFT Ownership Stack ──────────────────────────────────────── */
+    .nft-stack { border-radius: 12px; overflow: hidden; border: 1px solid rgba(192,132,252,0.15); margin: 1.25rem 0; }
+    .nft-stack-layer { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.7rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nft-stack-layer:last-child { border-bottom: none; }
+    .nft-stack-badge {
+      min-width: 90px; font-size: 0.63rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.22rem 0.5rem; border-radius: 5px; text-align: center; flex-shrink: 0; margin-top: 0.15rem;
+    }
+    .nft-stack-body h4 { font-size: 0.83rem; font-weight: 700; color: #e2e8f0; margin: 0 0 0.12rem; }
+    .nft-stack-body p  { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.45; }
+
+    /* ── Storage spectrum ─────────────────────────────────────────── */
+    .storage-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:560px) { .storage-grid { grid-template-columns: 1fr; } }
+    .storage-card {
+      border-radius: 10px; padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    }
+    .storage-card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; }
+    .storage-card-name  { font-size: 0.88rem; font-weight: 700; color: #e2e8f0; }
+    .storage-card-tag   { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.08em; padding: 0.15rem 0.45rem; border-radius: 4px; }
+    .storage-card p { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+    .storage-card-risk  { font-size: 0.72rem; font-weight: 700; margin-top: 0.3rem; }
+
+    /* ── Scam pattern cards ───────────────────────────────────────── */
+    .scam-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:560px) { .scam-grid { grid-template-columns: 1fr; } }
+    .scam-card {
+      border-radius: 10px; padding: 0.85rem 1rem;
+      background: rgba(201,138,133,0.05); border: 1px solid rgba(201,138,133,0.2);
+    }
+    .scam-card h4 { font-size: 0.85rem; font-weight: 700; color: #e2e8f0; margin: 0 0 0.3rem; }
+    .scam-card p  { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+    .scam-card-warning { font-size: 0.7rem; font-weight: 700; color: #f87171; margin-top: 0.4rem; }
+
+    /* ── Launch type cards ────────────────────────────────────────── */
+    .launch-grid {
+      display: grid; grid-template-columns: repeat(2,1fr);
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:560px) { .launch-grid { grid-template-columns: 1fr; } }
+    .launch-card {
+      border-radius: 10px; padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    }
+    .launch-card h4 { font-size: 0.85rem; font-weight: 700; color: #e2e8f0; margin: 0 0 0.3rem; }
+    .launch-card p  { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+
+    /* ── Solana ecosystem arch ────────────────────────────────────── */
+    .sol-arch { border-radius: 12px; overflow: hidden; border: 1px solid rgba(153,69,255,0.18); margin: 1.25rem 0; }
+    .sol-layer { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.7rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .sol-layer:last-child { border-bottom: none; }
+    .sol-layer-badge {
+      min-width: 84px; font-size: 0.63rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.22rem 0.5rem; border-radius: 5px; text-align: center; flex-shrink: 0; margin-top: 0.15rem;
+    }
+    .sol-layer-body h4 { font-size: 0.83rem; font-weight: 700; color: #e2e8f0; margin: 0 0 0.12rem; }
+    .sol-layer-body p  { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.45; }
+
+    /* ── Marketplace timeline ─────────────────────────────────────── */
+    .market-timeline { border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); margin: 1.25rem 0; }
+    .market-row { display: flex; align-items: flex-start; gap: 0.85rem; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .market-row:last-child { border-bottom: none; }
+    .market-row:nth-child(odd)  { background: rgba(192,132,252,0.03); }
+    .market-row:nth-child(even) { background: rgba(255,255,255,0.015); }
+    .market-date  { min-width: 72px; font-size: 0.72rem; font-weight: 700; color: #c084fc; font-family: monospace; padding-top: 0.1rem; flex-shrink: 0; }
+    .market-title { font-size: 0.82rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.12rem; }
+    .market-desc  { font-size: 0.82rem; color: #8a9aaa; line-height: 1.45; }
+
+    .nav-card--disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 12</span>
+  <button class="chapter-picker-btn" data-current="12" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background:linear-gradient(90deg,#c084fc,#a78bfa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;letter-spacing:0.16em;">Part 4 • Ownership, Community & Real-World Networks</div>
+          <h1>บทที่ 12: NFTs</h1>
+          <p class="lede">
+            ภาพ JPEG ที่ขาย $70 ล้านที่ Christie's ดูเหมือนไร้สาระ แต่นั่นคือจุดเริ่มต้นของคำถามที่ลึกกว่า — ถ้าไฟล์ดิจิทัล copy ได้ฟรีและสมบูรณ์แบบ ความเป็นเจ้าของหมายความว่าอะไร NFTs ตอบโดยการแยกชั้นของ "สิ่งที่คุณได้รับ" ออกจากกัน: token control, provenance, usage rights, และ utility access — แต่ละชั้นทำงานอิสระและ composable กันได้
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          He didn't purchase exclusive access to the pixels. He bought something more interesting: a cryptographically-verified proof that he owns the original.
+          <cite>— Larry Cermak, How Crypto Actually Works</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_12_nfts.png" alt="Chapter 12 NFTs Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — What Are NFTs
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 12 • Foundations</span>
+            <h2 class="book-page-title">NFT คืออะไร — Digital Ownership ที่แท้จริง</h2>
+          </div>
+          <div class="book-page-index">NFTs<br>Overview</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ปัญหาที่ NFT มาแก้</h3>
+            <p>ก่อน NFT โลกดิจิทัลมีปัญหาพื้นฐาน: ทุกอย่าง copy ได้สมบูรณ์แบบในต้นทุนศูนย์ ไม่มีทางพิสูจน์ว่า "ต้นฉบับ" คืออะไร NFT แก้ปัญหานี้โดยการแยกความเป็นเจ้าของออกเป็นชั้น ๆ ที่บันทึกบน blockchain อย่างถาวร</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ในเดือนมีนาคม 2021 ศิลปิน Beeple ขายงานชื่อ <em>"Everydays: The First 5000 Days"</em> ผ่าน Christie's ด้วยราคา <strong style="color:#c084fc;">$69.3 ล้าน</strong> ผู้ซื้อที่รู้จักในชื่อ Metakovan ไม่ได้ซื้อสิทธิ์พิเศษในการดูภาพ ใครก็ตาม right-click save ได้ฟรีและได้ไฟล์ที่เหมือนกันทุกพิกเซล สิ่งที่เขาซื้อคือ <strong>proof of ownership</strong> ที่ verify ได้ด้วย cryptography บน Ethereum blockchain — บันทึกถาวรที่ทุกคนตรวจสอบได้ว่า wallet ของเขาคือเจ้าของ "ต้นฉบับ" นี้
+            </p>
+            <p>
+              นี่คือหัวใจของ NFT (Non-Fungible Token — โทเคนที่ไม่สามารถแทนกันได้): ต่างจาก ERC-20 token อย่าง ETH หรือ USDC ที่ทุกหน่วยเท่ากันทุกประการ NFT แต่ละ token มี <strong>identifier เฉพาะ</strong> ที่ไม่ซ้ำกันภายใน smart contract ของมัน combination ของ contract address + token ID จึงเป็น globally unique ทั่วทั้ง blockchain
+            </p>
+          </div>
+
+          <div class="nft-stack">
+            <div class="nft-stack-layer" style="background:rgba(192,132,252,0.06);">
+              <div class="nft-stack-badge" style="background:rgba(192,132,252,0.15);color:#c084fc;">Token Control</div>
+              <div class="nft-stack-body">
+                <h4>Blockchain Ownership Record</h4>
+                <p>Immutable ledger บันทึกว่า wallet ใดถือ token ID ใด — ใครก็ verify ได้ ไม่มีใครเปลี่ยนแปลงได้ นี่คือสิ่งที่อยู่ "on-chain" อย่างแท้จริง</p>
+              </div>
+            </div>
+            <div class="nft-stack-layer">
+              <div class="nft-stack-badge" style="background:rgba(167,139,250,0.15);color:#a78bfa;">Provenance</div>
+              <div class="nft-stack-body">
+                <h4>Certificate of Authenticity จาก Creator</h4>
+                <p>บันทึกที่พิสูจน์ว่า token นี้ถูก mint จาก wallet ของ creator จริง — สร้างสายการพิสูจน์ความแท้จากต้นทางถึงเจ้าของปัจจุบัน</p>
+              </div>
+            </div>
+            <div class="nft-stack-layer">
+              <div class="nft-stack-badge" style="background:rgba(129,140,248,0.15);color:#818cf8;">Usage Rights</div>
+              <div class="nft-stack-body">
+                <h4>License สำหรับ Content ที่แนบมา</h4>
+                <p>กำหนดว่าเจ้าของทำอะไรกับ content ได้บ้าง — บางโปรเจกต์ให้ commercial rights (BAYC), บางโปรเจกต์เปิด public domain (CC0 เช่น Nouns DAO)</p>
+              </div>
+            </div>
+            <div class="nft-stack-layer">
+              <div class="nft-stack-badge" style="background:rgba(99,102,241,0.15);color:#818cf8;">Utility</div>
+              <div class="nft-stack-body">
+                <h4>Smart Contract Permissions & Token-Gating</h4>
+                <p>Smart contracts ตรวจสอบ token possession แล้วให้สิทธิ์เข้าถึง — community access, event entry, in-game perks, governance rights, หรือใดก็ได้ที่ developer เขียนไว้</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ชั้นเหล่านี้ทำงาน modular และ independent กัน — owner อาจถือ token บน Ethereum ขณะที่ภาพอยู่บน IPFS license บอกว่าใช้ commercial ได้ และ smart contract อีกตัวให้สิทธิ์เข้า private Discord โดยอัตโนมัติ ความยืดหยุ่นนี้เปิดประตูสู่กรณีใช้งานที่ไม่มีใน analog world: NFT ที่ evolve ได้, NFT ที่มี wallet ของตัวเอง, credentials ที่ไม่สามารถโอนได้
+            </p>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Copyright Reality:</strong> การถือ NFT ไม่ได้แปลว่าได้ copyright อัตโนมัติ — ภาพยังคง copy ได้ฟรี usage rights กำหนดโดย license แยกต่างหากซึ่งมักอยู่ off-chain และ enforce ยากข้ามเขตอำนาจศาล <strong>Bored Ape Yacht Club</strong> ให้ commercial rights แต่ยัง retain IP control ขณะที่ <strong>Nouns DAO</strong> และ <strong>CrypToadz</strong> ใช้ CC0 — "no rights reserved" — เพื่อให้ทุกคน remix และต่อยอดได้อย่างเสรี
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">NFTs · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — Storage & Token Types
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 12 • Infrastructure</span>
+            <h2 class="book-page-title">Storage, Token Types และ Supply Mechanics</h2>
+          </div>
+          <div class="book-page-index">NFTs<br>Infrastructure</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ปัญหา: ถ้า server ปิด NFT หายไปด้วยไหม?</h3>
+            <p>การ mint NFT บังคับให้ตัดสินใจ: เก็บทุกอย่าง on-chain ได้ความถาวรสูงสุดแต่ค่า gas แพงมาก หรือเก็บ content off-chain ถูกกว่าแต่เสี่ยง dead link ในอนาคต</p>
+          </div>
+
+          <div class="storage-grid">
+            <div class="storage-card">
+              <div class="storage-card-header">
+                <div class="storage-card-name">Centralized Server</div>
+                <span class="storage-card-tag" style="background:rgba(248,113,113,0.15);color:#f87171;">HIGH RISK</span>
+              </div>
+              <p>Metadata/ภาพอยู่บน server ของ project team — ถูกที่สุด ยืดหยุ่นที่สุด แต่ถ้า project หยุดดำเนิน server ปิด หรือโดน hack ภาพ NFT หายหมด</p>
+              <div class="storage-card-risk" style="color:#f87171;">⚠ "Rug" storage risk สูง</div>
+            </div>
+            <div class="storage-card">
+              <div class="storage-card-header">
+                <div class="storage-card-name">IPFS</div>
+                <span class="storage-card-tag" style="background:rgba(245,166,35,0.15);color:#f5a623;">MEDIUM</span>
+              </div>
+              <p>Content-addressed storage — ไฟล์ระบุด้วย hash ของเนื้อหาเอง เปลี่ยนไฟล์ไม่ได้ลักษณะนี้ แต่ต้องมีคนช่วย "pin" ไว้ ถ้าไม่มี node pin ไฟล์หายได้</p>
+              <div class="storage-card-risk" style="color:#f5a623;">ต้องการ ongoing pinning service</div>
+            </div>
+            <div class="storage-card">
+              <div class="storage-card-header">
+                <div class="storage-card-name">Arweave</div>
+                <span class="storage-card-tag" style="background:rgba(74,222,128,0.15);color:#4ade80;">PERMANENT</span>
+              </div>
+              <p>จ่ายครั้งเดียวเพื่อ permanent storage ผ่าน endowment model เรียกว่า "permaweb" — ค่าใช้จ่ายสูงกว่า IPFS แต่ไม่ต้องกังวลเรื่อง ongoing maintenance</p>
+              <div class="storage-card-risk" style="color:#4ade80;">Pay-once, store forever</div>
+            </div>
+            <div class="storage-card">
+              <div class="storage-card-header">
+                <div class="storage-card-name">Fully On-Chain</div>
+                <span class="storage-card-tag" style="background:rgba(192,132,252,0.15);color:#c084fc;">MAXIMUM</span>
+              </div>
+              <p>ทุกอย่างอยู่บน blockchain โดยตรง — เช่น Autoglyphs (Larva Labs) หรือ Nouns DAO SVG on-chain ความถาวรสูงสุด censorship resistant แต่ค่า gas สูงมาก ($1,000+ ต่อ image)</p>
+              <div class="storage-card-risk" style="color:#c084fc;">True permanence, expensive</div>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Best practice คือ layered approach: ใช้ content-addressed URIs (IPFS/Arweave hashes) เพื่อป้องกันการเปลี่ยนไฟล์แบบเงียบ ๆ เก็บ critical provenance data on-chain และมี multiple pinning providers เป็น backup
+            </p>
+          </div>
+
+          <h3 style="font-size:0.85rem;margin:1.25rem 0 0.65rem;color:#c8d4e0;">Advanced Token Types: มากกว่าแค่ภาพ</h3>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Concept</span></div>
+            <h3 class="callout-title">Token Type Spectrum</h3>
+            <ul style="margin:0.5rem 0 0;padding-left:1.2rem;font-size:0.8rem;color:#c8d4e0;line-height:1.7;">
+              <li><strong style="color:#c084fc;">Dynamic NFTs</strong> — evolve ตามข้อมูลจริง: sports card update stats หลังเกม, digital art เปลี่ยนสีตามสภาพอากาศ, game character level up</li>
+              <li><strong style="color:#a78bfa;">Composable NFTs</strong> — token ที่มี token อื่นอยู่ข้างใน: ที่ดินเสมือน (NFT) → บ้าน (NFT) → เฟอร์นิเจอร์ (NFT) ขายที่ดินโอนทุกอย่างพร้อมกัน</li>
+              <li><strong style="color:#818cf8;">Semi-fungible (ERC-1155)</strong> — ตั๋วคอนเสิร์ตเริ่มเหมือนกัน (fungible) แต่หลังใช้งานบันทึก seat และ event เฉพาะตัว (unique)</li>
+              <li><strong style="color:#6366f1;">Soulbound Tokens (SBTs)</strong> — โอนไม่ได้โดยออกแบบ: ปริญญา, certification, achievement, reputation ที่ผูกกับบุคคลถาวร</li>
+            </ul>
+          </div>
+
+          <h3 style="font-size:0.85rem;margin:1.25rem 0 0.65rem;color:#c8d4e0;">Supply Mechanics</h3>
+
+          <div class="table-shell">
+            <div class="table-topbar"><div>
+              <h3>วิธีบริหาร Supply ของ NFT Collection</h3>
+              <p class="caption">แต่ละ model มีผลต่อ price dynamics, fairness และ speculation ที่แตกต่างกัน</p>
+            </div></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Model</th><th>กลไก</th><th>ตัวอย่าง</th><th>ผลต่อ Price</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><strong style="color:#c084fc;">Fixed Supply</strong></td>
+                    <td>จำนวน cap ถาวร ไม่เพิ่มอีก</td>
+                    <td>CryptoPunks (10,000)</td>
+                    <td style="color:#4ade80;">Absolute scarcity</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Bonding Curve</strong></td>
+                    <td>ราคาขึ้นทุก mint ตามสูตร</td>
+                    <td>Nouns DAO (1/day)</td>
+                    <td style="color:#f5a623;">Early minter advantage</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Burn Mechanics</strong></td>
+                    <td>destroy token เพื่อ evolve หรือ access</td>
+                    <td>Many gaming projects</td>
+                    <td style="color:#4ade80;">Deflationary pressure</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Open Edition</strong></td>
+                    <td>mint ได้ไม่จำกัดในช่วงเวลา</td>
+                    <td>Art Blocks Presents</td>
+                    <td style="color:#64748b;">Time-based scarcity</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">NFTs · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — ERC-721, ERC-1155 & NFT Categories
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 12 • Standards</span>
+            <h2 class="book-page-title">ERC-721, ERC-1155 และ NFT Categories</h2>
+          </div>
+          <div class="book-page-index">NFTs<br>Standards</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Rulebook ที่ทำให้ NFT ทำงานได้ทั่วทั้ง Ethereum</h3>
+            <p>Standard คือชุดฟังก์ชันขั้นต่ำที่ contract ต้อง implement — ทำให้ marketplace, wallet, และ game ทำงานกับ NFT ทุก collection ได้โดยไม่ต้องเขียน code ใหม่ทุกครั้ง</p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">ERC-721</span></div>
+            <h3 class="callout-title">Core Functions ที่ทุก NFT Contract ต้องมี</h3>
+            <div style="margin-top:0.65rem;display:grid;gap:0.45rem;">
+              <div style="background:rgba(255,255,255,0.04);border-radius:7px;padding:0.55rem 0.8rem;font-size:0.76rem;border-left:2px solid rgba(192,132,252,0.4);">
+                <code style="color:#c084fc;">ownerOf(tokenId)</code>
+                <span style="color:#8a9aaa;margin-left:0.5rem;">→ ถาม: "ใครถือ NFT #1234?"</span>
+              </div>
+              <div style="background:rgba(255,255,255,0.04);border-radius:7px;padding:0.55rem 0.8rem;font-size:0.76rem;border-left:2px solid rgba(167,139,250,0.4);">
+                <code style="color:#a78bfa;">transferFrom(from, to, tokenId)</code>
+                <span style="color:#8a9aaa;margin-left:0.5rem;">→ โอน NFT #1234 จาก Alice ไป Bob</span>
+              </div>
+              <div style="background:rgba(255,255,255,0.04);border-radius:7px;padding:0.55rem 0.8rem;font-size:0.76rem;border-left:2px solid rgba(129,140,248,0.4);">
+                <code style="color:#818cf8;">approve(to, tokenId)</code>
+                <span style="color:#8a9aaa;margin-left:0.5rem;">→ Alice ให้ Bob โอน NFT ตัวเดียวได้</span>
+              </div>
+              <div style="background:rgba(255,255,255,0.04);border-radius:7px;padding:0.55rem 0.8rem;font-size:0.76rem;border-left:2px solid rgba(248,113,113,0.4);">
+                <code style="color:#f87171;">setApprovalForAll(operator, approved)</code>
+                <span style="color:#8a9aaa;margin-left:0.5rem;">→ ⚠ Alice ให้ marketplace โอน NFT ทุกตัวได้</span>
+              </div>
+            </div>
+            <p style="margin:0.65rem 0 0;font-size:0.74rem;color:#8a9aaa;">Extension ที่สำคัญ: <code>tokenURI(tokenId)</code> ส่งคืน URL ไปยัง JSON metadata ที่มีชื่อ, คำอธิบาย, ภาพ, และ attributes</p>
+          </div>
+
+          <div class="table-shell" style="margin-top:1.1rem;">
+            <div class="table-topbar"><div>
+              <h3>ERC-721 vs ERC-1155</h3>
+              <p class="caption">เลือก standard ตาม use case — ไม่มีตัวไหน "ดีกว่า" ในทุกสถานการณ์</p>
+            </div></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Feature</th><th>ERC-721</th><th>ERC-1155</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Token Type</strong></td>
+                    <td>Unique เท่านั้น (1 token = 1 item)</td>
+                    <td>Fungible + Non-fungible ในที่เดียว</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Batch Transfer</strong></td>
+                    <td style="color:#f87171;">ไม่รองรับ (1 tx = 1 token)</td>
+                    <td style="color:#4ade80;">รองรับ (1 tx = หลาย token, gas ถูกกว่า)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>ใช้งานหลัก</strong></td>
+                    <td>Art, PFPs, collectibles</td>
+                    <td>Games, gaming assets, ticket systems</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Gas Efficiency</strong></td>
+                    <td style="color:#f5a623;">ปกติ</td>
+                    <td style="color:#4ade80;">สูงกว่า (batch ops)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Contract Complexity</strong></td>
+                    <td style="color:#4ade80;">ง่ายกว่า</td>
+                    <td style="color:#f5a623;">ซับซ้อนกว่า</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Semi-fungible</strong></td>
+                    <td style="color:#f87171;">ไม่รองรับ native</td>
+                    <td style="color:#4ade80;">รองรับ (ตั๋ว → used)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h3 style="font-size:0.85rem;margin:1.25rem 0 0.65rem;color:#c8d4e0;">NFT Categories หลัก</h3>
+
+          <div class="book-prose">
+            <p>
+              <strong style="color:#c084fc;">Profile Picture Projects (PFPs)</strong> — CryptoPunks, Bored Apes, Pudgy Penguins สร้าง digital identity และ tribal signaling ในโลกออนไลน์ เหมือนการใส่ Rolex แต่ในดิจิทัล มูลค่าสะสมผ่าน network effects: Jay-Z, Serena Williams, Steph Curry ใช้เป็น avatar ยิ่งคนดังใช้ collection ยิ่ง exclusive ข้อเท็จจริงสำคัญ: floor price ของ Bored Apes ลดไป <strong>>90%</strong> จาก ATH ที่ $400,000+ ในต้นปี 2026
+            </p>
+            <p>
+              <strong style="color:#a78bfa;">Generative Art</strong> — ศิลปะจาก algorithm เช่น Art Blocks ที่ artist เขียน code แล้ว execute ณ เวลา mint สร้างผลลัพธ์ unique อย่าง Tyler Hobbs' Fidenzas หรือ Chromie Squiggles ผู้ซื้อไม่รู้ว่าจะได้ภาพแบบไหนจนกว่าจะ mint — value มาจาก artistic merit และ algorithmic novelty
+            </p>
+            <p>
+              <strong style="color:#818cf8;">Gaming & Virtual World NFTs</strong> — assets ใน blockchain-based games ตั้งแต่ Axie Infinity ถึง The Sandbox — ส่วนใหญ่พบกับปัญหา sustainable economy ใน "play-to-earn" models เมื่อ token inflation สูงและผู้เล่นขาย rewards ออก
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">NFTs · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — Security, Scams & Launch Strategies
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 12 • Security</span>
+            <h2 class="book-page-title">Scams, Wallet Drainers และ Launch Strategies</h2>
+          </div>
+          <div class="book-page-index">NFTs<br>Security</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>NFT Space มี Attack Surface ที่กว้างมาก</h3>
+            <p>ฟังก์ชัน approval ใน ERC-721/1155 มีอำนาจสูงมาก — เมื่อ grant แล้ว blockchain ไม่มีวันย้อนกลับ scammer ออกแบบทุกกลยุทธ์เพื่อให้คุณ sign โดยไม่รู้ตัว</p>
+          </div>
+
+          <div class="scam-grid">
+            <div class="scam-card">
+              <h4>🎣 Phishing via Fake Sites</h4>
+              <p>สร้าง replica ของ official website หรือส่งลิงก์ผ่าน Discord/X ให้ connect wallet สำหรับ "free mint" หรือ "exclusive airdrop" — site หน้าตาเหมือนจริงทุกอย่างแต่ domain ต่างกันเล็กน้อย</p>
+              <div class="scam-card-warning">Always verify URL ด้วยตา — ไม่ใช่แค่ชื่อ</div>
+            </div>
+            <div class="scam-card">
+              <h4>💀 Wallet Drainers</h4>
+              <p>ให้คุณ sign transaction ที่ดูเหมือน signature request ธรรมดา แต่จริง ๆ คือ malicious payload ที่ grant <code>setApprovalForAll</code> ให้ attacker — drain NFT + token ทั้ง wallet ในวินาทีเดียว</p>
+              <div class="scam-card-warning">Signature ≠ Safe — อ่าน what you sign ทุกครั้ง</div>
+            </div>
+            <div class="scam-card">
+              <h4>🖼 Fake Collection Listings</h4>
+              <p>สร้าง contract ชื่อเหมือนกับ collection ดังแต่ address ต่าง ขาย NFT ในราคาถูกกว่า floor — ผู้ซื้อได้ NFT ปลอมที่ไม่มีมูลค่า สังเกต verified checkmark และ contract address</p>
+              <div class="scam-card-warning">ตรวจสอบ contract address เสมอ</div>
+            </div>
+            <div class="scam-card">
+              <h4>💸 Discord DM Scams</h4>
+              <p>แอบอ้างเป็น moderator หรือ team member ส่ง DM แจ้ง "คุณได้รับ whitelist พิเศษ" พร้อมลิงก์ไป malicious site — team จริงไม่ DM ก่อนเกือบทุกกรณี</p>
+              <div class="scam-card-warning">Official team ไม่ DM ก่อน — ไม่เชื่อ unsolicited DM</div>
+            </div>
+          </div>
+
+          <div class="callout callout--warning">
+            <div class="callout-meta">
+              <span class="status-pill warning">Best Practice</span>
+              <span>Self-Custody Safety</span>
+            </div>
+            <h3 class="callout-title">วิธีป้องกันตัวใน NFT Space</h3>
+            <ul style="margin:0.4rem 0 0;padding-left:1.2rem;font-size:0.79rem;color:#c8d4e0;line-height:1.75;">
+              <li>ใช้ <strong>hardware wallet</strong> (Ledger, Trezor) สำหรับ high-value NFT — private key ไม่เคยออกจากอุปกรณ์</li>
+              <li>เตรียม <strong>"burner" wallet</strong> แยกสำหรับ mint project ใหม่ — ไม่เก็บ asset มีค่าไว้ใน wallet นั้น</li>
+              <li><strong>Revoke approvals</strong> ที่ไม่จำเป็นผ่าน revoke.cash หรือ Etherscan token approvals</li>
+              <li>ใช้ <strong>wallet simulation tools</strong> เช่น Pocket Universe, Fire ที่แสดงผลลัพธ์ของ transaction ก่อน sign</li>
+            </ul>
+          </div>
+
+          <h3 style="font-size:0.85rem;margin:1.25rem 0 0.65rem;color:#c8d4e0;">Launch Strategies: วิธีกระจาย NFT อย่างยุติธรรม</h3>
+
+          <div class="launch-grid">
+            <div class="launch-card">
+              <h4>Fair Launch</h4>
+              <p>ราคาเดียว first-come-first-served — ง่ายแต่โดน bot ครองสูง เหมาะเมื่อต้องการ decentralized distribution สูงสุด</p>
+            </div>
+            <div class="launch-card">
+              <h4>Dutch Auction</h4>
+              <p>เริ่มราคาสูงลดลงตามเวลาจนถึง demand — bot-resistant มากกว่า ราคา clear ที่จุด market price จริง</p>
+            </div>
+            <div class="launch-card">
+              <h4>Allowlist (Whitelist)</h4>
+              <p>approve wallet ที่ active community กก่อน public sale — ให้รางวัล engagement จริง ลด gas war</p>
+            </div>
+            <div class="launch-card">
+              <h4>Bonding Curve Mint</h4>
+              <p>ราคาเพิ่มขึ้นตามจำนวน mint — Nouns DAO ใช้ (1 NFT/วัน ราคาจาก auction) early minter ได้ราคาดีกว่า</p>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">NFTs · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — Solana NFT Ecosystem
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 12 • Ecosystems</span>
+            <h2 class="book-page-title">Solana NFTs — Ecosystem คู่ขนานที่เติบโตเป็นตัวเอง</h2>
+          </div>
+          <div class="book-page-index">NFTs<br>Solana</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Solana พัฒนา NFT ecosystem แยกจาก Ethereum โดยสิ้นเชิง</h3>
+            <p>ค่า fee ต่ำ, throughput สูง, และ architecture ที่ต่างออกไป ทำให้ Solana สร้าง standards, tooling, และ culture ที่เป็นเอกลักษณ์ของตัวเอง</p>
+          </div>
+
+          <div class="sol-arch">
+            <div class="sol-layer" style="background:rgba(153,69,255,0.05);">
+              <div class="sol-layer-badge" style="background:rgba(153,69,255,0.15);color:#9945ff;">Marketplaces</div>
+              <div class="sol-layer-body">
+                <h4>Magic Eden & Tensor — แบ่ง Segment ชัดเจน</h4>
+                <p><strong>Magic Eden</strong> ครอง early volume ด้วย UX ง่ายและ launch tools สำหรับ creator — <strong>Tensor</strong> เกิดทีหลังเจาะกลุ่ม professional trader ด้วย trait-based bidding, automated pricing pools, และ advanced portfolio views ต่างจาก Ethereum ที่ OpenSea นานครอง Solana มี two-tier market structure ชัดเจนตามประเภทผู้ใช้</p>
+              </div>
+            </div>
+            <div class="sol-layer">
+              <div class="sol-layer-badge" style="background:rgba(20,184,166,0.15);color:#14b8a6;">Metaplex</div>
+              <div class="sol-layer-body">
+                <h4>Foundation Protocol — Metadata, Collections, Royalties</h4>
+                <p>Framework มาตรฐานสำหรับ NFT บน Solana ครอบคลุม metadata schema, collection verification, royalty configuration, และ token standards ส่วนใหญ่ของ Solana NFT ecosystem สร้างบน Metaplex ทำให้เป็น single point of standardization ที่คล้ายกับบทบาทของ OpenZeppelin บน Ethereum</p>
+              </div>
+            </div>
+            <div class="sol-layer">
+              <div class="sol-layer-badge" style="background:rgba(245,166,35,0.15);color:#f5a623;">cNFTs</div>
+              <div class="sol-layer-body">
+                <h4>Compressed NFTs — นวัตกรรมที่ไม่มีบน Ethereum</h4>
+                <p>State compression เก็บ cryptographic summary on-chain และ detailed data off-chain ลดต้นทุน mint จาก ~$0.024 เหลือ <strong>&lt;$0.001</strong> ต่อ NFT — unlock use cases ที่ Ethereum ทำไม่ได้: large-scale airdrop ล้านชิ้น, loyalty programs, gaming assets จำนวนมหาศาล</p>
+              </div>
+            </div>
+            <div class="sol-layer">
+              <div class="sol-layer-badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;">Collections</div>
+              <div class="sol-layer-body">
+                <h4>Notable Collections — วัฒนธรรม Low-Cost Experiment</h4>
+                <p>Solana Monkey Business (SMB) — pioneer collection, Mad Lads โดย Armani (Backpack wallet), Claynosaurz — 3D animated characters ที่ extend ไปสู่ entertainment IP แต่ละ collection สะท้อน culture ที่เต็มไปด้วย experimentation เพราะ cost barrier ต่ำกว่า Ethereum</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-value">&lt;$0.001</div>
+              <div class="stat-label">Cost per compressed NFT</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">$0</div>
+              <div class="stat-label">Gas (vs $10-100+ ETH)</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">1B+</div>
+              <div class="stat-label">cNFTs possible (same cost)</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">Optional</div>
+              <div class="stat-label">Creator royalties (market driven)</div>
+            </div>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Royalty Wars บน Solana:</strong> เหมือน Ethereum, marketplace competition ผลักดัน creator royalties ไปสู่ optional standard บาง NFT standards พยายาม enforce royalties ที่ contract level แต่การ enforce ยังขึ้นอยู่กับ marketplace cooperation อยู่ดี Tensor และ Magic Eden ต่างเคยเปลี่ยนนโยบาย royalty ตามแรงกดดัน competitive หลายครั้ง
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Solana NFT culture แตกต่างจาก Ethereum ด้วย high-velocity trading, frequent price movements, และ willingness to experiment เพราะ low fee ทำให้ cost of failure ต่ำ ผลคือ collection ใหม่เกิดเร็วกว่า แต่ก็ตายเร็วกว่าเช่นกัน — market มี high churn rate โดยเนื้อแท้ blue-chip ที่ survive long-term มักต้องมี community หรือ IP ที่แข็งแกร่งนอกเหนือจาก speculation ล้วน
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">NFTs · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 06 — Marketplace Wars & Key Takeaways
+           ============================================================ -->
+      <article class="book-page" id="page-06">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 12 • Markets & Takeaways</span>
+            <h2 class="book-page-title">Marketplace Wars, Pricing Mechanics และสรุปสิ่งที่ต้องจำ</h2>
+          </div>
+          <div class="book-page-index">NFTs<br>Markets</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>OpenSea vs Blur — การต่อสู้ที่เปลี่ยน NFT Market Structure</h3>
+            <p>NFT marketplaces วิวัฒน์จาก listing site ธรรมดาไปสู่ financial infrastructure ที่ซับซ้อน — core vulnerability คือ royalty ไม่ได้ build ใน ERC-721/1155 ทำให้ marketplace ใช้เป็นอาวุธแข่งขัน</p>
+          </div>
+
+          <div class="market-timeline">
+            <div class="market-row">
+              <div class="market-date">Nov 2022</div>
+              <div>
+                <div class="market-title">Blur เปิดตัว — ชนะ Professional Traders ทันที</div>
+                <div class="market-desc">ออกแบบสำหรับ trader มืออาชีพ: advanced portfolio management, real-time pricing, trait-based filtering + royalties optional (0.5% minimum) + BLUR token rewards สำหรับ trading volume</div>
+              </div>
+            </div>
+            <div class="market-row">
+              <div class="market-date">Feb 2023</div>
+              <div>
+                <div class="market-title">Blur แซง OpenSea ด้าน Trading Volume</div>
+                <div class="market-desc">OpenSea response ไม่สอดคล้อง — enforce full royalties เฉพาะ collection ใหม่ผ่าน Operator Filter แต่ enforce ไม่ได้บน collection เก่า trader ย้ายไป Blur เพราะ fee ต่ำกว่า</div>
+              </div>
+            </div>
+            <div class="market-row">
+              <div class="market-date">Aug 2023</div>
+              <div>
+                <div class="market-title">OpenSea ยกเลิก Royalty Enforcement</div>
+                <div class="market-desc">แรงกดดัน competitive บังคับ OpenSea ทิ้ง royalty policy ที่ protect creator สัญญาณว่า volume ชนะ creator protection</div>
+              </div>
+            </div>
+            <div class="market-row">
+              <div class="market-date">2025</div>
+              <div>
+                <div class="market-title">OpenSea กลับมา — Blur ถดถอย</div>
+                <div class="market-desc">Blur volume ส่วนใหญ่ driven by token incentives/airdrop farming ไม่ใช่ organic demand เมื่อ incentives หมด + NFT market collapse โดยรวม OpenSea reclaim dominant position บน Ethereum</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout info-chip" style="margin-top:1rem;">
+            <strong>ERC-2981 Royalty Standard:</strong> Standard ใหม่ที่ให้ contract "แนะนำ" จำนวน royalty ที่ควรจ่าย แต่ยังคงเป็น optional — marketplace ยังสามารถเลือก ignore ได้ ปัญหา structural ของ royalty enforcement ยังไม่ได้รับการแก้อย่างถาวร
+          </div>
+
+          <h3 style="font-size:0.85rem;margin:1.25rem 0 0.65rem;color:#c8d4e0;">Pricing Mechanics ที่ต้องเข้าใจ</h3>
+
+          <div class="book-prose">
+            <p>
+              <strong style="color:#c084fc;">Floor Price</strong> คือ NFT ที่ถูกที่สุดใน collection ณ ขณะนั้น — metric ที่ watch กันมากที่สุดแต่ misleading สุด Bored Ape ที่มี golden fur + laser eyes อาจขายได้ 10x เหนือ floor ขณะที่ common traits ขายที่ floor หรือต่ำกว่า trait rarity สำคัญมากกว่า floor ในหลายกรณี
+            </p>
+            <p>
+              <strong style="color:#a78bfa;">Collection-Wide Bidding</strong> แก้ปัญหา illiquidity — แทนที่จะ bid NFT ตัวเดียว ผู้ซื้อ bid บน "Bored Ape ใดก็ได้ที่มี laser eyes" ทำให้ seller มี exit liquidity ง่ายขึ้น แต่ tradeoff คือ commoditize สิ่งที่ควรจะ unique
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Key Takeaways</span></div>
+            <h3 class="callout-title">สรุปสิ่งที่ต้องจำจากบทนี้</h3>
+            <ol class="digest-list">
+              <li>
+                <span class="digest-index">01</span>
+                <div><strong>NFT แยก "ความเป็นเจ้าของ" ออกเป็น 4 ชั้นอิสระ</strong>
+                <p>Token control, provenance, usage rights, utility — แต่ละชั้นทำงาน modular และ programmable แยกกัน ภาพยังคง copyable ได้ฟรี</p></div>
+              </li>
+              <li>
+                <span class="digest-index">02</span>
+                <div><strong>ERC-721 = unique, ERC-1155 = multi-token + batch</strong>
+                <p>Standard กำหนด interoperability ทั่วทั้ง ecosystem — setApprovalForAll เป็น function ที่อันตรายที่สุดถ้า grant ให้ malicious contract</p></div>
+              </li>
+              <li>
+                <span class="digest-index">03</span>
+                <div><strong>Storage คือ risk ที่มองข้ามไม่ได้</strong>
+                <p>On-chain > Arweave > IPFS (pinned) > centralized server — ในแง่ permanence centralized storage มี "rug" risk ที่แท้จริง</p></div>
+              </li>
+              <li>
+                <span class="digest-index">04</span>
+                <div><strong>Solana compressed NFTs เปลี่ยน economics อย่างสิ้นเชิง</strong>
+                <p>&lt;$0.001 ต่อ NFT ทำให้ large-scale airdrops, loyalty programs, gaming assets เป็นไปได้จริง — use case ที่ Ethereum ทำไม่ได้ในต้นทุนเดียวกัน</p></div>
+              </li>
+              <li>
+                <span class="digest-index">05</span>
+                <div><strong>Market หดตัวหนักจาก 2022 peak แต่ blue-chips ยังอยู่</strong>
+                <p>CryptoPunks และ Bored Apes retain cultural significance แม้ volume โดยรวมจะเป็น fraction ของ peak — NFT market mirrors traditional art: handful of established names hold value, long tail goes to zero</p></div>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">NFTs · Page 06</span>
+          <span class="page-number">06</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-11-hyperliquid.html">
+          <span>Previous</span>
+          <strong>บทที่ 11: Hyperliquid — DEX ที่ท้าทาย CEX</strong>
+        </a>
+        <a class="nav-card" href="./chapter-13-governance-tokenomics.html">
+          <span>Next</span>
+          <strong>บทที่ 13: DAO & Governance — Tokenomics</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="../assets/js/mermaid-init.js"></script>
+  <script>
+    // Particle background
+    (function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W, H, dots;
+      const COLOR = '192,132,252';
+      const COUNT = 55;
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function init() {
+        dots = Array.from({ length: COUNT }, () => ({
+          x: Math.random() * W, y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.5 + 0.5,
+        }));
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        dots.forEach(d => {
+          d.x += d.vx; d.y += d.vy;
+          if (d.x < 0 || d.x > W) d.vx *= -1;
+          if (d.y < 0 || d.y > H) d.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${COLOR},0.55)`;
+          ctx.fill();
+        });
+        dots.forEach((a, i) => {
+          for (let j = i + 1; j < dots.length; j++) {
+            const b = dots[j];
+            const dist = Math.hypot(a.x - b.x, a.y - b.y);
+            if (dist < 110) {
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = `rgba(${COLOR},${0.12 * (1 - dist / 110)})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
+        });
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', () => { resize(); init(); });
+      resize(); init(); draw();
+    })();
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

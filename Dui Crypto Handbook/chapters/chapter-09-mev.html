@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 9: MEV — มูลค่าที่ซ่อนอยู่ใน Mempool • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="Sandwich Attacks, Frontrunning, Flashbots, MEV-Boost, PBS, L2 Sequencers — ทำความเข้าใจ Maximal Extractable Value ฉบับสมบูรณ์">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      top: 20%;
+      right: 5%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle, rgba(248,113,113,0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 10;
+      padding-top: 0;
+    }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Colorful: Digest List badges ─────────────────────────────── */
+    .digest-list .digest-index {
+      background: rgba(248,113,113,0.15);
+      color: #f87171;
+      border: 1px solid rgba(248,113,113,0.35);
+    }
+
+    /* ── Colorful: Info chips ──────────────────────────────────────── */
+    .info-chip {
+      border-left: 3px solid rgba(248,113,113,0.45);
+      background: rgba(248,113,113,0.05) !important;
+    }
+    .info-chip strong { color: #f87171; }
+
+    /* ── Colorful: Table headers ───────────────────────────────────── */
+    .table-shell thead th {
+      background: rgba(248,113,113,0.1);
+      color: #f87171;
+      border-bottom: 1px solid rgba(248,113,113,0.3);
+    }
+    .table-shell tbody tr:nth-child(odd) td { background: rgba(248,113,113,0.02); }
+    .table-shell tbody tr:hover td { background: rgba(248,113,113,0.06); }
+
+    /* ── MEV Attack Flow Diagram ───────────────────────────────────── */
+    .mev-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .mev-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      padding: 0.85rem 1.1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .mev-step:last-child { border-bottom: none; }
+
+    .mev-step-badge {
+      min-width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.82rem; font-weight: 700; flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .mev-step-badge.attack { background: rgba(248,113,113,0.2); color: #f87171; }
+    .mev-step-badge.victim { background: rgba(245,166,35,0.2); color: #f5a623; }
+    .mev-step-badge.exit   { background: rgba(98,126,234,0.2); color: #8da4f5; }
+    .mev-step-badge.neutral{ background: rgba(156,201,209,0.15); color: #9cc9d1; }
+
+    .mev-step-body { flex: 1; }
+    .mev-step-title { font-size: 0.85rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.2rem; }
+    .mev-step-desc  { font-size: 0.79rem; color: #8a9aaa; line-height: 1.5; }
+    .mev-step-tag {
+      display: inline-block; margin-top: 0.35rem;
+      font-size: 0.7rem; font-weight: 700;
+      padding: 0.15rem 0.5rem; border-radius: 4px;
+    }
+    .mev-step-tag.red    { background: rgba(248,113,113,0.15); color: #f87171; }
+    .mev-step-tag.amber  { background: rgba(245,166,35,0.15);  color: #f5a623; }
+    .mev-step-tag.blue   { background: rgba(98,126,234,0.15);  color: #8da4f5; }
+    .mev-step-tag.teal   { background: rgba(156,201,209,0.15); color: #9cc9d1; }
+    .mev-step-tag.green  { background: rgba(74,222,128,0.15);  color: #4ade80; }
+
+    .mev-step:nth-child(odd)  { background: rgba(248,113,113,0.03); }
+    .mev-step:nth-child(even) { background: rgba(255,255,255,0.02); }
+
+    /* ── PBS Architecture Diagram ──────────────────────────────────── */
+    .pbs-pipeline {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+      align-items: center;
+      gap: 0;
+      margin: 1rem 0;
+    }
+    .pbs-card {
+      padding: 0.75rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.02);
+      border-top-width: 2px;
+    }
+    .pbs-card.searcher { border-top-color: #f87171; }
+    .pbs-card.builder  { border-top-color: #f5a623; }
+    .pbs-card.relay    { border-top-color: #9cc9d1; }
+    .pbs-card.proposer { border-top-color: #4ade80; }
+    .pbs-role {
+      font-family: 'Prompt', sans-serif; font-size: 0.68rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem;
+    }
+    .pbs-card.searcher .pbs-role { color: #f87171; }
+    .pbs-card.builder  .pbs-role { color: #f5a623; }
+    .pbs-card.relay    .pbs-role { color: #9cc9d1; }
+    .pbs-card.proposer .pbs-role { color: #4ade80; }
+    .pbs-action {
+      font-family: 'Prompt', sans-serif; font-size: 0.92rem; font-weight: 700;
+      color: #e2e8f0; margin-bottom: 0.25rem;
+    }
+    .pbs-detail { font-size: 0.82rem; color: #64748b; line-height: 1.45; }
+    .pbs-connector {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0.15rem; padding: 0 0.4rem;
+    }
+    .pbs-connector-arrow { color: #2d3748; font-size: 1.1rem; line-height: 1; }
+    .pbs-connector-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.62rem; font-weight: 600;
+      color: #334155; text-align: center; letter-spacing: 0.03em;
+      line-height: 1.3; max-width: 80px;
+    }
+    @media (max-width: 680px) {
+      .pbs-pipeline { grid-template-columns: 1fr; }
+      .pbs-connector { flex-direction: row; justify-content: center; padding: 0.1rem 0; }
+    }
+
+    /* ── Protection Cards ──────────────────────────────────────────── */
+    .protect-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
+    }
+    @media (max-width: 640px) { .protect-grid { grid-template-columns: 1fr; } }
+
+    .protect-card {
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      border: 1px solid;
+      background: rgba(255,255,255,0.03);
+    }
+    .protect-card.green  { border-color: rgba(74,222,128,0.25); }
+    .protect-card.teal   { border-color: rgba(156,201,209,0.25); }
+    .protect-card.blue   { border-color: rgba(98,126,234,0.25); }
+    .protect-card.amber  { border-color: rgba(245,166,35,0.25); }
+
+    .protect-card-label {
+      font-size: 0.73rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.35rem;
+    }
+    .protect-card.green  .protect-card-label { color: #4ade80; }
+    .protect-card.teal   .protect-card-label { color: #9cc9d1; }
+    .protect-card.blue   .protect-card-label { color: #8da4f5; }
+    .protect-card.amber  .protect-card-label { color: #f5a623; }
+
+    .protect-card h4 { font-size: 0.88rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.25rem; }
+    .protect-card p  { font-size: 0.78rem; color: #8a9aaa; line-height: 1.5; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: "loose",
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#2a1515",
+        primaryTextColor: "#ede7dc",
+        primaryBorderColor: "#f87171",
+        lineColor: "#f87171",
+        secondaryColor: "#251a1a",
+        tertiaryColor: "#21252c",
+        fontFamily: "Prompt, Noto Serif Thai, Kanit, sans-serif"
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 09</span>
+  <button class="chapter-picker-btn" data-current="09" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background: linear-gradient(90deg, #f87171, #9cc9d1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; letter-spacing: 0.16em;">Part 3 • Protocols And Infrastructure</div>
+          <h1>บทที่ 9: MEV — มูลค่าที่ซ่อนอยู่ใน Mempool</h1>
+          <p class="lede">
+            ทุกครั้งที่คุณ submit transaction เข้า public mempool คุณกำลังเปิดเผยเจตนาของตัวเองให้กับนักล่าที่มีโครงสร้างพื้นฐานเร็วกว่าคุณ Maximal Extractable Value คือภาษีล่องหนที่ผู้ใช้ส่วนใหญ่ไม่รู้ว่าตัวเองกำลังจ่าย
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          Mempool เป็น "dark forest" — ทุกการเคลื่อนไหวที่มองเห็นได้จะดึงดูดผู้ล่า
+          <cite>Liu Cixin Analogy</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_09_mev.png" alt="Chapter 9 MEV">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — MEV Fundamentals
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 09 • Fundamentals</span>
+            <h2 class="book-page-title">MEV คืออะไร และใครได้ประโยชน์</h2>
+          </div>
+          <div class="book-page-index">MEV<br>Overview</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ที่มาของ MEV</h3>
+            <p>การควบคุม transaction ordering สร้างและกระจายมูลค่าบน chain โดยที่ผู้ใช้ทั่วไปมักไม่รู้ว่ากำลังเสียเปรียบอยู่</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Maximal Extractable Value (MEV)</strong> คือกำไรที่เกิดจากการจัดเรียง รวม หรือยกเว้น transaction ภายใน block อย่างมีกลยุทธ์ เดิมเรียกว่า "Miner Extractable Value" ในยุค Proof of Work ปัจจุบันใช้คำว่า "Maximal" เพราะรวมถึง validators, builders และ searchers ทั้งหมด
+            </p>
+            <p>
+              โปรดนึกถึงตลาดที่มีกระดานสาธารณะ: ทุกคนต้องเขียนสิ่งที่ตัวเองจะซื้อก่อนจะซื้อได้ ผู้ค้าเร็วจะเห็นข้อมูลนั้น วิ่งไปซื้อก่อน แล้วขายต่อในราคาสูงขึ้น — นี่คือสิ่งที่เกิดขึ้นใน mempool ทุกวัน
+            </p>
+          </div>
+
+          <div class="info-strip">
+            <div class="info-chip">
+              <strong>Searcher</strong>
+              <span>bot ที่สแกน mempool หาโอกาส submit bundle เพื่อ extract MEV</span>
+            </div>
+            <div class="info-chip">
+              <strong>Builder</strong>
+              <span>สร้าง block โดยรวม bundles จาก searchers เพื่อให้ได้ block value สูงสุด</span>
+            </div>
+            <div class="info-chip">
+              <strong>Proposer</strong>
+              <span>validator ที่เลือก block ที่ให้ผลตอบแทนสูงสุด ไม่จำเป็นต้องสร้างเอง</span>
+            </div>
+          </div>
+
+          <ol class="digest-list">
+            <li>
+              <span class="digest-index">1</span>
+              <div>
+                <strong>MEV เป็นภาษีล่องหน</strong>
+                <p>ผู้ใช้จ่ายในรูป worse execution, higher slippage และ front-running โดยไม่เห็นรายการใดในใบเสร็จ</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">2</span>
+              <div>
+                <strong>ไม่ใช่ MEV ทุกอย่างที่แย่</strong>
+                <p>Arbitrage และ liquidation ให้บริการ economically useful ช่วยให้ราคา aligned และ protocol solvent</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">3</span>
+              <div>
+                <strong>Sandwich attack คือ pure wealth transfer</strong>
+                <p>ผู้ใช้จ่ายมากขึ้น searcher รับไป ตลาดไม่ได้อะไรเลย นี่คือ malignant MEV ที่แท้จริง</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Visibility in the mempool equals vulnerability</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — Extraction Strategies
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 09 • Attack Patterns</span>
+            <h2 class="book-page-title">Sandwich Attack ทำงานอย่างไร ทีละขั้น</h2>
+          </div>
+          <div class="book-page-index">MEV<br>Extraction</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>กายวิภาคของการโจมตี</h3>
+            <p>AMM ใช้ pricing curve ที่คำนวณได้ล่วงหน้า + mempool ที่สาธารณะ = สูตรสำเร็จสำหรับ sandwich attack ที่แทบจะ risk-free สำหรับ searcher</p>
+          </div>
+
+          <div class="mev-flow">
+            <div class="mev-step">
+              <div class="mev-step-badge neutral">📡</div>
+              <div class="mev-step-body">
+                <div class="mev-step-title">Searcher bot detect pending swap ใน mempool</div>
+                <div class="mev-step-desc">ผู้ใช้ submit Tx เพื่อ swap ETH → USDC บน Uniswap bot เห็น Tx ที่ยังไม่ถูก include คำนวณ slippage และกำไรที่ทำได้ทันที</div>
+                <span class="mev-step-tag teal">Detection</span>
+              </div>
+            </div>
+            <div class="mev-step">
+              <div class="mev-step-badge attack">①</div>
+              <div class="mev-step-body">
+                <div class="mev-step-title">Front-run: Bot ซื้อ USDC ก่อนผู้ใช้ด้วย gas สูงกว่า</div>
+                <div class="mev-step-desc">Bot inject Tx ก่อน ซื้อ USDC จาก pool ราคาขยับขึ้น เพราะ constant product curve (x×y=k) การซื้อ USDC ทำให้ราคา ETH/USDC ต่ำลงในมุมผู้ใช้</div>
+                <span class="mev-step-tag red">Front-run</span>
+              </div>
+            </div>
+            <div class="mev-step">
+              <div class="mev-step-badge victim">②</div>
+              <div class="mev-step-body">
+                <div class="mev-step-title">Victim's Tx execute ที่ราคาแย่กว่าเดิม</div>
+                <div class="mev-step-desc">ผู้ใช้ได้รับ USDC น้อยกว่าที่ quote ไว้ตอน submit ทั้งหมดอยู่ใน slippage tolerance ที่ตั้งไว้ (เช่น 1%) ผู้ใช้ไม่รู้ว่าถูก exploit</div>
+                <span class="mev-step-tag amber">Victim executes at worse price</span>
+              </div>
+            </div>
+            <div class="mev-step">
+              <div class="mev-step-badge exit">③</div>
+              <div class="mev-step-body">
+                <div class="mev-step-title">Back-run: Bot ขาย USDC ออก ราคา settle กลับ</div>
+                <div class="mev-step-desc">Bot ขาย USDC ที่ซื้อไปก่อนหน้า กำไรมาจากส่วนต่างราคา bundle ทั้งสามถูก execute atomically — ถ้า fail ทั้ง bundle revert ไม่มีความเสี่ยงของ bot</div>
+                <span class="mev-step-tag blue">Profit extracted</span>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="callout concept-card" style="margin-top: 1rem;">
+            <div class="callout-meta">
+              <span class="term-chip">MEV Types</span>
+              <span>ไม่ใช่แค่ sandwich</span>
+            </div>
+            <h3 class="callout-title">รูปแบบ MEV ที่พบบ่อย</h3>
+            <div class="table-shell" style="margin-top: 0.5rem;">
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ประเภท</th>
+                      <th>วิธีการ</th>
+                      <th>ผลต่อตลาด</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong style="color:#9cc9d1;">CEX-DEX Arb</strong></td>
+                      <td>ซื้อ/ขายระหว่าง CEX และ DEX หลัง oracle update</td>
+                      <td style="color:#4ade80;">✓ Price alignment</td>
+                    </tr>
+                    <tr>
+                      <td><strong style="color:#9cc9d1;">Liquidation</strong></td>
+                      <td>ปิด unhealthy position รับ bonus 5–10%</td>
+                      <td style="color:#4ade80;">✓ Protocol solvency</td>
+                    </tr>
+                    <tr>
+                      <td><strong style="color:#f87171;">Sandwich</strong></td>
+                      <td>Front-run + back-run trade ของผู้ใช้</td>
+                      <td style="color:#f87171;">✗ Pure value extraction</td>
+                    </tr>
+                    <tr>
+                      <td><strong style="color:#f5a623;">Front-running</strong></td>
+                      <td>Copy trade ด้วย gas สูงกว่า เอาโอกาสไปก่อน</td>
+                      <td style="color:#f87171;">✗ User harm</td>
+                    </tr>
+                    <tr>
+                      <td><strong style="color:#9b7fe8;">JIT Liquidity</strong></td>
+                      <td>Add/remove liquidity รอบ large trade</td>
+                      <td style="color:#f5a623;">~ Ambiguous</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Predictable AMM curves + public mempool = sandwich attack recipe</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — User Protection
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 09 • Protection</span>
+            <h2 class="book-page-title">วิธีป้องกัน MEV ในฐานะผู้ใช้</h2>
+          </div>
+          <div class="book-page-index">MEV<br>User Defense</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>เป้าหมายคือลด exposure ไม่ใช่กำจัด MEV ทั้งหมด</h3>
+            <p>MEV กำจัดไม่ได้สมบูรณ์ แต่สามารถทำให้มัน extract ยากขึ้นและ profitable น้อยลงด้วยเครื่องมือที่มีอยู่</p>
+          </div>
+
+          <div class="protect-grid">
+            <div class="protect-card teal">
+              <div class="protect-card-label">Layer 1: Transaction</div>
+              <h4>Tight Slippage Tolerance</h4>
+              <p>ตั้ง 0.5–1% สำหรับ liquid pairs ตั้งต่ำกว่า 0.3% เสี่ยง tx fail แต่สูงกว่า 1% เปิดโอกาสให้ sandwich มากขึ้น</p>
+            </div>
+
+            <div class="protect-card green">
+              <div class="protect-card-label">Layer 2: Routing</div>
+              <h4>Flashbots Protect</h4>
+              <p>Route ผ่าน private channel แทน public mempool bot ไม่เห็น intent ก่อน execute Failed tx ไม่เสีย gas trade-off: inclusion less predictable</p>
+            </div>
+
+            <div class="protect-card blue">
+              <div class="protect-card-label">Layer 3: Mechanism</div>
+              <h4>CoW Swap / UniswapX</h4>
+              <p>Batch auction + solver competition ทำให้ sandwich structurally ยากขึ้น CoW หา Coincidence of Wants ก่อน touch AMM liquidity</p>
+            </div>
+
+            <div class="protect-card amber">
+              <div class="protect-card-label">Layer 4: Size</div>
+              <h4>Split Large Orders</h4>
+              <p>แบ่ง trade ใหญ่หลาย blocks ใช้ TWAP strategy ลด price impact ต่อ block ทำให้ sandwich ทำกำไรได้น้อยลงต่อ attack</p>
+            </div>
+          </div>
+
+          <div class="callout warning-box" style="margin-top: 1rem;">
+            <div class="callout-meta">
+              <span class="status-pill warning">Warning</span>
+              <span>Don't try to become a searcher without research</span>
+            </div>
+            <h3 class="callout-title">MEV searching ไม่ใช่ free money</h3>
+            <p>
+              ระบบ AMM ทำให้ unit ที่เพิ่มขึ้นราคาแพงกว่าเดิมเสมอ bot ที่ calibrate ผิดมักบริจาค value ให้กับ professional searchers, builders และ validators แทนที่จะ extract ได้ การที่จะ profitable จริง ต้องมี precise simulation, risk controls และ infrastructure ระดับ production
+            </p>
+          </div>
+
+          <ol class="digest-list">
+            <li>
+              <span class="digest-index">1</span>
+              <div>
+                <strong>ใช้ DEX ที่มี MEV protection built-in</strong>
+                <p>CoW Swap, UniswapX และ 1inch Fusion ออกแบบมาเพื่อลด sandwich attacks โดยไม่ต้องทำอะไรเพิ่ม</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">2</span>
+              <div>
+                <strong>Private routing คือ upgrade ฟรีที่ดีที่สุด</strong>
+                <p>Flashbots Protect และ MEV Blocker ง่ายต่อการตั้งค่าและให้ protection ทันทีโดยไม่ต้องเปลี่ยน workflow</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">3</span>
+              <div>
+                <strong>บน L2 ผู้คุกคามอาจคือ sequencer เอง</strong>
+                <p>Public mempool MEV ลดลง แต่ centralized sequencer มีข้อมูลทุก tx ก่อน execute ทางป้องกันคือ intent-based systems อย่าง CoW Swap ที่ทำงานอิสระ</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Intent-based systems and private routing are the best practical defenses</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — MEV-Boost & PBS
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 09 • Infrastructure</span>
+            <h2 class="book-page-title">Flashbots, MEV-Boost และ Proposer-Builder Separation</h2>
+          </div>
+          <div class="book-page-index">MEV<br>MEV-Boost & PBS</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>แทนที่จะกำจัด MEV ให้ channel มันผ่าน infrastructure ที่ดีกว่า</h3>
+            <p>Flashbots เสนอ approach ที่แตกต่าง: สร้าง transparent marketplace สำหรับ block space แทนการสู้กับแรงทางเศรษฐกิจที่ไม่อาจหยุดได้</p>
+          </div>
+
+          <div class="pbs-pipeline">
+            <div class="pbs-card searcher">
+              <div class="pbs-role">Searchers</div>
+              <div class="pbs-action">Submit Bundles</div>
+              <div class="pbs-detail">ส่ง tx bundles + bid ผ่าน private channel</div>
+            </div>
+            <div class="pbs-connector">
+              <div class="pbs-connector-arrow">→</div>
+              <div class="pbs-connector-label">bid to builders</div>
+            </div>
+            <div class="pbs-card builder">
+              <div class="pbs-role">Builders <span style="font-weight:500;opacity:0.7;">~2–5</span></div>
+              <div class="pbs-action">Construct Blocks</div>
+              <div class="pbs-detail">bundles + mempool → block มูลค่าสูงสุด ส่ง header + bid ให้ relay</div>
+            </div>
+            <div class="pbs-connector">
+              <div class="pbs-connector-arrow">→</div>
+              <div class="pbs-connector-label">header + bid (hidden)</div>
+            </div>
+            <div class="pbs-card relay">
+              <div class="pbs-role">Relay (escrow)</div>
+              <div class="pbs-action">Verify & Forward</div>
+              <div class="pbs-detail">ส่ง header เท่านั้น ป้องกัน proposer ขโมย MEV</div>
+            </div>
+            <div class="pbs-connector">
+              <div class="pbs-connector-arrow">→</div>
+              <div class="pbs-connector-label">highest bid header</div>
+            </div>
+            <div class="pbs-card proposer">
+              <div class="pbs-role">Proposer / Validator</div>
+              <div class="pbs-action">Sign & Propose</div>
+              <div class="pbs-detail">เลือก bid สูงสุด sign header → รับ payment</div>
+            </div>
+          </div>
+
+          <div class="callout warning-box" style="margin-top: 1rem;">
+            <div class="callout-meta">
+              <span class="status-pill warning">Centralization Risk</span>
+              <span>~90% of blocks via MEV-Boost (early 2026)</span>
+            </div>
+            <h3 class="callout-title">PBS แก้ปัญหาหนึ่ง สร้างปัญหาใหม่</h3>
+            <p>
+              ต้น 2024: builder 2 รายสร้าง 90% ของ blocks ใน 2 สัปดาห์ relay บางเจ้า filter OFAC transactions ส่งผลทั้ง network Flashbots กำลังพัฒนา <strong>BuilderNet</strong> ซึ่งใช้ secure enclaves ให้หลาย operators ร่วมกันสร้าง block โดยไม่มีใครเห็นข้อมูลของอีกฝ่าย — ยังอยู่ระหว่าง rollout ต้น 2026
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">MEV-Boost solved gas wars but created builder centralization</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — L2 & Cross-Domain MEV
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 09 • L2 & Cross-Domain</span>
+            <h2 class="book-page-title">MEV บน L2 และภัยคุกคามข้ามชั้น</h2>
+          </div>
+          <div class="book-page-index">MEV<br>L2 & Future</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>บน L2 ผู้คุกคามใหม่ คือ sequencer</h3>
+            <p>Rollups ลด sandwich attacks จาก public mempool แต่ centralized sequencer มีอำนาจมากกว่า builder L1 ใด ๆ เพราะไม่ต้องชนะ auction ใด</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              บน L2 ผู้ใช้ส่ง tx โดยตรงไปยัง sequencer ไม่ผ่าน public mempool bot สาธารณะไม่เห็น intent แต่ <strong>sequencer เห็นทุกอย่าง</strong> และสามารถ insert หรือ reorder tx ของตัวเองก่อนได้โดยไม่ต้องจ่าย bid ใดให้ใคร
+            </p>
+            <p>
+              ต้น 2026: Arbitrum (Offchain Labs), Optimism + Base (OP Labs), zkSync (Matter Labs), Starknet (StarkWare) ทั้งหมดมี centralized sequencer ที่ตัวเองรัน พวกเขาประกาศ FIFO policy อย่างเป็นทางการ แต่นั่นเป็น <em>trust-based promise</em> ไม่ใช่ cryptographic guarantee
+            </p>
+          </div>
+
+          <div class="table-shell">
+            <div class="table-topbar">
+              <div>
+                <h3>L1 vs L2 MEV Comparison</h3>
+                <p class="caption">Trade-off ของแต่ละ layer</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>มิติ</th>
+                    <th>L1 Ethereum</th>
+                    <th>L2 Rollup</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Sandwich risk</td>
+                    <td style="color:#f87171;">สูง (public mempool)</td>
+                    <td style="color:#4ade80;">ต่ำ (direct to sequencer)</td>
+                  </tr>
+                  <tr>
+                    <td>Sequencer MEV</td>
+                    <td style="color:#4ade80;">ต่ำ (competitive auction)</td>
+                    <td style="color:#f87171;">ต้องเชื่อใจ operator</td>
+                  </tr>
+                  <tr>
+                    <td>Censorship resist.</td>
+                    <td style="color:#4ade80;">สูงกว่า (หลาย builders)</td>
+                    <td style="color:#f5a623;">ปานกลาง (policy-dependent)</td>
+                  </tr>
+                  <tr>
+                    <td>Best protection</td>
+                    <td>Private routing + CoW Swap</td>
+                    <td>Intent systems (CoW Swap)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="callout concept-card" style="margin-top: 1rem;">
+            <div class="callout-meta">
+              <span class="term-chip">Next Frontier</span>
+              <span>Cross-Domain MEV</span>
+            </div>
+            <h3 class="callout-title">ภัยคุกคามที่ยิ่งใหญ่กว่า: MEV ข้ามหลาย Chain</h3>
+            <p>
+              เมื่อ ecosystem เติบโตและ interconnected มากขึ้น price differences ระหว่าง chains, bridge timing และ latency กลายเป็นแหล่ง MEV ใหม่ที่ซับซ้อนกว่า single-chain counterparts นักวิจัยเรียกมันว่า "existential risk to decentralization" เพราะมันบังคับให้ coordination ข้ามหลาย consensus mechanisms ที่มี block time และ economic model ต่างกัน
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">On L2, the sequencer IS the potential adversary — trust-based, not protocol-enforced</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-08-defi.html">
+          <span>Previous</span>
+          <strong>บทที่ 8: DeFi — ระบบการเงินที่ทำงานด้วยโค้ด</strong>
+        </a>
+        <a class="nav-card" href="./chapter-10-stablecoins-rwa.html">
+          <span>Next</span>
+          <strong>บทที่ 10: Stablecoins & RWA</strong>
+        </a>
+      </nav>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function() {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      const COUNT = 55;
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      for (let i = 0; i < COUNT; i++) {
+        particles.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          r: Math.random() * 1.4 + 0.4,
+          dx: (Math.random() - 0.5) * 0.25,
+          dy: (Math.random() - 0.5) * 0.25,
+          o: Math.random() * 0.4 + 0.1
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (const p of particles) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(248,113,113,${p.o})`;
+          ctx.fill();
+          p.x += p.dx;
+          p.y += p.dy;
+          if (p.x < 0) p.x = canvas.width;
+          if (p.x > canvas.width) p.x = 0;
+          if (p.y < 0) p.y = canvas.height;
+          if (p.y > canvas.height) p.y = 0;
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 5: Solana — เครื่องจักรความเร็วสูงของ Crypto • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="Parallel Execution, Proof of History, Gulf Stream, Staking, SVM, Firedancer — ทำความเข้าใจ Solana ฉบับสมบูรณ์">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    #nano-canvas {
+      position: fixed; inset: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none; opacity: 0.28;
+    }
+    .ambient-glow {
+      position: fixed; top: 20%; right: 5%;
+      width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(153, 69, 255, 0.04) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+    .page-shell { position: relative; z-index: 10; padding-top: 0; }
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+    .chapter-topbar::before { display: none; }
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true, securityLevel: "loose", theme: "base",
+      themeVariables: {
+        primaryColor: "#252a32", primaryTextColor: "#ede7dc",
+        primaryBorderColor: "#9945ff", lineColor: "#9945ff",
+        tertiaryColor: "#21252c", fontFamily: "Prompt, Noto Serif Thai, Kanit, sans-serif"
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 05</span>
+  <button class="chapter-picker-btn" data-current="05" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background: linear-gradient(90deg, #9945ff, #9cc9d1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; letter-spacing: 0.16em;">Part 2 • The Assets</div>
+          <h1>บทที่ 5: Solana — เครื่องจักรความเร็วสูงของ Crypto</h1>
+          <p class="lede">
+            Bitcoin เลือกความปลอดภัย Ethereum เลือก programmability Solana เลือกความเร็ว — ด้วยการออกแบบที่แตกต่างจาก blockchain ทุกตัวที่มีมาก่อน Solana พิสูจน์ว่า decentralized network สามารถเร็วได้เกือบเท่ากับระบบ centralized
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          Solana is a high-performance blockchain that can process thousands of transactions per second with sub-second finality and near-zero fees.
+          <span style="display:block; font-size: 0.85em; color: #9cc9d1; margin-top: 0.5rem; font-style: normal; font-family: 'Prompt', sans-serif;">"บล็อกเชนประสิทธิภาพสูงที่ประมวลผลได้หลายพันธุรกรรมต่อวินาที ด้วย finality ต่ำกว่าหนึ่งวินาทีและค่าธรรมเนียมแทบเป็นศูนย์"</span>
+          <cite>Solana Whitepaper — Anatoly Yakovenko (2017)</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_05_solana.png" alt="Chapter 5 Solana Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — Architecture & Parallel Execution
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 05 • สถาปัตยกรรม</span>
+            <h2 class="book-page-title">Parallel Execution — ทำงานหลาย Lanes พร้อมกัน</h2>
+          </div>
+          <div class="book-page-index">Solana<br>Architecture</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ทำไม Solana ถึงเร็วกว่า Ethereum มาก?</h3>
+            <p>Ethereum ประมวลผล transaction ทีละอัน เหมือนซูเปอร์มาร์เก็ตที่มีแค่แถวเดียว Solana เปิดหลายสิบแถวพร้อมกัน — ยิ่งมี CPU cores มาก ยิ่ง throughput สูง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              นวัตกรรมหลักของ Solana คือ <strong>Parallel Execution</strong> — ทุก transaction ต้องประกาศล่วงหน้าว่าจะอ่าน/เขียน accounts ไหนบ้าง ทำให้ runtime รู้ว่า transactions ใดไม่ overlap กันและ run พร้อมกันได้บน CPU cores หลายตัว สร้างความสัมพันธ์โดยตรงระหว่าง hardware และ throughput
+            </p>
+            <p>
+              State ของ Solana แบ่งเป็น <strong>Accounts</strong> แต่ละอันเป็น "ช่อง" เก็บข้อมูลอิสระ โปรแกรม (smart contracts) อยู่ใน executable accounts ที่ code immutable ส่วน user data อยู่ใน data accounts ที่ owned โดย program นั้น programs เรียกกันผ่าน <strong>CPI (Cross-Program Invocation)</strong> เหมือน function call ระหว่าง programs
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Concept</span>
+              <span>PDA — Program Derived Address</span>
+            </div>
+            <h3 class="callout-title">Escrow ที่ไม่มีใครถือกุญแจ</h3>
+            <p>PDA คือ address ที่ไม่มี private key — program สร้างจากการคำนวณ ทำให้ <em>มีเพียง program เท่านั้น</em>ที่ authorize transaction จาก address นี้ได้ แก้ปัญหา escrow ดั้งเดิมที่ต้องมีคนถือกุญแจและเสี่ยงถูกขโมย — กองทุน DeFi อยู่ใน PDA ไม่มีใครแตะได้นอกจากโค้ดที่กำหนดไว้</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Accounts ต้องฝาก <strong>lamports</strong> (หน่วยเล็กสุดของ SOL เทียบเท่า satoshi ใน Bitcoin) ขั้นต่ำเพื่อเป็น rent-exempt ป้องกัน state bloat — เหมือนมัดจำที่จ่ายครั้งเดียวเพื่อใช้พื้นที่เก็บข้อมูลถาวร ไม่มีค่าเช่ารายเดือน
+            </p>
+            <p>
+              ความแตกต่างจาก Ethereum: Ethereum ใช้ Account Model ที่ยอดเงินอัปเดตตรง (คล้ายบัญชีธนาคาร) ส่วน Bitcoin ใช้ UTXO Solana ก็เป็น Account Model แต่แยก code กับ data ออกจากกันอย่างชัดเจน ทำให้ parallel execution เป็นไปได้
+            </p>
+          </div>
+
+          <div class="mermaid-shell">
+            <div class="mermaid-toolbar">
+              <div class="mermaid-title">Figure 1 • Sequential vs Parallel Execution</div>
+              <span class="status-pill info">Diagram</span>
+            </div>
+            <div class="mermaid-frame" style="padding: 1.5rem 1.25rem;">
+              <style>
+                .cmp-grid { display: flex; gap: 1.5rem; width: 100%; font-family: 'Prompt', sans-serif; }
+                .cmp-col { flex: 1; }
+                .cmp-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+                .cmp-title.eth { color: #627eea; border-color: rgba(98,126,234,0.3); }
+                .cmp-title.sol { color: #9945ff; border-color: rgba(153,69,255,0.3); }
+                .cmp-lane { display: flex; flex-direction: column; gap: 0.35rem; }
+                .cmp-tx {
+                  padding: 0.45rem 0.65rem; border-radius: 5px; font-size: 0.78rem;
+                  color: #ede7dc; border: 1px solid rgba(255,255,255,0.08);
+                  background: rgba(255,255,255,0.03);
+                }
+                .cmp-tx.eth { border-left: 3px solid rgba(98,126,234,0.5); }
+                .cmp-tx.sol { border-left: 3px solid rgba(153,69,255,0.5); }
+                .cmp-tx.sol-dim { opacity: 0.5; }
+                .cmp-lanes { display: flex; gap: 0.5rem; }
+                .cmp-lanes .cmp-lane { flex: 1; }
+                .cmp-lane-label { font-size: 0.70rem; color: #475569; text-align: center; margin-bottom: 0.3rem; }
+              </style>
+              <div class="cmp-grid">
+                <div class="cmp-col">
+                  <div class="cmp-title eth">Ethereum — แถวเดียว (Sequential)</div>
+                  <div class="cmp-lane">
+                    <div class="cmp-tx eth">① Swap บน Uniswap</div>
+                    <div class="cmp-tx eth" style="opacity:0.6;">② Transfer ETH</div>
+                    <div class="cmp-tx eth" style="opacity:0.35;">③ Mint NFT</div>
+                    <div class="cmp-tx eth" style="opacity:0.2;">④ Borrow บน Aave</div>
+                  </div>
+                </div>
+                <div class="cmp-col">
+                  <div class="cmp-title sol">Solana — หลายแถว (Parallel)</div>
+                  <div class="cmp-lanes">
+                    <div class="cmp-lane">
+                      <div class="cmp-lane-label">Core 1</div>
+                      <div class="cmp-tx sol">① Swap</div>
+                      <div class="cmp-tx sol" style="opacity:0.5;">⑤ Swap</div>
+                    </div>
+                    <div class="cmp-lane">
+                      <div class="cmp-lane-label">Core 2</div>
+                      <div class="cmp-tx sol">② Transfer</div>
+                      <div class="cmp-tx sol" style="opacity:0.5;">⑥ Mint</div>
+                    </div>
+                    <div class="cmp-lane">
+                      <div class="cmp-lane-label">Core 3</div>
+                      <div class="cmp-tx sol">③ Mint NFT</div>
+                      <div class="cmp-tx sol" style="opacity:0.5;">⑦ Borrow</div>
+                    </div>
+                    <div class="cmp-lane">
+                      <div class="cmp-lane-label">Core 4</div>
+                      <div class="cmp-tx sol">④ Borrow</div>
+                      <div class="cmp-tx sol" style="opacity:0.5;">⑧ Vote</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="figure-caption">
+            <span class="figure-caption-title">Figure Caption</span>
+            Ethereum ประมวลผล tx ทีละอัน (sequential) Solana ระบุ accounts ล่วงหน้าแล้ว run tx ที่ไม่ overlap พร้อมกันบน multiple cores — throughput โตตาม hardware โดยตรง
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Solana · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — Transactions, Fees & UX
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 05 • ค่าธรรมเนียมและ UX</span>
+            <h2 class="book-page-title">ค่าธรรมเนียมเศษสตางค์ และ Local Fee Markets</h2>
+          </div>
+          <div class="book-page-index">Solana<br>Fees & UX</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ทำไม Solana ถึงถูกกว่า Ethereum มาก?</h3>
+            <p>ค่า gas บน Ethereum ช่วงแออัดอาจสูงถึง $50–$200 ต่อ transaction บน Solana ค่าธรรมเนียมพื้นฐานอยู่ที่ ~0.000005 SOL หรือน้อยกว่า 0.1 บาท — ทำให้พฤติกรรมผู้ใช้เปลี่ยนไปอย่างสิ้นเชิง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ทุก transaction บน Solana จ่าย <strong>Base Fee</strong> 5,000 lamports (~$0.001) ต่อ signature และเพิ่ม <strong>Priority Fee</strong> ได้ตาม compute units ที่ใช้ เพื่อให้ validators เลือก transaction ของตนก่อน ต่างจาก Ethereum ที่ base fee ถูกเผาทิ้ง บน Solana base fee แบ่งครึ่ง — 50% เผาทำลาย 50% ให้ block leader
+            </p>
+            <p>
+              <strong>Local Fee Markets</strong> คือนวัตกรรมสำคัญ — congestion บน Solana คิดราคาตาม account ไม่ใช่ network ทั้งหมด ถ้า Pump.fun แออัดมาก ค่าธรรมเนียมของ Pump.fun สูงขึ้น แต่การโอน SOL ธรรมดาไม่ได้รับผลกระทบ ต่างจาก Ethereum ที่ทุก transaction แข่งกันใช้ block space เดียวกัน อย่างไรก็ตาม ช่วง spam events ปี 2024–2025 ความแออัดบน accounts ยอดนิยมยังคงส่งผลกระทบต่อ performance โดยรวมได้
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Concept</span>
+              <span>Gulf Stream — ไม่มี Public Mempool</span>
+            </div>
+            <h3 class="callout-title">ส่ง Transaction ตรงถึง Validator ที่กำลังจะมาถึง</h3>
+            <p>Bitcoin และ Ethereum broadcast transactions ไปที่ mempool สาธารณะก่อน ทุกคนเห็นได้ เปิดโอกาส frontrunning Solana ใช้ <strong>Gulf Stream</strong> ส่ง transaction ตรงไปที่ leader ปัจจุบันและอนาคต ลด latency และซ่อนข้อมูล transaction จากสาธารณะ ลด MEV บางส่วน แต่ยังไม่หมดสิ้น</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ค่าธรรมเนียมต่ำเปลี่ยน user behavior จริง ๆ บน Ethereum ราคา $50/tx ทำให้คนคิดหนักก่อนทำทุกอย่าง บน Solana ผู้ใช้เทรด position หลายรอบต่อวัน ทดลองของใหม่ เล่น memecoin ขนาดเล็ก เปิด/ปิด position ได้อย่างอิสระ นี่คือเหตุผลที่ Solana กลายเป็นบ้านของ memecoin culture และ retail DeFi ที่เข้าถึงได้
+            </p>
+            <p>
+              <strong>Dropped vs Failed Transactions</strong> — Dropped transactions หายไปก่อนเข้า block เพราะ network overload หรือ priority fee ต่ำเกิน ไม่มีร่องรอยบน chain Failed transactions เข้า block แล้วแต่ revert เพราะ program logic ผิด ทั้งสองดูเหมือนกันจากมุมผู้ใช้ แต่แก้คนละวิธี dropped แก้ด้วย retry + higher fee ส่วน failed ต้องดู error message
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Solana · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — Consensus Stack & Alpenglow
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 05 • Consensus Stack</span>
+            <h2 class="book-page-title">PoH, Tower BFT, Turbine และ Alpenglow</h2>
+          </div>
+          <div class="book-page-index">Solana<br>Consensus</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ความเร็วของ Solana ไม่ได้มาจาก magic — มาจาก stack ที่ออกแบบมาเพื่อกันเลย</h3>
+            <p>ระบบ consensus ของ Solana ประกอบด้วย 4 ชั้นที่ทำงานร่วมกัน แต่ละชั้นออกแบบให้ลด communication overhead ที่ blockchain ทั่วไปต้องเสียเวลากับมัน</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Proof of History (PoH)</strong> คือ "นาฬิกา" ที่ทุกคนเห็นตรงกัน — sequence ของ hash ต่อเนื่องที่พิสูจน์ว่า event ต่าง ๆ เกิดขึ้นในลำดับใด โดยไม่ต้องรอให้ validators คุยกันยืนยัน PoH ทำให้ transaction ordering เป็นที่ตกลงก่อนเข้า consensus จริง ๆ ลด round-trip communication ไปมาก
+            </p>
+            <p>
+              <strong>Tower BFT</strong> ใช้ timestamp จาก PoH เป็น reference point แทนที่จะให้ validators ส่ง message ยืนยันกันไปมา validators cast stake-weighted votes บน blocks ที่มี PoH timestamps ป้องกัน equivocation (vote ขัดแย้งกัน) — finality ปัจจุบัน ~12.8 วินาที แต่ ในทางปฏิบัติ transactions ส่วนใหญ่ยาก reverse ได้เร็วกว่านั้นมาก
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Concept</span>
+              <span>Turbine + QUIC — ส่ง Block ให้ทั่วถึง</span>
+            </div>
+            <h3 class="callout-title">แตก Block เป็นชิ้นเล็ก กระจาย validator tree</h3>
+            <p><strong>Turbine</strong> แตก block เป็น "shreds" ขนาดเล็กแล้วกระจายผ่าน tree structure ของ validators แต่ละ node รับ shreds และส่งต่อ ไม่ต้องส่ง block ทั้งก้อนทุกทาง มี redundancy built-in เพื่อ reconstruct จาก shreds ที่เหลือได้แม้บางชิ้นหาย — <strong>QUIC</strong> เป็น transport protocol ที่ให้ priority bandwidth แก่ validators ที่มี stake มากกว่า ทำให้ spam ไม่สามารถ flood network ได้ง่าย</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Alpenglow</strong> — อัปเกรดที่กำลังจะมาถึง (เป้าหมาย 2026) จะเปลี่ยน consensus stack ใหม่ทั้งหมด แทนที่ PoH และ Tower BFT ด้วย <strong>Votor</strong> ที่ validators แลกเปลี่ยน votes โดยตรงและ aggregate เป็น certificate ใน 1-2 rounds — เป้าหมาย finality ~100–150ms จากปัจจุบัน 12.8 วินาที รองรับ stake malicious ได้ถึง 20% และ offline ได้อีก 20% (รวม 40%) โดยไม่ล่ม
+            </p>
+            <p>
+              Alpenglow ยัง deprecate PoH ออกไปด้วย แทนด้วย fixed slot scheduling และ local timers — นี่คือการเปลี่ยนแปลงระดับ architecture ที่ใหญ่ที่สุดในประวัติศาสตร์ Solana ถ้าสำเร็จ Solana จะมี finality เร็วกว่า Ethereum (~12.8 min) ถึง ~100 เท่า
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Solana · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — Economics, Staking & Decentralization
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 05 • เศรษฐศาสตร์และ Staking</span>
+            <h2 class="book-page-title">SOL Tokenomics, Staking และคำถามเรื่อง Decentralization</h2>
+          </div>
+          <div class="book-page-index">Solana<br>Economics</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>SOL ไม่ได้มีแค่ใช้จ่ายค่าธรรมเนียม</h3>
+            <p>SOL คือ staking collateral, governance weight, และ store of value ในระบบเดียวกัน — monetary policy ออกแบบให้ inflation ลดลงทุกปีจนถึง terminal rate ในปี ~2031</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Inflation เริ่มต้นที่ 8% ต่อปีและลดลง 15% ต่อปีจนถึง terminal rate 1.5% ราวปี 2031 ซึ่งคงที่ตลอดไป เงินเฟ้อนี้จ่ายให้ validators เป็น staking rewards ขณะที่ 50% ของ base fee ถูกเผาทำลายเพื่อหักแรงดันเงินเฟ้อ ช่วงที่ network ยุ่งมากอาจ burn มากกว่า mint ทำให้ SOL supply ลดลงชั่วคราว staking yield ปัจจุบันประมาณ ~7% APY
+            </p>
+            <p>
+              Staking บน Solana ง่ายกว่า Ethereum มาก — ไม่ต้องมี 32 ETH ขั้นต่ำ delegate SOL จำนวนใดก็ได้ไปที่ validator โดยตรง ไม่สูญเสียการครอบครอง validators คิด commission 0–10% จากรางวัล delegation เปิดช่อง epoch boundaries (~2-3 วัน) ทำให้มีความยืดหยุ่นมากกว่า Ethereum ที่ต้องรอ queue
+            </p>
+          </div>
+
+          <div class="callout warning-box">
+            <div class="callout-meta">
+              <span class="status-pill warning">Risk</span>
+              <span>Centralization Concerns</span>
+            </div>
+            <h3 class="callout-title">19–22 Validators ควบคุม 1/3 ของ Stake</h3>
+            <p>จำนวน active validators ลดจาก ~2,000 เหลือ ~800 (ต้นปี 2026) มีเพียง 19-22 validators ขนาดใหญ่ที่ถือ stake รวมกันเกิน "superminority threshold" (1/3 ของ total stake) ซึ่งเพียงพอที่จะหยุด network ได้ถ้าประสานงานกัน นอกจากนี้ Solana ยังไม่มี slashing บน mainnet — ผู้โจมตีไม่สูญเสีย stake โดยอัตโนมัติ ต้องพึ่ง reputation และ economic opportunity cost แทน</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ค่าใช้จ่าย validator สูงมาก: hardware ระดับ enterprise, bandwidth หลาย TB ต่อเดือน, vote transaction fees ~$4,000/เดือน รวมทั้งหมดประมาณ ~$5,000/เดือน validators ขนาดเล็กที่ไม่มี organic delegation พอจะไม่คุ้มทุน Solana Foundation Delegation Program (SFDP) ช่วย bootstrap แต่ support สิ้นสุดใน 12 เดือน ทำให้ต้องหา delegation จากตลาดจริง มิฉะนั้นต้องปิดตัว
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Solana · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — Dev Stack, Use Cases & Trade-offs
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 05 • Dev Stack & Use Cases</span>
+            <h2 class="book-page-title">SVM, SPL Tokens, Firedancer และโลกที่ Solana เหมาะที่สุด</h2>
+          </div>
+          <div class="book-page-index">Solana<br>Use Cases</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Solana ไม่ใช่แค่ "Ethereum ที่เร็วกว่า"</h3>
+            <p>การออกแบบที่แตกต่างสร้าง use cases ที่แตกต่าง Solana เก่งที่สุดในสิ่งที่ network อื่น "ทำได้ แต่แพงเกินไป"</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>SVM (Solana Virtual Machine)</strong> ใช้ register-based VM (แตกต่างจาก EVM ที่เป็น stack-based) ซึ่งเร็วกว่าสำหรับ parallel execution นักพัฒนาเขียนด้วย Rust เป็นหลัก ใช้ framework <strong>Anchor</strong> ที่ automate งาน boilerplate และ generate IDL โดยอัตโนมัติ Anchor เป็น de facto standard เหมือน React ในโลก web
+            </p>
+            <p>
+              <strong>SPL Tokens</strong> ต่างจาก Ethereum ที่แต่ละ token เป็น smart contract แยกกัน — ทุก token บน Solana share <em>program เดียวกัน</em> สร้าง token ใหม่แค่สร้าง "mint account" ไม่ต้อง deploy code ใหม่ การอัปเกรด SPL Token program ครั้งเดียวปรับปรุงทุก token ในระบบพร้อมกัน <strong>Token-2022</strong> เพิ่ม features อย่าง transfer hooks, confidential transfers และ transfer fees
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Reference</span>
+              <span>Solana เหมาะกับอะไร?</span>
+            </div>
+            <h3 class="callout-title">Use Cases ที่ Solana โดดเด่น</h3>
+            <div class="comparison-table">
+              <table>
+                <thead><tr><th>Use Case</th><th>ทำไม Solana?</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Memecoin Trading</strong></td><td>ค่าธรรมเนียม &lt;0.1 บาท เทรดกี่รอบก็ได้</td></tr>
+                  <tr><td><strong>High-freq DeFi</strong></td><td>Atomic composability + finality ต่ำ</td></tr>
+                  <tr><td><strong>On-chain CLOB</strong></td><td>Block time 400ms รองรับ order book จริง</td></tr>
+                  <tr><td><strong>DePIN</strong></td><td>หลายล้าน micro-tx/วัน ค่าธรรมเนียมต้องต่ำมาก</td></tr>
+                  <tr><td><strong>Tokenized Assets</strong></td><td>Settlement เร็ว composable กับ DeFi</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Firedancer</strong> — Jump Crypto เขียน Solana validator client ใหม่ทั้งหมดด้วย C (ไม่ใช่ Rust เหมือน Agave) เป้าหมายคือ deterministic, high-throughput engine ที่ทนต่อ single point of failure ปัจจุบัน <strong>Frankendancer</strong> (hybrid ของ Firedancer + Agave) live บน mainnet แล้วกับ validators บางส่วนตั้งแต่ กันยายน 2024 แต่ยังต้องพึ่ง Agave สำหรับ consensus — full Firedancer ยังอยู่ระหว่างพัฒนา
+            </p>
+            <p>
+              <strong>Trade-offs ที่ต้องรู้</strong>: hardware requirements สูง, Rust learning curve สูงกว่า Solidity, validator count ลดลง, ไม่มี slashing, historical outages (แม้ปัจจุบันดีขึ้นมาก) — Solana ไม่ใช่ทางเลือกที่ดีที่สุดสำหรับทุก use case โดยเฉพาะโปรเจกต์ที่ต้องการ maximum decentralization หรือ Ethereum liquidity depth
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Solana · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-04-ethereum.html">
+          <span>Previous</span>
+          <strong>บทที่ 4: Ethereum — คอมพิวเตอร์การเงินของโลก</strong>
+        </a>
+        <a href="./chapter-06-l1-blockchains.html" class="nav-card">
+          <span>Next</span>
+          <strong>Chapter 06: L1 Blockchains — สนามรบแห่งสถาปัตยกรรม</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { canvas.style.display = 'none'; return; }
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      const COUNT = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT * 3; i++) posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+      const makeTexture = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16,16,0,16,16,16);
+        g.addColorStop(0, 'rgba(156,201,209,1)'); g.addColorStop(0.2, 'rgba(156,201,209,0.8)'); g.addColorStop(1, 'rgba(156,201,209,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
+        const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+      };
+      const mat = new THREE.PointsMaterial({ size: 0.05, map: makeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 });
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh); camera.position.z = 4;
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', e => { mouseX = e.clientX - window.innerWidth/2; mouseY = e.clientY - window.innerHeight/2; });
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        mesh.rotation.y += 0.0008; mesh.rotation.x += 0.0004;
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) { const i3 = i*3; pos[i3+1] = posOrig[i3+1] + Math.sin(t*0.3 + posOrig[i3]) * 0.18; }
+        geo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    });
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

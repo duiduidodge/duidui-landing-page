@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คำนำ: ทำไมคริปโตจึงสำคัญ • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="ก่อนจะเริ่มต้นลงทุนหรือทำความเข้าใจคริปโต คุณต้องรู้ก่อนว่ากำลังเดินเข้าสู่สภาพแวดล้อมแบบไหน — สนามที่ไม่มีตาข่ายรองรับ ไม่มีผู้จัดการ และไม่มีใครมาช่วยคุณถ้าทำพลาด">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    /* ---- FRAMEWORK OVERRIDES ---- */
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      top: 20%;
+      right: 5%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle, rgba(156, 201, 209, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 10;
+      padding-top: 0;
+    }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Preface</span>
+  <button class="chapter-picker-btn" data-current="preface" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background: linear-gradient(90deg, #FF7B00, #9cc9d1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; letter-spacing: 0.16em;">DuiDui's Crypto Handbook • คำนำ</div>
+          <h1>ทำไมคริปโตจึงสำคัญ</h1>
+          <p class="lede">
+            ก่อนจะถามว่าเหรียญไหนน่าซื้อ หรือโปรโตคอลไหนดี คุณต้องเข้าใจก่อนว่ากำลังเดินเข้าสู่สภาพแวดล้อมแบบไหน — สนามที่ไม่มีตาข่ายรองรับ ไม่มีผู้จัดการ และไม่มีใครมาช่วยคุณถ้าทำพลาด
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          ถ้าคุณเข้าใจกลไก คริปโตคือเครื่องมือ ถ้าคุณไม่เข้าใจ คริปโตคือกับดัก
+          <cite>Opening Thesis</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/preface.png" alt="Crypto Preface Editorial Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — The Adversarial Frontier
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">คำนำ • ส่วนที่ 1</span>
+            <h2 class="book-page-title">สนามรบที่ไม่มีเครือข่ายรองรับ</h2>
+          </div>
+          <div class="book-page-index">คำนำ<br>The Frontier</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>สภาพแวดล้อมที่คุณกำลังเดินเข้าไป</h3>
+            <p>ก่อนจะพูดถึงกลไกของ blockchain หรือโปรโตคอล DeFi คุณต้องเข้าใจธรรมชาติของสนามนี้ก่อน คริปโตคือระบบการเงินที่เปิดกว้างและไร้ตาข่ายรองรับมากที่สุดที่มนุษย์เคยสร้าง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              โลกการเงินดั้งเดิมถูกห่อด้วยความสะดวก ถ้าบัตรหายก็โทรหาธนาคาร ถ้าโดนโกงก็ยื่น dispute ถ้าลืมรหัสก็กด reset มีองค์กรที่รับผิดชอบความผิดพลาดแทนคุณอยู่เสมอ
+            </p>
+            <p>
+              ในคริปโตไม่มีสิ่งเหล่านี้ ถ้าโอนเงินผิด address เงินหายถาวร ถ้าทำ <strong>private key</strong> หาย สินทรัพย์เข้าไม่ได้ตลอดกาล ถ้าเซ็นธุรกรรมให้ <strong>smart contract</strong> ที่เป็นอันตราย ไม่มีใครสามารถย้อนกลับได้ ระบบตรวจสอบลายเซ็นดิจิทัล ไม่ใช่เจตนาของผู้ใช้
+            </p>
+            <p>
+              ความโหดร้ายนี้เองคือแก่นแท้ของ meritocracy ในคริปโต คนที่รอดไม่ใช่คนมีสถาบันหนุนหลังหรือคนมีชื่อเสียง แต่เป็นคนที่เข้าใจกลไกและป้องกันตัวเองได้ ในขณะเดียวกัน ความเปิดกว้างนี้คือสิ่งที่ทำให้คริปโตสำคัญในระดับโลก
+            </p>
+            <p>
+              การเข้าร่วมต้องการเพียงอินเทอร์เน็ต ทีมพัฒนานิรนามจากที่ใดก็ได้สามารถ deploy โปรโตคอลที่คนทั่วโลกใช้งานได้ เด็กอายุ 15 ปีใน Lagos ไม่สามารถเดินเข้า Goldman Sachs ไปเทรดอนุพันธ์ได้ แต่สามารถเชื่อม wallet เข้ากับ decentralized exchange และได้รับเงื่อนไขเดียวกับนักลงทุนรายใหญ่ทุกประการ
+            </p>
+            <p>
+              นอกจากนั้น ข้อมูลทุกอย่างบน blockchain ยังโปร่งใส ต่างจากระบบการเงินดั้งเดิมที่มี dark pool และ private order flow ทุก transaction บน chain ถูกบันทึกและเปิดให้ทุกคนตรวจสอบแบบ real-time สนามนี้แข่งขันกันด้วยทักษะ ไม่ใช่การเข้าถึงที่สงวนไว้เฉพาะกลุ่ม
+            </p>
+          </div>
+
+          <ol class="digest-list">
+            <li>
+              <span class="digest-index">1</span>
+              <div>
+                <strong>ไม่มีผู้คุมเกมกลาง</strong>
+                <p>ความผิดพลาดในคริปโตย้อนกลับไม่ได้ ต่างจากระบบการเงินดั้งเดิมที่ยังมี dispute หรือ reset ให้พึ่งพา</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">2</span>
+              <div>
+                <strong>เปิดให้ทุกคนบนโลก</strong>
+                <p>ต้องการเพียงอินเทอร์เน็ต ภูมิศาสตร์และสถาบันไม่ใช่ปัจจัยในการเข้าร่วม</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">3</span>
+              <div>
+                <strong>โปร่งใสแบบสมบูรณ์</strong>
+                <p>ข้อมูลบน chain เปิดสาธารณะ real-time ทักษะในการอ่านข้อมูลนี้คือความได้เปรียบ ไม่ใช่การเข้าถึงพิเศษ</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">คำนำ · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — The Tyranny of Convenience + The Illusion of Safety
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">คำนำ • ส่วนที่ 2–3</span>
+            <h2 class="book-page-title">ความสะดวกที่เป็นกับดัก และภาพลวงตาแห่งความปลอดภัย</h2>
+          </div>
+          <div class="book-page-index">คำนำ<br>Convenience & Safety</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ทำไมคนส่วนใหญ่ถึงไม่ต้องการ sovereignty</h3>
+            <p>ความโหดของสนามนี้ทำให้คนส่วนใหญ่ถอยหลัง และนั่นคือเหตุผลที่อุตสาหกรรมต้องสร้างทางเลือกระหว่าง convenience กับ sovereignty ในหลายระดับ</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ความจริงที่ต้องยอมรับคือคนส่วนใหญ่ไม่ได้ต้องการอธิปไตยทางการเงินแบบสมบูรณ์ คนส่วนมากต้องการความสะดวก ความย้อนกลับได้ และ customer service พวกเขาต้องการใครสักคนให้โทษเมื่อสิ่งผิดพลาด และระบบธนาคารดั้งเดิมตอบสนองความต้องการนี้ได้ดีมาก
+            </p>
+            <p>
+              นี่คือเหตุผลที่ Centralized Exchange อย่าง Coinbase มีผู้ใช้หลายล้านคน และทำไม multi-sig wallet กับ social recovery จึงถูกพัฒนาขึ้นมา เครื่องมือเหล่านี้ช่วยให้ผู้ใช้เลือกจุดสมดุลระหว่างความปลอดภัยที่ต้องรับผิดชอบด้วยตัวเองกับการมอบความไว้วางใจให้บุคคลที่สาม
+            </p>
+            <p>
+              สำหรับคนที่อาศัยอยู่ในประชาธิปไตยที่มั่นคง ความ "ยุ่งยาก" ของ private key และ seed phrase ดูไม่มีความจำเป็น ทำไมต้องยุ่งกับเรื่องเหล่านี้ถ้า Apple Pay ทำงานได้ดีอยู่แล้ว? แต่ความคิดนี้เปลี่ยนทันทีเมื่อสภาพแวดล้อมเปลี่ยน
+            </p>
+          </div>
+
+          <div class="callout warning-box">
+            <div class="callout-meta">
+              <span class="status-pill warning">กรณีศึกษา</span>
+              <span>การใช้การเงินเป็นอาวุธ</span>
+            </div>
+            <h3 class="callout-title">เมื่อระบบที่ "ปลอดภัย" กลายเป็นอาวุธ</h3>
+            <p>ในปี 2022 รัฐบาลแคนาดาใช้อำนาจฉุกเฉินอายัดบัญชีธนาคารของผู้ประท้วงโดยไม่ผ่านกระบวนการยุติธรรม ไม่ว่าคุณจะเห็นด้วยกับการประท้วงนั้นหรือไม่ precedent ที่ถูกสร้างขึ้นนั้นน่าหวาดกลัว ถ้าระบบการเงินสามารถถูกใช้เป็นอาวุธต่อกลุ่มหนึ่งได้วันนี้ มันก็สามารถถูกใช้ต่อกลุ่มใดก็ได้ในวันพรุ่งนี้</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              คนส่วนใหญ่มองว่าความล้มเหลวของสถาบันการเงินเป็นเรื่องของประเทศที่ "ไม่มั่นคง" เท่านั้น เราดูเงินเฟ้อในเวเนซุเอลาหรือการควบคุมเงินทุนในเลบานอนแล้วคิดว่า "สิ่งนั้นไม่มีทางเกิดที่นี่" แต่รอยร้าวกำลังปรากฏขึ้นทั่วโลก
+            </p>
+            <p>
+              ในระดับพื้นฐาน กำลังซื้อของคุณอยู่ภายใต้การควบคุมของนโยบายการเงินที่ตัดสินใจโดยไม่ต้องฟังเสียงคุณ คุณเป็นผู้โดยสารในยานพาหนะทางเศรษฐกิจที่ไม่มีพวงมาลัย ไม่มีเบรกฉุกเฉิน และไม่มีประตูหนีภัย
+            </p>
+            <p>
+              Bitcoin ทำงานเหมือนกรมธรรม์ประกันอัคคีภัย คุณอาจไม่ต้องใช้มันทุกวัน มันยุ่งยากในการตั้งค่าและน่ารำคาญในการดูแล แต่เมื่อบ้านไฟไหม้ — ไม่ว่าจะจากเงินเฟ้อ การเซ็นเซอร์ หรือการล่มสลายของระบบ — มันคือประตูหนีภัยทางเดียวที่ไม่สามารถล็อกจากภายนอกได้
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">แนวคิด</span>
+              <span>Spectrum of Sovereignty</span>
+            </div>
+            <h3 class="callout-title">ทางเลือกระหว่าง Convenience กับ Control</h3>
+            <p>คริปโตไม่ได้บังคับให้คุณเลือกระหว่าง 0 กับ 100 มีสเปกตรัมตั้งแต่การฝากไว้กับ CEX (ง่ายที่สุด แต่ฝากความไว้วางใจไว้กับบุคคลที่สาม) ไปจนถึง self-custody แบบเต็มรูปแบบ (ควบคุมได้ทั้งหมด แต่รับผิดชอบทั้งหมดด้วย) แต่ละจุดในสเปกตรัมนี้คือการแลกระหว่างความสะดวกกับการควบคุม</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">คำนำ · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — The Price of Open Gates + Signal in the Noise
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">คำนำ • ส่วนที่ 4–5</span>
+            <h2 class="book-page-title">ราคาของประตูเปิด และสัญญาณในกองเสียง</h2>
+          </div>
+          <div class="book-page-index">คำนำ<br>Signal & Noise</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ทำความเข้าใจกับความขัดแย้งที่อยู่ตรงหน้า</h3>
+            <p>ความเปิดกว้างที่ให้ประโยชน์แก่ทุกคนนั้น ก็ให้ประโยชน์แก่คนร้ายด้วย และนั่นคือสิ่งที่คุณต้องเข้าใจก่อนเดินเข้ามา</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              คุณสมบัติเดียวกันที่ทำให้คริปโต permissionless และ censorship-resistant คือสิ่งเดียวกับที่ทำให้มันเป็นพื้นที่สำหรับนักต้มตุ๋น แฮกเกอร์ และนักฉ้อโกง ถ้าใครก็ได้สามารถสร้างโปรโตคอลการเงินโดยไม่ต้องขอใบอนุญาต คนร้ายก็สร้างได้เช่นกัน
+            </p>
+            <p>
+              สำหรับผู้สังเกตจากภายนอก อุตสาหกรรมนี้มักดูเหมือนคาสิโนที่สร้างอยู่กลางทุ่งทุ่นระเบิด หัวข้อข่าวเต็มไปด้วยการล่มสลาย rug pull และการ hack เพราะการฉ้อโกงดังกว่าโครงสร้างพื้นฐานที่ทำงานอยู่เงียบ ๆ ทุกวัน
+            </p>
+            <p>
+              แต่นี่คือผลที่ต้องยอมรับของ technology ที่ทรงพลัง คุณไม่สามารถมีระบบที่ให้ทุกคน innovate โดยไม่ต้องขออนุญาต ในขณะเดียวกันก็ป้องกันไม่ให้ใครก่ออาชญากรรมได้ การไม่มี gatekeeper หมายความว่าประตูเปิดกว้างสำหรับทุกคน รวมถึงคนที่ไม่ดีด้วย
+            </p>
+          </div>
+
+          <div class="callout warning-box">
+            <div class="callout-meta">
+              <span class="status-pill warning">ความจริงที่ต้องรับรู้</span>
+              <span>Radical Indifference</span>
+            </div>
+            <h3 class="callout-title">โปรโตคอลไม่แยกแยะ</h3>
+            <p>คริปโตให้เครื่องมือเดียวกันแก่นักเรียนใน Lagos และนักลงทุน Wall Street มันทำให้สนามเท่าเทียมกัน แต่ความเป็นกลางนี้ตัดสองทาง โปรโตคอลไม่แคร์ว่าคุณคือผู้ลี้ภัยหนีระบอบเผด็จการ หรือแฮกเกอร์ที่กำลังดูดเงินจากผู้บริสุทธิ์ มันตรวจสอบลายเซ็น ไม่ใช่เจตนา</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ความท้าทายจึงไม่ใช่การปฏิเสธอุตสาหกรรมเพราะความอันตราย แต่คือการเรียนรู้วิธีนำทางในนั้น ใต้ข่าวและ hype มีรางรถไฟการเงินชุดใหม่กำลังถูกสร้างขึ้น ซึ่งแก้ไขปัญหาพื้นฐานของความไว้วางใจและมูลค่าในแบบที่ไม่เคยมีมาก่อน
+            </p>
+            <p>
+              Layer หลัก อย่าง Bitcoin, Ethereum, Solana มีประโยชน์จริงและตรวจสอบได้ — การโอนมูลค่าที่ไม่ถูกเซ็นเซอร์ และสิทธิ์ในทรัพย์สินที่เขียนด้วยโค้ด แต่เรื่องเล่านี้ถูกจี้ไปอยู่เรื่อยโดยการเก็งกำไรและผู้ไม่หวังดีที่ต้องการใช้ประโยชน์จากมันเพื่อกำไรระยะสั้น
+            </p>
+            <p>
+              ในโลกที่ไม่มีตัวกลางที่ไว้วางใจได้ การยืนยันคือการอยู่รอด คุณไม่สามารถพึ่งชื่อเสียงหรือการตลาด คุณต้องเข้าใจ incentive และกลไกด้วยตัวเอง หนังสือเล่มนี้ออกแบบมาเพื่อให้คุณมีเครื่องมือในการเอาตัวรอดในสภาพแวดล้อมนี้
+            </p>
+          </div>
+
+          <div class="callout pro-tip">
+            <div class="callout-meta">
+              <span class="status-pill success">แนวทางการอ่าน</span>
+              <span>วิธีใช้หนังสือเล่มนี้</span>
+            </div>
+            <h3 class="callout-title">Verification คือทักษะที่สำคัญที่สุด</h3>
+            <p>ถ้าคุณเข้ามาในคริปโตโดยไม่เข้าใจกลไก คุณจะจ่ายค่าเล่าเรียนให้กับคนอื่น แต่ถ้าคุณปฏิเสธอุตสาหกรรมทั้งหมดเพราะความเสี่ยง คุณจะพลาดการเปลี่ยนแปลงทางการเงินที่สำคัญที่สุดนับตั้งแต่การประดิษฐ์บัญชีแยกประเภท บทต่อ ๆ ไปจะอธิบายว่าระบบเหล่านี้ทำงานอย่างไรจริง ๆ และช่วยให้คุณแยก signal ออกจาก noise ได้</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">คำนำ · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card nav-card--disabled" aria-disabled="true" tabindex="-1">
+          <span>Previous</span>
+          <strong>ก่อนหน้า</strong>
+        </a>
+        <a class="nav-card" href="./chapter-01-crypto-map.html">
+          <span>Next</span>
+          <strong>บทที่ 1: แผนที่โลกคริปโต</strong>
+        </a>
+      </nav>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        canvas.style.display = 'none';
+        return;
+      }
+      const scene    = new THREE.Scene();
+      const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const COUNT   = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT * 3; i++) posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+
+      const makeTexture = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16,16,0,16,16,16);
+        g.addColorStop(0,   'rgba(156,201,209,1)');
+        g.addColorStop(0.2, 'rgba(156,201,209,0.8)');
+        g.addColorStop(1,   'rgba(156,201,209,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
+        const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+      };
+
+      const mat = new THREE.PointsMaterial({ size: 0.05, map: makeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 });
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh);
+      camera.position.z = 4;
+
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', e => { mouseX = e.clientX - window.innerWidth/2; mouseY = e.clientY - window.innerHeight/2; });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        mesh.rotation.y += 0.0008; mesh.rotation.x += 0.0004;
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) { const i3 = i*3; pos[i3+1] = posOrig[i3+1] + Math.sin(t*0.3 + posOrig[i3]) * 0.18; }
+        geo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    });
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 2: กระเป๋าเงิน การเก็บรักษา และความปลอดภัย • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="Private Keys, Seed Phrases, Self-Custody, Hardware Wallets, Scams, และการวางแผนมรดก — ทุกอย่างที่ต้องรู้ก่อนเริ่มถือคริปโตด้วยตัวเอง">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      top: 20%;
+      right: 5%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle, rgba(156, 201, 209, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 10;
+      padding-top: 0;
+    }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Colorful: Digest List badges ─────────────────────────────── */
+    .digest-list .digest-index {
+      background: rgba(156,201,209,0.15);
+      color: #9cc9d1;
+      border: 1px solid rgba(156,201,209,0.35);
+    }
+
+    /* ── Colorful: Table headers ───────────────────────────────────── */
+    .table-shell thead th {
+      background: rgba(156,201,209,0.1);
+      color: #9cc9d1;
+      border-bottom: 1px solid rgba(156,201,209,0.3);
+    }
+
+    /* Row accent: hot wallet = orange, cold = teal, CEX = amber, multisig = purple */
+    .table-shell tbody tr:nth-child(1) td:first-child { color: #FF7B00; font-weight: 600; }
+    .table-shell tbody tr:nth-child(2) td:first-child { color: #9cc9d1; font-weight: 600; }
+    .table-shell tbody tr:nth-child(3) td:first-child { color: #f5a623; font-weight: 600; }
+    .table-shell tbody tr:nth-child(4) td:first-child { color: #9b7fe8; font-weight: 600; }
+    .table-shell tbody tr:hover td { background: rgba(156,201,209,0.05); }
+
+
+    /* ── Key Diagram (custom HTML) ─────────────────────────────────── */
+    .key-diagram {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1.25rem 0.75rem;
+    }
+
+    .key-diagram-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .key-root {
+      border: 2px solid #FF7B00;
+      background: rgba(255,123,0,0.12);
+      border-radius: 10px;
+      padding: 0.75rem 1.1rem;
+      text-align: center;
+    }
+    .key-root .kr-icon { font-size: 1.3rem; margin-bottom: 0.25rem; }
+    .key-root .kr-label { font-size: 0.72rem; color: rgba(255,123,0,0.7); font-weight: 600; margin-bottom: 0.15rem; }
+    .key-root .kr-title { font-size: 0.92rem; font-weight: 700; color: #FF7B00; white-space: nowrap; }
+
+    .key-diagram-paths {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .key-path {
+      border: 1px solid;
+      border-radius: 10px;
+      padding: 0.65rem 0.9rem;
+    }
+    .key-path.receive { border-color: rgba(156,201,209,0.3); background: rgba(156,201,209,0.04); }
+    .key-path.spend   { border-color: rgba(155,127,232,0.3); background: rgba(155,127,232,0.04); }
+
+    .key-path-label {
+      font-size: 0.70rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.55rem;
+    }
+    .key-path.receive .key-path-label { color: rgba(156,201,209,0.7); }
+    .key-path.spend   .key-path-label { color: rgba(155,127,232,0.7); }
+
+    .key-path-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .kp-node {
+      border: 1.5px solid;
+      border-radius: 7px;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .key-path.receive .kp-node { border-color: rgba(156,201,209,0.5); color: #9cc9d1; background: rgba(156,201,209,0.08); }
+    .key-path.spend   .kp-node { border-color: rgba(155,127,232,0.5); color: #c4b0f5; background: rgba(155,127,232,0.08); }
+    .key-path.spend   .kp-node.final { border-color: rgba(74,222,128,0.5); color: #4ade80; background: rgba(74,222,128,0.08); }
+
+    .kp-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.05rem;
+      flex-shrink: 0;
+    }
+    .kp-arrow .ka-label { font-size: 0.67rem; color: #64748b; }
+    .kp-arrow .ka-icon  { font-size: 0.85rem; color: #4a5568; line-height: 1; }
+
+    .key-diagram-branch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-shrink: 0;
+      padding: 0 0.25rem;
+    }
+    .kdb-line {
+      width: 2px;
+      background: rgba(255,123,0,0.3);
+      flex: 1;
+      min-height: 24px;
+    }
+    .kdb-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #FF7B00;
+      flex-shrink: 0;
+    }
+    .kdb-arm {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .kdb-arm-line {
+      width: 28px;
+      height: 2px;
+      background: rgba(255,123,0,0.3);
+    }
+    .kdb-arm-label {
+      font-size: 0.67rem;
+      color: #64748b;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 02</span>
+  <button class="chapter-picker-btn" data-current="02" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background: linear-gradient(90deg, #FF7B00, #9cc9d1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; letter-spacing: 0.16em;">Part 1 • Orientation And Survival</div>
+          <h1>บทที่ 2: กระเป๋าเงิน การเก็บรักษา และความปลอดภัย</h1>
+          <p class="lede">
+            คริปโตเปลี่ยนมูลค่าให้กลายเป็นข้อมูล ผู้ที่ควบคุมกุญแจ คือผู้ที่ควบคุมสินทรัพย์ — บทนี้จะสอนให้คุณเข้าใจว่ากุญแจนั้นคืออะไร เก็บอย่างไรให้ปลอดภัย และรับมือกับภัยคุกคามที่มีในโลกจริงอย่างไร
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          Not your keys, not your coins.
+          <cite>หลักการพื้นฐานของ Self-Custody</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_02_custody.png" alt="Chapter 2 Custody and Wallet Security Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — Private Keys, Public Keys, Addresses
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 02 • รากฐานการเข้ารหัส</span>
+            <h2 class="book-page-title">กุญแจ ที่อยู่ และลายเซ็นดิจิทัล</h2>
+          </div>
+          <div class="book-page-index">Custody<br>Keys & Signatures</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ทำความเข้าใจก่อนว่า "ความเป็นเจ้าของ" ในคริปโตหมายความว่าอะไร</h3>
+            <p>ในโลกการเงินดั้งเดิม ธนาคารเก็บบันทึกว่าเงินเป็นของคุณ ในคริปโต blockchain เก็บบันทึกนั้น แต่คุณต้องพิสูจน์ความเป็นเจ้าของด้วยกุญแจของตัวเอง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              คริปโตเปลี่ยนมูลค่าให้เป็นข้อมูล แทนที่จะต้องขนเงินสดหรือเก็บในตู้นิรภัย คุณเก็บ <strong>private key</strong> ซึ่งเป็นแค่ตัวเลขขนาดใหญ่ที่พิสูจน์ว่าคุณมีสิทธิ์ใช้สินทรัพย์นั้น ใครก็ตามที่มี private key คือเจ้าของที่แท้จริง ไม่มีชื่อ ไม่มีใบหน้า และไม่มีสถาบันใดจะช่วยพิสูจน์ให้คุณถ้าคุณทำมันหาย
+            </p>
+            <p>
+              Private key คือตัวเลขสุ่มขนาด 256 บิต ซึ่งมีความเป็นไปได้สูงมากจนแทบเป็นไปไม่ได้ที่จะเดาหรือสร้างซ้ำได้ จาก private key นี้ การคำนวณทางคณิตศาสตร์จะสร้าง <strong>public key</strong> ออกมาได้ การย้อนกลับจาก public key ไปหา private key นั้นเป็นไปไม่ได้ในทางปฏิบัติด้วยเทคโนโลยีปัจจุบัน
+            </p>
+            <p>
+              <strong>Address</strong> หรือที่อยู่คริปโต คือรูปแบบย่อของ public key ที่ผ่านการ hash อีกชั้น ใช้สำหรับรับเงิน ปลอดภัยที่จะแชร์ได้สาธารณะ แต่การใช้จ่ายเงินจาก address นั้นต้องใช้ private key เพื่อสร้าง <strong>digital signature</strong>
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Concept</span>
+              <span>Digital Signature</span>
+            </div>
+            <h3 class="callout-title">ลายเซ็นดิจิทัลทำงานอย่างไร</h3>
+            <p>เมื่อคุณส่งธุรกรรม wallet จะใช้ private key สร้าง signature ที่ผูกกับรายละเอียดธุรกรรมนั้น ๆ ทุกคนสามารถตรวจสอบด้วย public key ว่า signature นี้ถูกต้อง แต่ไม่สามารถดึง private key ออกมาได้ นี่คือหลักการพิสูจน์ความเป็นเจ้าของโดยไม่ต้องเปิดเผยความลับ</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Bitcoin และ Ethereum ใช้ ECDSA (Elliptic Curve Digital Signature Algorithm) ส่วน Solana ใช้ EdDSA (Edwards-curve Digital Signature Algorithm) Bitcoin ยังมี Schnorr signatures จาก Taproot upgrade ซึ่งทำให้ multi-party signing ดูเหมือน single signature บน chain ได้
+            </p>
+            <p>
+              รูปแบบ address ก็ต่างกันไปตาม chain: Bitcoin มีหลายรูปแบบ (เริ่มต้นด้วย "1", "3", หรือ "bc1") Ethereum ใช้ hexadecimal 40 ตัวอักษรขึ้นต้นด้วย "0x" และ Solana ใช้ string 44 ตัวอักษร ระวัง: ส่งเงินผิด chain หรือผิด address format อาจหายถาวรได้
+            </p>
+          </div>
+
+          <div class="mermaid-shell">
+            <div class="mermaid-toolbar">
+              <div class="mermaid-title">Figure 1 • ความสัมพันธ์ระหว่าง Key, Address, และ Signature</div>
+              <span class="status-pill info">Diagram</span>
+            </div>
+            <div class="mermaid-frame" style="padding:1.5rem 1rem;">
+              <!-- Custom key-flow diagram replacing Mermaid -->
+              <div style="display:flex;flex-direction:column;align-items:center;gap:0;font-family:'Prompt',sans-serif;min-width:420px;">
+
+                <!-- Root node: Private Key -->
+                <div style="background:#2a1a10;border:2px solid #FF7B00;border-radius:8px;padding:0.65rem 2rem;color:#FF7B00;font-weight:600;font-size:0.95rem;text-align:center;min-width:200px;">Private Key (256-bit)</div>
+
+                <!-- Fork arrow row -->
+                <div style="display:flex;width:100%;justify-content:center;position:relative;height:52px;">
+                  <!-- vertical stem -->
+                  <div style="position:absolute;left:50%;top:0;width:2px;height:26px;background:#9cc9d1;transform:translateX(-50%);"></div>
+                  <!-- horizontal bar -->
+                  <div style="position:absolute;top:26px;left:25%;right:25%;height:2px;background:#9cc9d1;"></div>
+                  <!-- left drop -->
+                  <div style="position:absolute;left:25%;top:26px;width:2px;height:26px;background:#9cc9d1;transform:translateX(-50%);"></div>
+                  <!-- right drop -->
+                  <div style="position:absolute;right:25%;top:26px;width:2px;height:26px;background:#9cc9d1;transform:translateX(50%);"></div>
+                  <!-- left label -->
+                  <div style="position:absolute;left:calc(25% - 26px);top:32px;font-size:0.72rem;color:#9cc9d1;">Sign</div>
+                  <!-- right label -->
+                  <div style="position:absolute;right:calc(25% - 38px);top:32px;font-size:0.72rem;color:#9cc9d1;">One-way</div>
+                </div>
+
+                <!-- Two paths -->
+                <div style="display:flex;width:100%;gap:1rem;align-items:flex-start;">
+
+                  <!-- Path 2: ใช้จ่าย (left) -->
+                  <div style="flex:1;border:1px solid rgba(156,201,209,0.25);border-radius:8px;background:#1a2030;padding:1rem 0.75rem;display:flex;flex-direction:column;align-items:center;gap:0;">
+                    <div style="font-size:0.72rem;color:#9cc9d1;margin-bottom:0.75rem;font-weight:600;letter-spacing:0.05em;">Path 2 — ใช้จ่าย</div>
+                    <!-- Digital Signature node -->
+                    <div style="background:#21252c;border:2px solid #9b7fe8;border-radius:6px;padding:0.55rem 1.25rem;color:#c4b0f5;font-weight:600;font-size:0.88rem;text-align:center;width:100%;box-sizing:border-box;">Digital Signature</div>
+                    <!-- arrow + label -->
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:0;height:44px;justify-content:center;">
+                      <div style="width:2px;height:14px;background:#9b7fe8;"></div>
+                      <div style="font-size:0.7rem;color:#9b7fe8;">อนุมัติ</div>
+                      <div style="width:2px;height:8px;background:#9b7fe8;"></div>
+                      <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid #9b7fe8;"></div>
+                    </div>
+                    <!-- Transaction node -->
+                    <div style="background:#1d2a24;border:2px solid #4ade80;border-radius:6px;padding:0.55rem 1.25rem;color:#6ee79b;font-weight:600;font-size:0.88rem;text-align:center;width:100%;box-sizing:border-box;">Transaction</div>
+                  </div>
+
+                  <!-- Path 1: รับเงิน (right) -->
+                  <div style="flex:1;border:1px solid rgba(156,201,209,0.25);border-radius:8px;background:#1a2030;padding:1rem 0.75rem;display:flex;flex-direction:column;align-items:center;gap:0;">
+                    <div style="font-size:0.72rem;color:#9cc9d1;margin-bottom:0.75rem;font-weight:600;letter-spacing:0.05em;">Path 1 — รับเงิน</div>
+                    <!-- Public Key node -->
+                    <div style="background:#1d2a2a;border:2px solid #9cc9d1;border-radius:6px;padding:0.55rem 1.25rem;color:#9cc9d1;font-weight:600;font-size:0.88rem;text-align:center;width:100%;box-sizing:border-box;">Public Key</div>
+                    <!-- arrow + label -->
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:0;height:44px;justify-content:center;">
+                      <div style="width:2px;height:14px;background:#9cc9d1;"></div>
+                      <div style="font-size:0.7rem;color:#9cc9d1;">Hash</div>
+                      <div style="width:2px;height:8px;background:#9cc9d1;"></div>
+                      <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid #9cc9d1;"></div>
+                    </div>
+                    <!-- Address node -->
+                    <div style="background:#1d2a2a;border:2px solid #b8e0e6;border-radius:6px;padding:0.55rem 1.25rem;color:#b8e0e6;font-weight:600;font-size:0.88rem;text-align:center;width:100%;box-sizing:border-box;">Address</div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="figure-caption">
+            <span class="figure-caption-title">Figure Caption</span>
+            Private key เป็นรากฐานทุกอย่าง มีสองเส้นทาง: (1) สร้าง Public Key → Hash → Address สำหรับรับเงิน และ (2) Sign → Signature สำหรับอนุมัติธุรกรรม Signature ทุกอันยืนยันได้ด้วย Public Key โดยไม่เปิดเผย Private Key เลย
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Custody · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — Seed Phrases & HD Wallets
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 02 • Seed Phrases</span>
+            <h2 class="book-page-title">12 คำที่ควบคุมทุกอย่าง</h2>
+          </div>
+          <div class="book-page-index">Custody<br>Seed Phrases</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ทำไมต้องมี Seed Phrase</h3>
+            <p>Raw private key คือ string hexadecimal 64 ตัวอักษรที่จำไม่ได้และเขียนผิดง่ายมาก Seed phrase แก้ปัญหานี้ด้วยการแปลงข้อมูลเดียวกันให้กลายเป็นคำภาษาอังกฤษที่อ่านออกได้</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              มาตรฐาน <strong>BIP-39</strong> ใช้คำศัพท์ 2,048 คำ Seed phrase 12 คำเก็บ entropy ประมาณ 128 บิต ส่วน 24 คำเก็บ 256 บิต ตัวเลขท้ายมีไว้สำหรับตรวจจับความผิดพลาดในการถอดความ
+            </p>
+            <p>
+              Seed phrase เดียวกันจะสร้าง private key เดิมเสมอ — นี่คือความสามารถในการ <strong>restore</strong> wallet บนอุปกรณ์ใดก็ได้ในโลก มาตรฐาน <strong>BIP-32</strong> และ <strong>BIP-44</strong> กำหนดวิธีสร้าง address หลาย ๆ อันจาก seed เดียว ทำให้ wallet หนึ่งอันรองรับหลาย chain และหลาย account ได้พร้อมกัน (<strong>HD Wallet</strong> — Hierarchical Deterministic)
+            </p>
+          </div>
+
+          <div class="callout warning-box">
+            <div class="callout-meta">
+              <span class="status-pill warning">Critical Warning</span>
+              <span>Seed phrase security</span>
+            </div>
+            <h3 class="callout-title">ไม่มีการขอ Seed Phrase ที่ถูกต้องอยู่จริง</h3>
+            <p>ไม่มี Support team, ไม่มี Customer service, ไม่มี Admin ใดในโลกที่จำเป็นต้องรู้ seed phrase ของคุณ ถ้าใครขอ ทั้งออนไลน์และออฟไลน์ คนนั้นกำลังขโมยสินทรัพย์ของคุณ Seed phrase ใช้สำหรับ restore wallet เท่านั้น ไม่ใช่ยืนยันตัวตน</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>The 25th Word (Passphrase)</strong> — BIP-39 อนุญาตให้เพิ่ม passphrase เสริมเข้าไปกับ seed phrase ปกติ เหมือนกับ "คำที่ 25" ที่คุณคิดขึ้นเอง seed phrase เดิม + passphrase ต่างกัน จะสร้าง wallet คนละอัน ทำให้สามารถมี "decoy wallet" ที่มีเงินน้อย ๆ ให้คนร้ายเห็นได้ ในขณะที่สินทรัพย์จริงซ่อนอยู่หลัง passphrase ที่คนร้ายไม่รู้จะถาม
+            </p>
+            <p>
+              สำคัญมาก: ถ้าลืม passphrase จะไม่สามารถ restore wallet ที่ใช้มันได้เลย เก็บ seed phrase และ passphrase แยกกัน แต่ต้องมีเอกสารบันทึกว่าใช้ร่วมกัน เพื่อให้ทายาทหรือตัวเองในอนาคตกู้คืนได้
+            </p>
+          </div>
+
+          <ol class="digest-list">
+            <li>
+              <span class="digest-index">1</span>
+              <div>
+                <strong>เขียนลงกระดาษ เก็บออฟไลน์เสมอ</strong>
+                <p>ห้ามถ่ายภาพ, ห้าม screenshot, ห้าม email หรือ cloud storage ไม่ว่าจะเข้ารหัสแล้วหรือไม่</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">2</span>
+              <div>
+                <strong>สำรองไว้หลายที่แยกกัน</strong>
+                <p>ไฟไหม้ที่หนึ่ง อีกที่หนึ่งยังอยู่ อย่าเก็บทุกสำเนาไว้ในที่เดียวกัน</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">3</span>
+              <div>
+                <strong>ทดสอบ restore ก่อนฝากเงินจริง</strong>
+                <p>ทดลอง restore บนอุปกรณ์อื่นเพื่อยืนยันว่า seed phrase ที่เขียนไว้ถูกต้อง ก่อนโอนสินทรัพย์จำนวนมากเข้าไป</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Custody · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — Software vs Hardware Wallets
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 02 • ประเภทของ Wallet</span>
+            <h2 class="book-page-title">Software Wallet vs Hardware Wallet</h2>
+          </div>
+          <div class="book-page-index">Custody<br>Wallet Types</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>เลือก wallet ให้ตรงกับ threat model ของตัวเอง</h3>
+            <p>ไม่มี wallet ที่ดีที่สุดสำหรับทุกคน คำถามคือ: คุณต้องการ convenience มากแค่ไหน และยอมรับความเสี่ยงระดับไหนได้</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Software wallet</strong> อย่าง MetaMask, Trust Wallet, หรือ Phantom เก็บ private key บนอุปกรณ์ทั่วไปเช่นโทรศัพท์หรือคอมพิวเตอร์ ข้อดีคือใช้งานง่าย เชื่อมต่อกับ DeFi apps ได้ทันที แต่ security ของ wallet ผูกอยู่กับ security ของอุปกรณ์นั้น ถ้าอุปกรณ์ติด malware หรือถูกแฮก private key ก็อาจถูกขโมยได้
+            </p>
+            <p>
+              <strong>Hardware wallet</strong> อย่าง Ledger หรือ Trezor เก็บ private key ใน chip พิเศษที่แยกออกมาจากระบบทั่วไป ธุรกรรมจะถูก sign ภายในอุปกรณ์และส่งออกมาแค่ signature ไม่ใช่ key ผู้ใช้ต้องกดปุ่มบนอุปกรณ์เพื่ออนุมัติทุกธุรกรรม ทำให้แม้คอมพิวเตอร์ติด malware ก็ไม่สามารถขโมย key ได้
+            </p>
+          </div>
+
+          <div class="table-shell">
+            <div class="table-topbar">
+              <div>
+                <h3>เปรียบเทียบประเภท Wallet</h3>
+                <p class="caption">แต่ละประเภทมี trade-off ที่ต่างกัน</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ประเภท</th>
+                    <th>ตัวอย่าง</th>
+                    <th>ความสะดวก</th>
+                    <th>ความปลอดภัย</th>
+                    <th>เหมาะสำหรับ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Software (Hot)</td>
+                    <td>MetaMask, Phantom</td>
+                    <td>สูงมาก</td>
+                    <td>พื้นฐาน</td>
+                    <td>DeFi, ใช้งานบ่อย</td>
+                  </tr>
+                  <tr>
+                    <td>Hardware (Cold)</td>
+                    <td>Ledger, Trezor</td>
+                    <td>ปานกลาง</td>
+                    <td>สูงมาก</td>
+                    <td>เก็บระยะยาว, จำนวนมาก</td>
+                  </tr>
+                  <tr>
+                    <td>CEX Custody</td>
+                    <td>Binance, Coinbase</td>
+                    <td>สูงสุด</td>
+                    <td>ขึ้นอยู่กับ exchange</td>
+                    <td>เทรด, มือใหม่</td>
+                  </tr>
+                  <tr>
+                    <td>Multisig</td>
+                    <td>Safe (Gnosis)</td>
+                    <td>ต่ำ</td>
+                    <td>สูงสุด</td>
+                    <td>จำนวนมาก, องค์กร</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Concept</span>
+              <span>Hardware Wallet Security</span>
+            </div>
+            <h3 class="callout-title">Secure Element — ป้อมปราการภายในอุปกรณ์</h3>
+            <p>Secure Element คือ chip พิเศษที่ออกแบบมาเพื่อเก็บ cryptographic keys และทำ sensitive operations ในสภาพแวดล้อมที่แยกออกจาก processor หลัก ทนต่อการโจมตีทั้งทางกายภาพและซอฟต์แวร์ Ledger ใช้ Secure Element ที่ผ่านการรับรองระดับอุตสาหกรรม ส่วน Trezor รุ่นใหม่ (Safe series) เพิ่ม Secure Element เข้ามาพร้อมคงความ open-source ของ firmware ไว้</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              แนวทางปฏิบัติที่ดีสำหรับ hardware wallet: อัปเดต firmware สม่ำเสมอ, ตรวจสอบ address บนหน้าจออุปกรณ์ก่อนยืนยันทุกครั้ง (ไม่ใช่แค่บนคอมพิวเตอร์), ซื้อจากผู้จัดจำหน่ายอย่างเป็นทางการเท่านั้น — hardware wallet มือสองหรือจากแหล่งที่ไม่น่าเชื่อถืออาจถูก tamper มาแล้ว
+            </p>
+            <p>
+              การสูญหายของ hardware wallet ไม่ได้หมายความว่าสูญเสียเงิน ตราบที่มี seed phrase สำรองไว้อย่างถูกต้อง สามารถ restore wallet บนอุปกรณ์ใหม่ได้ทันที PIN protection บนอุปกรณ์ป้องกันการเข้าถึงโดยตรง และ Ledger จะ wipe ตัวเองหลังพิมพ์ PIN ผิด 3 ครั้ง
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Custody · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — Threats: Scams, Phishing, Coercion
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 02 • ภัยคุกคาม</span>
+            <h2 class="book-page-title">Scams, Phishing, Address Poisoning, และ $5 Wrench Attack</h2>
+          </div>
+          <div class="book-page-index">Custody<br>Threats</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ภัยคุกคามส่วนใหญ่ไม่ได้โจมตีโค้ด — มันโจมตีคน</h3>
+            <p>ระบบ cryptographic ของคริปโตแข็งแกร่งมาก การโจมตีส่วนใหญ่จึงมุ่งเป้าที่ผู้ใช้ ไม่ใช่เทคโนโลยี ความเข้าใจรูปแบบโจมตีเหล่านี้คือการป้องกันที่ดีที่สุด</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Phishing</strong> คือการสร้างเว็บไซต์ปลอมที่ดูเหมือนของจริง เพื่อหลอกให้กรอก seed phrase หรืออนุมัติ transaction ที่เป็นอันตราย ตรวจสอบ URL ทุกครั้งก่อนเชื่อมต่อ wallet และ bookmark เว็บที่ใช้บ่อย
+            </p>
+            <p>
+              <strong>Clipboard hijacking</strong> คือ malware ที่แทนที่ address ที่คุณ copy ด้วย address ของผู้โจมตีแบบเงียบ ๆ ก่อนวาง (paste) ตรวจสอบ address ทีละตัวอักษรเสมอ อย่าเชื่อแค่ช่วงต้นและท้าย
+            </p>
+            <p>
+              <strong>Address poisoning</strong> คือการส่ง transaction จำนวนเล็กน้อยจาก address ที่ดูคล้ายกับ address ที่คุณเคยทำธุรกรรมด้วย เพื่อให้คุณ copy address จาก transaction history โดยไม่ตรวจสอบให้ดี
+            </p>
+            <p>
+              <strong>Malicious approvals (Token Approvals)</strong> — การ connect wallet กับ DeFi protocol จะมีการขอ "approve" ให้ smart contract เข้าถึง token ของคุณ approval ที่ไม่จำกัดให้ contract ที่เป็นอันตรายดูด token ออกไปได้ทั้งหมด ตรวจสอบและ revoke approvals ที่ไม่จำเป็นที่ revoke.cash หรือ Etherscan
+            </p>
+          </div>
+
+          <div class="callout warning-box">
+            <div class="callout-meta">
+              <span class="status-pill warning">Physical Threat</span>
+              <span>$5 Wrench Attack</span>
+            </div>
+            <h3 class="callout-title">ภัยคุกคามทางกายภาพ — เมื่อเทคโนโลยีไม่ช่วย</h3>
+            <p>การขโมยด้วยการบังคับ (coercion) คือการโจมตีที่ตรงที่สุด: ขู่ให้โอนเงิน มีกรณีจริงที่บันทึกไว้เกี่ยวกับการบุกบ้านและการลักพาตัวที่มีเป้าหมายที่ผู้ถือคริปโต การป้องกันขั้นแรกคือ operational security — ไม่เปิดเผยจำนวนที่ถือบนโซเชียลมีเดียหรือในที่สาธารณะ การไม่ถูกระบุตัวว่าเป็นเป้าหมายคือการป้องกันที่ดีที่สุด</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              สำหรับผู้ที่ไม่สามารถหลีกเลี่ยงการเป็นที่รู้จักได้ มีเครื่องมือทางเทคนิคที่ช่วยลดความเสียหาย: <strong>25th word passphrase</strong> ทำให้มี decoy wallet ที่ดูน่าเชื่อถือพร้อมเงินจำนวนน้อย ส่วนสินทรัพย์จริงอยู่หลัง passphrase ที่ผู้โจมตีไม่รู้ว่ามี Trezor มี <strong>wipe code</strong> ที่เมื่อกรอกจะทำลายข้อมูลในอุปกรณ์โดยดูเหมือน PIN ผิดทั่วไป
+            </p>
+            <p>
+              <strong>Multisig</strong> และ <strong>time-lock</strong> เป็นการป้องกันที่ทรงพลังกว่า ถ้า wallet ต้องการลายเซ็น 2 จาก 3 ผู้โจมตีที่บังคับคุณอยู่ก็ยังโอนเงินทันทีไม่ได้ Time-lock สร้างช่วงเวลาบังคับระหว่างการเริ่มธุรกรรมและการยืนยัน ให้โอกาสในการขอความช่วยเหลือ
+            </p>
+          </div>
+
+          <div class="callout pro-tip">
+            <div class="callout-meta">
+              <span class="status-pill success">Pro Tip</span>
+              <span>Token approval hygiene</span>
+            </div>
+            <h3 class="callout-title">Revoke approvals เป็นประจำ</h3>
+            <p>ทุก DeFi protocol ที่คุณเคยใช้อาจยังมี approval ที่ active อยู่ ตรวจสอบและ revoke approvals ที่ไม่ใช้งานแล้วอย่างน้อยทุกไตรมาส โดยเฉพาะหลังใช้ protocol ที่ไม่คุ้นเคย ใช้ revoke.cash (Ethereum) หรือ tools ที่เทียบเท่าบน chain อื่น</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Custody · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — CEX Custody, Failures & Inheritance
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 02 • CEX และ Legacy</span>
+            <h2 class="book-page-title">Exchange Custody, บทเรียนจากความล้มเหลว และการวางแผนมรดก</h2>
+          </div>
+          <div class="book-page-index">Custody<br>CEX & Legacy</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Custody ใน CEX ไม่ใช่ Self-Custody</h3>
+            <p>เมื่อฝากเงินใน exchange คุณไม่ได้ถือ private key ตัวเอง exchange ถือแทนคุณ และนั่นหมายความว่าคุณกำลังรับ counterparty risk ของ exchange นั้น</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Exchange จัดการ asset ในระบบ hot/warm/cold storage ภายในของตัวเอง สินทรัพย์ที่คุณเห็นใน account คือ "IOU" ไม่ใช่ on-chain balance ที่คุณควบคุม ถ้า exchange ล้มละลาย ถูกแฮก หรือ freeze การถอนเงิน คุณต้องรอกระบวนการทางกฎหมาย ซึ่งอาจใช้เวลาหลายปีและอาจไม่ได้เงินคืนครบ
+            </p>
+            <p>
+              <strong>Proof of Reserves (PoR)</strong> คือการที่ exchange พิสูจน์ว่ามี asset เพียงพอต่อ liability ด้วย on-chain หรือ third-party attestation พร้อม Merkle-tree สำหรับให้ผู้ใช้ตรวจสอบได้เอง อย่างไรก็ตาม PoR เป็นแค่ snapshot ณ เวลาหนึ่ง ไม่ใช่การรับประกันความมั่นคงแบบถาวร
+            </p>
+          </div>
+
+          <div class="callout warning-box">
+            <div class="callout-meta">
+              <span class="status-pill warning">บทเรียนจากประวัติศาสตร์</span>
+              <span>Custody Failures</span>
+            </div>
+            <h3 class="callout-title">เมื่อ Custody ล้มเหลว: Mt. Gox, Ronin, FTX</h3>
+            <p><strong>Mt. Gox (2014)</strong> — exchange ที่ใหญ่ที่สุดในโลกขณะนั้นสูญ BTC ประมาณ 650,000 เหรียญจากการขาด hot/cold segregation และการไม่มี real-time reconciliation แฮกเกอร์ดูดเงินออกมา 3 ปีโดยไม่มีใครสังเกตเห็น<br><br>
+            <strong>Ronin Bridge (2022)</strong> — ผู้โจมตียึด 5 จาก 9 validator keys (ส่วนใหญ่รวมอยู่ที่บริษัทเดียว) และดูด 615 ล้านดอลลาร์ออกในหนึ่งธุรกรรมที่ "ถูกต้องตามกฎ" บนกระดาษ ระบบที่กระจายอำนาจบนกระดาษสามารถรวมศูนย์ได้ในทางปฏิบัติ<br><br>
+            <strong>FTX (2022)</strong> — ไม่ใช่การแฮก แต่เป็น commingling: นำ customer deposits ไปใช้เป็นทุนซื้อขายของบริษัทในเครือ เมื่อมูลค่าลด ทรัพย์สินของลูกค้าหายไปพร้อมกัน</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>การวางแผนมรดก (Inheritance Planning)</strong> — ถ้าคุณเสียชีวิตโดยที่ทายาทไม่รู้ว่ามีสินทรัพย์คริปโตอยู่ที่ไหนหรือเข้าถึงอย่างไร เงินนั้นจะหายไปตลอดกาล คำตัดสินของศาลไม่สามารถบังคับ blockchain ได้
+            </p>
+            <p>
+              ขั้นต่ำสุดที่ต้องทำ: เขียนเอกสาร sealed ที่บอกว่ามีสินทรัพย์อะไร, wallet อยู่ที่ไหน, และ backup ของ seed phrase อยู่ที่ไหน (ไม่ใช่ seed phrase เอง) ฝากไว้กับคนที่ไว้ใจได้หรือทนายความ วิธีที่ปลอดภัยกว่าคือใช้ <strong>Shamir's Secret Sharing (SSS)</strong> — แบ่ง seed phrase เป็น shares 2-of-3 ให้คนหลายคนถือ ไม่มีใครสามารถเข้าถึงได้คนเดียว แต่ผู้ถือ 2 คนใดก็ได้สามารถกู้คืน wallet ได้
+            </p>
+          </div>
+
+          <div class="callout pro-tip">
+            <div class="callout-meta">
+              <span class="status-pill success">Framework</span>
+              <span>Spectrum of Custody</span>
+            </div>
+            <h3 class="callout-title">กฎ 3 ระดับที่ใช้ได้จริง</h3>
+            <p><strong>เงินที่ใช้งานบ่อย</strong> → Hot wallet (MetaMask, Phantom) เก็บแค่จำนวนที่ยอมรับการสูญหายได้<br><strong>เงินที่เก็บระยะกลาง</strong> → Hardware wallet (Ledger, Trezor) พร้อม seed phrase ที่เก็บออฟไลน์<br><strong>เงินจำนวนมาก / ระยะยาว</strong> → Multisig หรือ qualified custodian ที่มีกระบวนการชัดเจน</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Custody · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-01-crypto-map.html">
+          <span>Previous</span>
+          <strong>บทที่ 1: แผนที่โลกคริปโต</strong>
+        </a>
+        <a class="nav-card" href="./chapter-03-bitcoin.html">
+          <span>Next</span>
+          <strong>บทที่ 3: Bitcoin — เงินดิจิทัลที่เกิดมาเพื่อความขาดแคลน</strong>
+        </a>
+      </nav>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        canvas.style.display = 'none';
+        return;
+      }
+      const scene    = new THREE.Scene();
+      const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const COUNT   = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT * 3; i++) posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+
+      const makeTexture = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16,16,0,16,16,16);
+        g.addColorStop(0,   'rgba(156,201,209,1)');
+        g.addColorStop(0.2, 'rgba(156,201,209,0.8)');
+        g.addColorStop(1,   'rgba(156,201,209,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
+        const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+      };
+
+      const mat = new THREE.PointsMaterial({ size: 0.05, map: makeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 });
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh);
+      camera.position.z = 4;
+
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', e => { mouseX = e.clientX - window.innerWidth/2; mouseY = e.clientY - window.innerHeight/2; });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        mesh.rotation.y += 0.0008; mesh.rotation.x += 0.0004;
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) { const i3 = i*3; pos[i3+1] = posOrig[i3+1] + Math.sin(t*0.3 + posOrig[i3]) * 0.18; }
+        geo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    });
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

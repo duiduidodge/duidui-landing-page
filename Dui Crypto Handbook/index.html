@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dui Crypto Handbook | DUIDUI</title>
+  <meta name="description" content="คู่มือการเอาตัวรอดและทำความเข้าใจโครงสร้างพื้นฐานของโลกคริปโตจาก DuiDui พร้อมอ่านครบทั้ง 17 บทผ่านหน้าเว็บ.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Dui Crypto Handbook | DUIDUI">
+  <meta property="og:description" content="คู่มือคริปโตฉบับเต็มจาก DuiDui พร้อมสารบัญครบ 17 บทและหน้าอ่านแยกตามบท.">
+  <meta property="og:image" content="./assets/images/cover/duidui_handbook_cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dui Crypto Handbook | DUIDUI">
+  <meta name="twitter:description" content="คู่มือคริปโตฉบับเต็มจาก DuiDui พร้อมอ่านได้ทันทีบนเว็บ.">
+  <meta name="twitter:image" content="./assets/images/cover/duidui_handbook_cover.png">
+  <link rel="icon" type="image/png" href="../assets/images/brand/favicon.png">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    /* ============================================
+       PAGE OVERRIDES & LAYOUT
+       ============================================ */
+
+    .page-shell {
+      position: relative;
+      z-index: 10;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ---- ANIMATIONS ---- */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.93); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-4px) scale(1.03); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(156, 201, 209, 0.08); }
+      50%       { box-shadow: 0 0 44px rgba(156, 201, 209, 0.18); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ---- AMBIENT CANVAS ---- */
+    #nano-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.32;
+    }
+
+    .ambient-glow {
+      position: absolute;
+      top: 30%;
+      left: 75%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, rgba(156, 201, 209, 0.06) 0%, transparent 60%);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ---- HERO SECTION ---- */
+    /*
+      Use padding-driven height instead of min-height: 100vh + align-items: center.
+      That combination was centering a ~430px content block in a 100vh cell,
+      leaving ~230px of dead space top and bottom.
+      Now the hero height is content + padding — intentional breathing room.
+    */
+    .hero-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+      padding: clamp(2rem, 5vh, 3.5rem) 6vw clamp(3rem, 8vh, 6rem);
+      gap: 3rem;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-split {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: clamp(1.5rem, 4vh, 3rem) 5vw clamp(3rem, 6vh, 5rem);
+      }
+      .portal-link            { align-self: center; }
+      .chapter-opener-inner { align-items: center; }
+      .lede                  { margin-left: auto; margin-right: auto; }
+      .stats-row             { justify-content: center; }
+      .button-group          { justify-content: center; }
+    }
+
+    .chapter-opener-inner {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+
+    .portal-link {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.2rem;
+      padding: 0.7rem 1rem;
+      border-radius: 999px;
+      text-decoration: none;
+      color: #D9E7EA;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    }
+
+    .portal-link:hover {
+      transform: translateY(-2px);
+      border-color: rgba(156, 201, 209, 0.3);
+      background: rgba(156, 201, 209, 0.08);
+    }
+
+    .portal-link svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .eyebrow {
+      animation: fadeInLeft 0.8s ease-out both;
+    }
+
+    /* ---- COVER TITLE ---- */
+    .cover-title {
+      font-size: clamp(2.2rem, 4.2vw, 4.2rem);
+      font-weight: 900;
+      margin-bottom: 0.4rem;
+      color: #ffffff;
+      text-transform: uppercase;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      animation: fadeInUp 0.8s ease-out 0.1s both;
+    }
+
+    .cover-title .title-accent {
+      background: linear-gradient(135deg, #FF7B00, #FF4D00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-family: 'Prompt', sans-serif;
+      font-size: clamp(1rem, 1.5vw, 1.3rem);
+      font-weight: 300;
+      color: #64748B;
+      letter-spacing: 0.08em;
+      margin-bottom: 1.1rem;
+      animation: fadeInUp 0.8s ease-out 0.15s both;
+    }
+
+    .lede {
+      font-family: 'Prompt', sans-serif;
+      font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+      line-height: 1.75;
+      color: #8B95A5;
+      max-width: 480px;
+      animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    /* ---- SNS ICONS ---- */
+    .sns-connect {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .sns-link {
+      color: rgba(156, 201, 209, 0.5);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      transition: color 0.3s ease, border-color 0.3s ease,
+                  background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .sns-link:hover {
+      color: var(--accent);
+      border-color: rgba(156, 201, 209, 0.3);
+      background: rgba(156, 201, 209, 0.06);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(156, 201, 209, 0.1);
+    }
+
+    .sns-link svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    /* ---- FLOATING 3D BOOK ---- */
+    .book-showcase {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1800px;
+      position: relative;
+      height: 100%;
+    }
+
+    .book-animator {
+      transform-style: preserve-3d;
+      position: relative;
+      animation: scaleIn 1s ease-out 0.3s both;
+    }
+
+    .book-animator::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 80px;
+      background: radial-gradient(ellipse,
+        rgba(255, 123, 0, 0.1) 0%,
+        rgba(156, 201, 209, 0.06) 40%,
+        transparent 70%);
+      pointer-events: none;
+      filter: blur(20px);
+    }
+
+    .premium-book {
+      position: relative;
+      width: clamp(280px, 36vw, 480px);
+      aspect-ratio: 1 / 1.35;
+      border-radius: 4px 14px 14px 4px;
+      transform-style: preserve-3d;
+      transform: rotateY(-14deg) rotateX(6deg);
+      box-shadow:
+        -20px 30px 60px rgba(0, 0, 0, 0.8),
+        -2px 0 0 rgba(255, 255, 255, 0.15),
+        inset -2px 0 10px rgba(255, 255, 255, 0.08);
+      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  box-shadow 0.6s ease;
+      cursor: pointer;
+    }
+
+    .premium-book:hover {
+      transform: rotateY(-3deg) rotateX(1deg) scale(1.06) translateY(-12px);
+      box-shadow:
+        -40px 50px 90px rgba(0, 0, 0, 0.9),
+        -2px 0 0 rgba(255, 255, 255, 0.3),
+        0 0 60px rgba(255, 123, 0, 0.1),
+        0 0 30px rgba(156, 201, 209, 0.08),
+        inset -2px 0 10px rgba(255, 255, 255, 0.15);
+    }
+
+    .premium-book img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px 14px 14px 4px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Gloss overlay */
+    .premium-book::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 4px 14px 14px 4px;
+      background: linear-gradient(115deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 40%);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .book-spine-detail {
+      position: absolute;
+      top: 0; left: 0; bottom: 0; width: 16px;
+      background: linear-gradient(to right,
+        rgba(0, 0, 0, 0.7) 0%,
+        rgba(0, 0, 0, 0.15) 35%,
+        rgba(255, 255, 255, 0.06) 100%);
+      z-index: 4;
+      border-radius: 4px 0 0 4px;
+      pointer-events: none;
+    }
+
+    /* ---- STAT BADGES ---- */
+    .stats-row {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 1.4rem;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.8s ease-out 0.3s both;
+    }
+
+    .stat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.9rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 8px;
+      font-family: "Prompt", sans-serif;
+      font-size: 0.75rem;
+      color: #94A3B8;
+      backdrop-filter: blur(12px);
+      transition: background 0.3s ease, border-color 0.3s ease,
+                  transform 0.3s ease, color 0.3s ease;
+    }
+
+    .stat-badge:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(156, 201, 209, 0.3);
+      transform: translateY(-2px);
+      color: #fff;
+    }
+
+    .stat-badge svg {
+      color: var(--accent);
+      width: 13px;
+      height: 13px;
+    }
+
+    /* ---- CTA BUTTONS ---- */
+    .button-group {
+      margin-top: 1.75rem;
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.8s ease-out 0.5s both;
+    }
+
+    .button-glow {
+      position: relative;
+      padding: 0.85rem 2rem;
+      font-size: 0.95rem;
+      font-family: 'Prompt', sans-serif;
+      font-weight: 700;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #FF7B00 0%, #FF4D00 100%);
+      color: #ffffff !important;
+      border: none;
+      box-shadow: 0 8px 24px rgba(255, 77, 0, 0.35),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      letter-spacing: 0.02em;
+      transition: box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .button-glow:hover {
+      box-shadow: 0 12px 32px rgba(255, 77, 0, 0.45),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .button-glow:active {
+      transform: translateY(1px);
+      box-shadow: 0 4px 12px rgba(255, 77, 0, 0.3);
+    }
+
+    .free-bubble {
+      position: absolute;
+      top: -14px;
+      right: -16px;
+      background: var(--accent);
+      color: #0b1120;
+      font-family: 'Prompt', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.25rem 0.7rem;
+      border-radius: 12px 12px 12px 4px;
+      border: none;
+      box-shadow: 0 4px 12px rgba(156, 201, 209, 0.3);
+      animation: gentleFloat 3s infinite ease-in-out;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .free-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 6px;
+      width: 0;
+      height: 0;
+      border-left: 6px solid var(--accent);
+      border-bottom: 6px solid transparent;
+      transform: rotate(15deg);
+    }
+
+    .button-outline {
+      padding: 0.85rem 1.8rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      color: #CBD5E1 !important;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      letter-spacing: 0.02em;
+      transition: background 0.3s ease, color 0.3s ease,
+                  border-color 0.3s ease, box-shadow 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .button-outline:hover {
+      background: rgba(156, 201, 209, 0.06);
+      color: var(--accent) !important;
+      border-color: rgba(156, 201, 209, 0.3);
+      box-shadow: 0 0 20px rgba(156, 201, 209, 0.08);
+    }
+
+    /* ---- TOC SECTION ---- */
+    .content-section {
+      padding: clamp(3rem, 6vh, 5rem) 6vw clamp(4rem, 8vh, 7rem);
+      position: relative;
+      z-index: 10;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .section-number {
+      font-size: 0.75rem;
+      font-family: 'Prompt', sans-serif;
+      font-weight: 700;
+      color: #FF7B00;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border: 1px solid rgba(255, 123, 0, 0.3);
+      border-radius: 99px;
+      background: rgba(255, 123, 0, 0.06);
+      white-space: nowrap;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      margin-bottom: 0;
+      color: #fff;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .section-title span {
+      color: #8B95A5;
+      font-weight: 400;
+    }
+
+    /* ---- BENTO GRID ---- */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    /* Spotlight effect — activated by JS */
+    .bento-card {
+      background: rgba(18, 21, 28, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      padding: 2.5rem;
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  border-color 0.4s ease,
+                  box-shadow 0.4s ease,
+                  background 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Radial spotlight follows cursor */
+    .bento-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        600px circle at var(--mouse-x, -100%) var(--mouse-y, -100%),
+        rgba(156, 201, 209, 0.06),
+        transparent 40%
+      );
+      z-index: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      opacity: 0;
+    }
+
+    .bento-card:hover::before {
+      opacity: 1;
+    }
+
+    .bento-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(156, 201, 209, 0.15);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5),
+                  0 0 30px rgba(156, 201, 209, 0.04);
+      background: rgba(22, 26, 36, 0.85);
+      z-index: 2;
+    }
+
+    /* Locked state — replaces inline styles */
+    .bento-card.locked {
+      cursor: not-allowed;
+      opacity: 0.58;
+    }
+
+    .bento-card.locked:hover {
+      transform: none;
+      border-color: rgba(255, 255, 255, 0.06);
+      box-shadow: none;
+      background: rgba(18, 21, 28, 0.65);
+    }
+
+    .bento-card.locked::before {
+      display: none;
+    }
+
+    /* Hero bento card */
+    .bento-hero {
+      grid-column: span 12;
+      min-height: 260px;
+      background: linear-gradient(135deg, rgba(20, 24, 32, 0.9) 0%, rgba(12, 14, 18, 0.95) 100%);
+      border: 1px solid rgba(156, 201, 209, 0.08);
+      animation: pulseGlow 4s infinite ease-in-out;
+    }
+
+    .bento-hero:hover {
+      background: linear-gradient(135deg, rgba(26, 31, 41, 0.95) 0%, rgba(16, 19, 24, 1) 100%);
+      border-color: rgba(156, 201, 209, 0.2);
+    }
+
+    .bento-hero .card-title {
+      font-size: 1.8rem;
+      color: #fff;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      transition: color 0.3s;
+    }
+
+    .bento-card:not(.locked):hover .card-title {
+      color: var(--accent);
+    }
+
+    .bento-hero p {
+      max-width: 720px;
+      color: #8B95A5;
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    .card-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent);
+      font-family: 'Prompt', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-top: 1.5rem;
+      transition: gap 0.3s;
+    }
+
+    .bento-card:not(.locked):hover .card-arrow {
+      gap: 0.8rem;
+    }
+
+    .card-arrow svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .bento-span-12 {
+      grid-column: span 12;
+    }
+
+    .bento-span-7 {
+      grid-column: span 7;
+      min-height: 240px;
+      justify-content: flex-start;
+    }
+
+    .bento-span-5 {
+      grid-column: span 5;
+      min-height: 240px;
+      justify-content: flex-start;
+    }
+
+    @media (max-width: 900px) {
+      .bento-span-7, .bento-span-5, .bento-span-12 { grid-column: span 12; }
+    }
+
+    .bento-span-7 .card-title,
+    .bento-span-5 .card-title {
+      font-size: 1.35rem;
+      color: #fff;
+      margin-bottom: 0.8rem;
+    }
+
+    .bento-span-7 p,
+    .bento-span-5 p {
+      color: #8B95A5;
+      line-height: 1.65;
+      font-size: 0.9rem;
+    }
+
+    /* Large watermark chapter number */
+    .chapter-number-bg {
+      position: absolute;
+      bottom: -40px;
+      right: -20px;
+      font-size: 12rem;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.018);
+      font-family: "Prompt", sans-serif;
+      line-height: 1;
+      pointer-events: none;
+      z-index: 0;
+      transition: color 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .bento-card:not(.locked):hover .chapter-number-bg {
+      color: rgba(156, 201, 209, 0.04);
+      transform: scale(1.05) translate(-10px, -10px);
+    }
+
+    .bento-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .status-pill.glass {
+      background: rgba(156, 201, 209, 0.08);
+      border: 1px solid rgba(156, 201, 209, 0.2);
+      padding: 0.35rem 1rem;
+      border-radius: 8px;
+      display: inline-flex;
+      margin-bottom: 1.2rem;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: 'Prompt', sans-serif;
+    }
+
+    .status-pill.glass.dim {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.08);
+      color: #64748B;
+    }
+
+    /* ---- FOOTER ---- */
+    .site-footer {
+      margin-top: 2rem;
+      padding: 3rem 6vw;
+      position: relative;
+      z-index: 10;
+    }
+
+    .footer-divider {
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(156, 201, 209, 0.15) 50%,
+        transparent 100%);
+      margin-bottom: 3rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .footer-brand {
+      font-family: 'Prompt', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .footer-copy {
+      font-family: 'Prompt', sans-serif;
+      font-size: 0.7rem;
+      color: #475569;
+      margin-top: 0.25rem;
+    }
+
+
+
+    /* ============================================
+       VISUAL POLISH
+       ============================================ */
+
+    /* Subtle radial glow behind the hero copy */
+    .chapter-opener-inner::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-60%, -50%);
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle,
+        rgba(255, 123, 0, 0.05) 0%,
+        rgba(156, 201, 209, 0.04) 40%,
+        transparent 70%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Hero columns — give the book side more room */
+    .hero-split {
+      grid-template-columns: 5fr 6fr;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Title glow for the h1 */
+    .cover-title {
+      text-shadow: 0 0 60px rgba(255, 123, 0, 0.12);
+    }
+
+    /* Stronger depth on the bento hero card */
+    .bento-hero {
+      background: linear-gradient(135deg,
+        rgba(22, 26, 35, 0.95) 0%,
+        rgba(14, 17, 22, 0.98) 100%);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.04) inset,
+        0 24px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    /* Subtle left accent bar on bento non-hero cards */
+    .bento-span-7::after,
+    .bento-span-5::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 2px;
+      border-radius: 2px;
+      background: linear-gradient(180deg,
+        transparent,
+        rgba(156, 201, 209, 0.2),
+        transparent);
+    }
+
+    /* Footer brand — slightly larger */
+    .footer-brand {
+      font-size: 0.85rem;
+    }
+
+    /* SNS icons in footer — slightly larger hit area */
+    .sns-link {
+      width: 46px;
+      height: 46px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient gradient blob -->
+  <div class="ambient-glow"></div>
+
+  <!-- Particle background canvas -->
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="page-shell">
+    <header class="hero-split">
+      <div class="chapter-opener-inner">
+        <a href="../shop.html" class="portal-link">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 19l-7-7 7-7"/></svg>
+          Back to Artifacts
+        </a>
+        <div class="eyebrow" style="font-family: 'Prompt', sans-serif; margin-bottom: 0.75rem; background: linear-gradient(90deg, var(--accent), #00B8FF); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.18em; font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">DuiDui's Crypto Survival Guide</div>
+        <h1 class="cover-title">คู่มือ<span class="title-accent">คริปโต</span></h1>
+        <div class="hero-subtitle">The Geometry of Consensus</div>
+        <p class="lede">
+          คู่มือการเอาตัวรอดและทำความเข้าใจโครงสร้างพื้นฐานของโลกคริปโต ฉบับเจาะลึก — A Guide in to the Unknown
+        </p>
+
+        <div class="stats-row">
+          <div class="stat-badge">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            Survival &amp; Mastery
+          </div>
+          <div class="stat-badge">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            Zero Fluff
+          </div>
+          <div class="stat-badge">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            100% Reality
+          </div>
+        </div>
+
+        <div class="button-group">
+          <a href="./chapters/preface.html" class="button-glow">
+            เริ่มอ่าน
+            <div class="free-bubble">อ่านฟรี</div>
+          </a>
+          <a href="#toc" class="button-outline">
+            ดูสารบัญเนื้อหา
+          </a>
+        </div>
+      </div>
+
+      <div class="book-showcase">
+        <div class="book-animator">
+          <div class="premium-book">
+            <div class="book-spine-detail"></div>
+            <img src="./assets/images/cover/duidui_handbook_cover.png" alt="Crypto Handbook Cover Art">
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-section" id="toc">
+
+      <div class="section-header">
+        <div class="section-number">Table of Contents</div>
+        <h2 class="section-title">The Modules <span>— All 17 Chapters Available</span></h2>
+      </div>
+
+      <div class="bento-grid">
+
+        <!-- Preface — Available -->
+        <a href="./chapters/preface.html" class="bento-card bento-span-12" style="background: linear-gradient(135deg, rgba(255,123,0,0.06) 0%, rgba(156,201,209,0.06) 100%);">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">คำนำ: ทำไมคริปโตจึงสำคัญ และทำไมต้องเข้าใจให้ลึก</h3>
+            <p>เริ่มต้นจากที่นี่ก่อนเสมอ — สภาพแวดล้อมที่คุณกำลังเดินเข้าไป ความโหดของ frontier ที่ไม่มีตาข่ายรองรับ และทำไม sovereignty ทางการเงินถึงสำคัญกว่าที่คุณคิด</p>
+            <div class="card-arrow">
+              อ่านคำนำ
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </div>
+          </div>
+          <div class="chapter-number-bg" style="font-size: clamp(3rem, 8vw, 7rem); opacity: 0.06;">00</div>
+        </a>
+
+        <!-- Chapter 1 — Available -->
+        <a href="./chapters/chapter-01-crypto-map.html" class="bento-card bento-hero">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 01: แผนที่โลกคริปโต (Crypto Map)</h3>
+            <p>ทำความเข้าใจภาพรวม ระบบนิเวศ CEX, DEX, Bridge และหมวดหมู่หลักในโลกของคริปโตเคอร์เรนซี เรียนรู้สิ่งที่จำเป็นต้องรู้เกี่ยวกับโครงสร้างพื้นฐานก่อนเริ่มต้นลงสนามจริง</p>
+            <div class="card-arrow">
+              เริ่มอ่าน
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </div>
+          </div>
+          <div class="chapter-number-bg">01</div>
+        </a>
+
+        <!-- Chapter 2 — Available -->
+        <a href="./chapters/chapter-02-wallets-custody-security.html" class="bento-card bento-span-7">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 02: กระเป๋าเงิน การเก็บรักษา และความปลอดภัย</h3>
+            <p>Private Keys, Seed Phrases, Hardware Wallets, Scams, Address Poisoning, $5 Wrench Attack และการวางแผนมรดก — ทุกอย่างที่ต้องรู้ก่อนถือคริปโตด้วยตัวเอง</p>
+            <div class="card-arrow">
+              เริ่มอ่าน
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </div>
+          </div>
+          <div class="chapter-number-bg">02</div>
+        </a>
+
+        <!-- Chapter 3 — Available -->
+        <a href="./chapters/chapter-03-bitcoin.html" class="bento-card bento-span-5">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 03: Bitcoin — เงินดิจิทัลที่เกิดมาเพื่อความขาดแคลน</h3>
+            <p>Proof of Work, UTXO Model, Halving, SegWit, Taproot, Lightning Network...</p>
+            <div class="card-arrow">เริ่มอ่าน <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
+          </div>
+          <div class="chapter-number-bg">03</div>
+        </a>
+
+        <!-- Chapter 4 — Available -->
+        <a href="./chapters/chapter-04-ethereum.html" class="bento-card bento-span-5">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 04: Ethereum — คอมพิวเตอร์การเงินของโลก</h3>
+            <p>EVM, Gas, Proof of Stake, Liquid Staking, Rollups, EIP-4844...</p>
+            <div class="card-arrow">เริ่มอ่าน <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
+          </div>
+          <div class="chapter-number-bg">04</div>
+        </a>
+
+        <!-- Chapter 5 — Available -->
+        <a href="./chapters/chapter-05-solana.html" class="bento-card bento-span-7">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 05: Solana: บล็อกเชนความเร็วสูงและประสบการณ์ใช้งานแบบแอป</h3>
+            <p>Proof of History, Tower BFT, QUIC, และ Account Model ที่แตกต่างจาก EVM — ทำไม Solana ถึงรู้สึกเร็วและ Trade-offs ที่ซ่อนอยู่</p>
+          </div>
+          <div class="chapter-number-bg">05</div>
+        </a>
+
+        <!-- Chapter 6 — Available -->
+        <a href="./chapters/chapter-06-l1-blockchains.html" class="bento-card bento-span-5">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 06: L1 Blockchains — สนามรบแห่งสถาปัตยกรรม</h3>
+            <p>Trilemma, Consensus, Virtual Machines, Vertical Scaling และ Bridges — เข้าใจทุก L1 ในภาพเดียว</p>
+          </div>
+          <div class="chapter-number-bg">06</div>
+        </a>
+
+        <!-- Chapter 7 — Available -->
+        <a href="./chapters/chapter-07-market-structure.html" class="bento-card bento-span-7">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 07: Market Structure — สนามซื้อขายคริปโต</h3>
+            <p>CEX, Perpetuals, Funding Rate, Spot ETFs, Strategy Playbook และ Order Execution — โครงสร้างตลาดฉบับสมบูรณ์</p>
+          </div>
+          <div class="chapter-number-bg">07</div>
+        </a>
+
+        <a href="./chapters/chapter-08-defi.html" class="bento-card bento-span-5">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 08: DeFi — ระบบการเงินที่ทำงานด้วยโค้ด</h3>
+            <p>AMM, Uniswap, Aave, Lending, Yield Strategies, Oracles, Flash Loans — DeFi ฉบับสมบูรณ์</p>
+          </div>
+          <div class="chapter-number-bg">08</div>
+        </a>
+
+        <a href="./chapters/chapter-09-mev.html" class="bento-card bento-span-7">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 09: MEV — มูลค่าที่ซ่อนอยู่ใน Mempool</h3>
+            <p>Sandwich Attacks, Frontrunning, Flashbots, MEV-Boost, PBS, L2 Sequencers — dark forest ฉบับสมบูรณ์</p>
+          </div>
+          <div class="chapter-number-bg">09</div>
+        </a>
+
+        <a href="./chapters/chapter-10-stablecoins-rwa.html" class="bento-card bento-span-5">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 10: Stablecoins & RWA — เงินดิจิทัลที่ราคาไม่ผัน</h3>
+            <p>USDT, USDC, DAI, UST Collapse, Tokenized Treasuries, BlackRock BUIDL, PayFi — ครบทุก model</p>
+          </div>
+          <div class="chapter-number-bg">10</div>
+        </a>
+
+        <a href="./chapters/chapter-11-hyperliquid.html" class="bento-card bento-span-5">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 11: Hyperliquid — DEX ที่เร็วที่สุดในโลก</h3>
+            <p>HyperBFT, HyperEVM, CLOB on-chain, HYPE token, Vaults, Perpetual trading — ครบทุกมิติ</p>
+          </div>
+          <div class="chapter-number-bg">11</div>
+        </a>
+
+        <a href="./chapters/chapter-12-nfts.html" class="bento-card bento-span-7">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 12: NFTs — สินทรัพย์ดิจิทัลที่มีเอกลักษณ์</h3>
+            <p>Ownership layers, Storage spectrum, Solana vs Ethereum NFTs, Launch strategies, Security threats — ครบทุกมิติ</p>
+            <div class="card-arrow">เริ่มอ่าน <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
+          </div>
+          <div class="chapter-number-bg">12</div>
+        </a>
+
+        <a href="./chapters/chapter-13-governance-tokenomics.html" class="bento-card bento-span-5">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 13: DAO & Governance — Tokenomics</h3>
+            <p>Voting models, Proposal lifecycle, Token design, Governance attacks — ระบบการตัดสินใจแบบกระจายศูนย์</p>
+            <div class="card-arrow">เริ่มอ่าน <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
+          </div>
+          <div class="chapter-number-bg">13</div>
+        </a>
+
+        <a href="./chapters/chapter-14-depin.html" class="bento-card bento-span-5">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 14: DePIN — โครงสร้างพื้นฐานกระจายศูนย์</h3>
+            <p>Helium, Filecoin, Render, Flywheel economics, Real-world hardware networks — โลกจริงบน blockchain</p>
+            <div class="card-arrow">เริ่มอ่าน <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
+          </div>
+          <div class="chapter-number-bg">14</div>
+        </a>
+
+        <a href="./chapters/chapter-15-prediction-markets.html" class="bento-card bento-span-7">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 15: Prediction Markets — ตลาดเดิมพันความจริง</h3>
+            <p>Polymarket, Kalshi, AMM vs CLOB, Wisdom of crowds, Manipulation risks — ตลาดที่ซื้อขายความเป็นไปได้</p>
+            <div class="card-arrow">เริ่มอ่าน <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
+          </div>
+          <div class="chapter-number-bg">15</div>
+        </a>
+
+        <a href="./chapters/chapter-16-quantum-resistance.html" class="bento-card bento-span-5">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 16: Quantum Resistance — อนาคตความปลอดภัย</h3>
+            <p>Shor's algorithm, Post-quantum cryptography, NIST standards, Migration timelines — เตรียมรับมือ quantum</p>
+            <div class="card-arrow">เริ่มอ่าน <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
+          </div>
+          <div class="chapter-number-bg">16</div>
+        </a>
+
+        <a href="./chapters/chapter-17-conclusion.html" class="bento-card bento-span-12" style="background: linear-gradient(135deg, rgba(255,123,0,0.06) 0%, rgba(6,182,212,0.06) 100%);">
+          <div class="bento-content">
+            <div class="status-pill glass">Available Now</div>
+            <h3 class="card-title">Chapter 17: บทสรุป — อ่านโลกคริปโตต่อจากนี้</h3>
+            <p>Framework การคิด 5 ข้อ, Mental models, Learning roadmap และวิธีติดตามโลกคริปโตอย่างมีระบบ — จบครบทุกบท</p>
+            <div class="card-arrow">
+              อ่านบทสรุป
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </div>
+          </div>
+          <div class="chapter-number-bg" style="font-size: clamp(3rem, 8vw, 7rem); opacity: 0.06;">17</div>
+        </a>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Bento card cursor spotlight -->
+  <script>
+    document.querySelectorAll('.bento-card:not(.locked)').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+      });
+    });
+  </script>
+
+  <!-- Particle background (Three.js) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+
+      // Respect reduced-motion preference
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        canvas.style.display = 'none';
+        return;
+      }
+
+      const scene    = new THREE.Scene();
+      const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Build particle geometry
+      const COUNT   = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+
+      for (let i = 0; i < COUNT * 3; i++) {
+        posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+
+      // Soft glowing point texture
+      const makeTexture = () => {
+        const c = document.createElement('canvas');
+        c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+        g.addColorStop(0,   'rgba(156,201,209, 1)');
+        g.addColorStop(0.2, 'rgba(156,201,209, 0.8)');
+        g.addColorStop(1,   'rgba(156,201,209, 0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, 32, 32);
+        const t = new THREE.Texture(c);
+        t.needsUpdate = true;
+        return t;
+      };
+
+      const mat = new THREE.PointsMaterial({
+        size: 0.05,
+        map: makeTexture(),
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        opacity: 0.4
+      });
+
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh);
+      camera.position.z = 4;
+
+      let mouseX = 0, mouseY = 0;
+      const halfW = window.innerWidth  / 2;
+      const halfH = window.innerHeight / 2;
+
+      document.addEventListener('mousemove', e => {
+        mouseX = e.clientX - halfW;
+        mouseY = e.clientY - halfH;
+      });
+
+      const clock = new THREE.Clock();
+
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+
+        // Slow base rotation
+        mesh.rotation.y += 0.0008;
+        mesh.rotation.x += 0.0004;
+
+        // Smooth parallax toward cursor
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+
+        // Organic wave on Y-axis
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) {
+          const i3 = i * 3;
+          pos[i3 + 1] = posOrig[i3 + 1] + Math.sin(t * 0.3 + posOrig[i3]) * 0.18;
+        }
+        geo.attributes.position.needsUpdate = true;
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    });
+  </script>
+</body>
+</html>

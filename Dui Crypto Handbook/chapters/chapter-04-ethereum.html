@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 4: Ethereum — คอมพิวเตอร์การเงินของโลก • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="EVM, Gas, Proof of Stake, Liquid Staking, Rollups, EIP-4844 — ทำความเข้าใจ Ethereum ฉบับสมบูรณ์สำหรับนักลงทุนที่จริงจัง">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      top: 20%;
+      right: 5%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle, rgba(98, 126, 234, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 10;
+      padding-top: 0;
+    }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: "loose",
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#252a32",
+        primaryTextColor: "#ede7dc",
+        primaryBorderColor: "#9cc9d1",
+        lineColor: "#9cc9d1",
+        tertiaryColor: "#21252c",
+        fontFamily: "Prompt, Noto Serif Thai, Kanit, sans-serif"
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 04</span>
+  <button class="chapter-picker-btn" data-current="04" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background: linear-gradient(90deg, #627eea, #9cc9d1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; letter-spacing: 0.16em;">Part 2 • The Assets</div>
+          <h1>บทที่ 4: Ethereum — คอมพิวเตอร์การเงินของโลก</h1>
+          <p class="lede">
+            Bitcoin พิสูจน์ว่าเงินดิจิทัลที่ไม่มีตัวกลางเป็นไปได้ Ethereum ยกระดับแนวคิดนั้นให้ไกลกว่า — โดยทำให้ทุกอย่างตั้งแต่การกู้ยืมไปจนถึงการซื้อขายหุ้น สามารถทำงานบน code ที่ไม่มีใครควบคุมได้
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          Ethereum is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third-party interference.
+          <span style="display:block; font-size: 0.85em; color: #9cc9d1; margin-top: 0.5rem; font-style: normal; font-family: 'Prompt', sans-serif;">"แพลตฟอร์มกระจายอำนาจที่รัน smart contracts — แอปพลิเคชันที่ทำงานตามโค้ดอย่างแน่นอน โดยไม่มีการหยุดทำงาน การเซ็นเซอร์ การฉ้อโกง หรือการแทรกแซงจากบุคคลที่สาม"</span>
+          <cite>คำอธิบายดั้งเดิมจาก Ethereum Whitepaper โดย Vitalik Buterin (2013)</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_04_ethereum.png" alt="Chapter 4 Ethereum Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — EVM & Smart Contracts
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 04 • แนวคิดหลัก</span>
+            <h2 class="book-page-title">EVM — เครื่องคอมพิวเตอร์ที่ไม่มีเจ้าของ</h2>
+          </div>
+          <div class="book-page-index">Ethereum<br>EVM & Gas</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ถ้า Bitcoin คือทองดิจิทัล Ethereum คืออะไร?</h3>
+            <p>Ethereum เป็น "โลกคอมพิวเตอร์" ที่ใครก็ได้เขียน program ลงไปได้ และมัน run โดยไม่มีใครสามารถหยุดหรือเปลี่ยนแปลงผลลัพธ์ได้ แม้แต่ผู้สร้างเอง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ที่หัวใจของ Ethereum คือ <strong>EVM (Ethereum Virtual Machine)</strong> — เครื่องคำนวณเสมือนที่ run code เดียวกันพร้อมกันบนคอมพิวเตอร์นับพัน ๆ เครื่องทั่วโลก ทุกเครื่องได้ผลลัพธ์เหมือนกันทุกครั้ง นี่คือ <strong>decentralized consensus</strong> — ไม่ต้องเชื่อใคร เพราะทุกคนตรวจสอบได้เอง
+            </p>
+            <p>
+              นักพัฒนาเขียน <strong>Smart Contract</strong> ในภาษาอย่าง Solidity หรือ Vyper แล้ว compile เป็น EVM bytecode ที่ทุก node run ได้ Smart contract ก็คือ program ที่เก็บ state ของตัวเอง เมื่อมีคนส่ง transaction มา EVM execute code อัปเดต state และ broadcast ผลลัพธ์ให้ทั้ง network ยืนยัน ตัวอย่าง: swap tokens บน Uniswap, กู้เงินบน Aave, หรือ mint NFT ทั้งหมดคือ smart contract ทำงาน
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Concept</span>
+              <span>Gas — ค่าเชื้อเพลิงของ EVM</span>
+            </div>
+            <h3 class="callout-title">ทุก operation มีราคา เพื่อป้องกัน spam</h3>
+            <p>Gas คือหน่วยวัด computational work ที่ transaction ใช้ไป โอน ETH ธรรมดาใช้ 21,000 gas, swap บน Uniswap ใช้ ~150,000 gas, deploy contract ซับซ้อนอาจใช้หลายล้าน gas ยิ่งซับซ้อนยิ่งแพง ทำให้ไม่มีใครสามารถ spam ด้วย infinite loop หรือสั่งคำนวณที่ไม่มีวันจบได้</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>EVM Compatibility</strong> คือหนึ่งใน moat ที่แข็งแกร่งที่สุดของ Ethereum — Rollups อย่าง Arbitrum, Optimism, Base และ L1 chains หลายตัวใช้ EVM เดียวกัน ทำให้ apps อย่าง Uniswap หรือ Aave deploy ได้ทุกที่โดยแทบไม่ต้องแก้ code wallet อย่าง MetaMask, block explorers, developer tools ทำงานได้เหมือนกันบนทุก EVM chain ทำให้ ecosystem ขยายตัวโดยไม่ต้องสร้างใหม่ทั้งหมด
+            </p>
+            <p>
+              <strong>Composability</strong> คือพลังที่แท้จริงของ Ethereum — protocol ต่าง ๆ ทำงานร่วมกันได้เหมือน Lego transaction เดียวสามารถ: กู้เงินจาก Aave → swap บน Uniswap → ฝากใน Curve → รับ yield token กลับมา ทั้งหมดใน tx เดียว หรือ revert ทั้งหมดถ้าขั้นตอนใดล้มเหลว นี่คือ "DeFi" ที่ไม่ใช่แค่คำพูด
+            </p>
+          </div>
+
+          <div class="mermaid-shell">
+            <div class="mermaid-toolbar">
+              <div class="mermaid-title">Figure 1 • วงจรชีวิตของ Transaction บน Ethereum</div>
+              <span class="status-pill info">Diagram</span>
+            </div>
+            <div class="mermaid-frame" style="padding: 1.75rem 1.5rem;">
+              <style>
+                .txflow { display: flex; flex-direction: column; gap: 0; width: 100%; font-family: 'Prompt', sans-serif; }
+
+                .txflow-phase {
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                  margin-bottom: 0.6rem;
+                }
+                .txflow-phase-dot {
+                  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+                }
+                .txflow-phase-text {
+                  font-size: 0.73rem;
+                  font-weight: 700;
+                  letter-spacing: 0.12em;
+                  text-transform: uppercase;
+                }
+
+                .txflow-row { display: flex; align-items: stretch; width: 100%; }
+
+                .txflow-box {
+                  flex: 1;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 0.35rem;
+                  padding: 0.85rem 0.75rem;
+                  border-radius: 8px;
+                  background: rgba(255,255,255,0.03);
+                  border: 1px solid rgba(255,255,255,0.1);
+                  transition: border-color 0.2s;
+                  text-align: center;
+                }
+                .txflow-box:hover { border-color: rgba(255,255,255,0.22); }
+
+                .txflow-badge {
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 22px; height: 22px;
+                  border-radius: 50%;
+                  font-size: 0.70rem;
+                  font-weight: 700;
+                  flex-shrink: 0;
+                }
+                .txflow-label {
+                  font-size: 0.82rem;
+                  font-weight: 500;
+                  color: #ede7dc;
+                  line-height: 1.3;
+                }
+
+                .txflow-arrow {
+                  flex-shrink: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 2.5rem;
+                  color: rgba(255,255,255,0.25);
+                  font-size: 1.1rem;
+                }
+
+                .txflow-between {
+                  display: flex;
+                  justify-content: flex-end;
+                  padding-right: calc(100% / 6 - 0.5rem);
+                  color: rgba(255,255,255,0.25);
+                  font-size: 1.1rem;
+                  margin: 0.5rem 0;
+                }
+                .txflow-between.left {
+                  justify-content: flex-start;
+                  padding-right: 0;
+                  padding-left: calc(100% / 6 - 0.5rem);
+                }
+                .txflow-row.reversed { flex-direction: row-reverse; }
+                .txflow-spacer { height: 1.1rem; }
+
+                /* Phase colour sets */
+                .phase1 .txflow-phase-dot  { background: #627eea; }
+                .phase1 .txflow-phase-text { color: #627eea; }
+                .phase1 .txflow-box        { border-color: rgba(98,126,234,0.3); }
+                .phase1 .txflow-box:hover  { border-color: rgba(98,126,234,0.6); }
+                .phase1 .txflow-badge      { background: rgba(98,126,234,0.15); color: #627eea; }
+
+                .phase2 .txflow-phase-dot  { background: #FF7B00; }
+                .phase2 .txflow-phase-text { color: #FF7B00; }
+                .phase2 .txflow-box        { border-color: rgba(255,123,0,0.3); }
+                .phase2 .txflow-box:hover  { border-color: rgba(255,123,0,0.6); }
+                .phase2 .txflow-badge      { background: rgba(255,123,0,0.15); color: #FF7B00; }
+
+                .phase3 .txflow-phase-dot  { background: #9cc9d1; }
+                .phase3 .txflow-phase-text { color: #9cc9d1; }
+                .phase3 .txflow-box        { border-color: rgba(156,201,209,0.3); }
+                .phase3 .txflow-box:hover  { border-color: rgba(156,201,209,0.6); }
+                .phase3 .txflow-badge      { background: rgba(156,201,209,0.15); color: #9cc9d1; }
+                .phase3 .txflow-box.final  { border-color: rgba(156,201,209,0.6); background: rgba(156,201,209,0.07); }
+              </style>
+
+              <div class="txflow">
+
+                <!-- Phase 1 -->
+                <div class="phase1">
+                  <div class="txflow-phase">
+                    <span class="txflow-phase-dot"></span>
+                    <span class="txflow-phase-text">Phase 1 · ส่งคำสั่ง</span>
+                  </div>
+                  <div class="txflow-row">
+                    <div class="txflow-box">
+                      <span class="txflow-badge">1</span>
+                      <span class="txflow-label">ผู้ใช้ส่งคำสั่ง</span>
+                    </div>
+                    <div class="txflow-arrow">→</div>
+                    <div class="txflow-box">
+                      <span class="txflow-badge">2</span>
+                      <span class="txflow-label">รอในคิว</span>
+                    </div>
+                    <div class="txflow-arrow">→</div>
+                    <div class="txflow-box">
+                      <span class="txflow-badge">3</span>
+                      <span class="txflow-label">Validator เลือก</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="txflow-between">↓</div>
+
+                <!-- Phase 2 — reversed (snake flow) -->
+                <div class="phase2">
+                  <div class="txflow-phase">
+                    <span class="txflow-phase-dot"></span>
+                    <span class="txflow-phase-text">Phase 2 · รันโค้ด</span>
+                  </div>
+                  <div class="txflow-row reversed">
+                    <div class="txflow-box">
+                      <span class="txflow-badge">4</span>
+                      <span class="txflow-label">EVM รันโค้ด</span>
+                    </div>
+                    <div class="txflow-arrow">←</div>
+                    <div class="txflow-box">
+                      <span class="txflow-badge">5</span>
+                      <span class="txflow-label">หักค่า Gas</span>
+                    </div>
+                    <div class="txflow-arrow">←</div>
+                    <div class="txflow-box">
+                      <span class="txflow-badge">6</span>
+                      <span class="txflow-label">State เปลี่ยน</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="txflow-between left">↓</div>
+
+                <!-- Phase 3 -->
+                <div class="phase3">
+                  <div class="txflow-phase">
+                    <span class="txflow-phase-dot"></span>
+                    <span class="txflow-phase-text">Phase 3 · ยืนยันผล</span>
+                  </div>
+                  <div class="txflow-row">
+                    <div class="txflow-box">
+                      <span class="txflow-badge">7</span>
+                      <span class="txflow-label">Nodes ตรวจสอบ</span>
+                    </div>
+                    <div class="txflow-arrow">→</div>
+                    <div class="txflow-box">
+                      <span class="txflow-badge">8</span>
+                      <span class="txflow-label">โหวตยืนยัน 2/3</span>
+                    </div>
+                    <div class="txflow-arrow">→</div>
+                    <div class="txflow-box final">
+                      <span class="txflow-badge">9</span>
+                      <span class="txflow-label">✓ บันทึกถาวร</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="figure-caption">
+            <span class="figure-caption-title">Figure Caption</span>
+            Phase 1: User ลงนาม Tx → รอใน Mempool → Validator เลือกตาม Gas · Phase 2: EVM execute bytecode ใช้ gas → State เปลี่ยน → propose block · Phase 3: Nodes verify → 2/3 supermajority attest → Block Justified → Finalized ถาวร
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Ethereum · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — Fee System, EIP-1559, Accounts, ERC-20
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 04 • ระบบค่าธรรมเนียมและบัญชี</span>
+            <h2 class="book-page-title">EIP-1559, Base Fee Burn และ Account Model</h2>
+          </div>
+          <div class="book-page-index">Ethereum<br>Fees & Accounts</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ค่าธรรมเนียมบน Ethereum ทำงานอย่างไร?</h3>
+            <p>ก่อนปี 2021 ผู้ใช้ต้องเดาค่า gas price เองในระบบ blind auction ซึ่งคาดเดาไม่ได้และเสียค่าธรรมเนียมเกินจำเป็น EIP-1559 เปลี่ยนทุกอย่าง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>EIP-1559 (สิงหาคม 2021)</strong> แยกค่าธรรมเนียมออกเป็น 2 ส่วน: <strong>Base Fee</strong> ที่ protocol กำหนดตาม network congestion (ปรับขึ้นลงได้สูงสุด 12.5% ต่อ block) และ <strong>Priority Fee (Tip)</strong> ที่ user จ่ายเสริมเพื่อให้ validator เลือก transaction ของตน ส่วนที่เกินจาก max fee ที่ตั้งไว้จะถูก refund กลับเสมอ
+            </p>
+            <p>
+              สิ่งที่เปลี่ยนแปลงที่สุดคือ <strong>Base Fee ถูกเผาทิ้ง (Burn)</strong> — ไม่ใช่จ่ายให้ validator แต่ถูก destroy ออกจาก circulation ถาวร ช่วงที่ network ยุ่งมากพอ จำนวน ETH ที่เผาจะมากกว่า ETH ใหม่ที่ออกมาจาก staking rewards ทำให้ ETH supply ลดลง (net deflationary) หลัง The Merge ปี 2022 มีช่วงยาวที่ ETH supply ลดลงจริง ๆ อย่างไรก็ตาม upgrade อย่าง Dencun ที่ลด L1 gas cost ทำให้ fee burn ลดลง และ supply กลับมาเพิ่มขึ้นในช่วงปี 2024 อีกครั้ง
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Reference</span>
+              <span>Ethereum Account Types</span>
+            </div>
+            <h3 class="callout-title">EOA vs Smart Contract Account</h3>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr><th>ประเภท</th><th>ควบคุมด้วย</th><th>ลักษณะ</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>EOA</strong></td>
+                    <td>Private Key</td>
+                    <td>wallet ปกติ เริ่ม transaction ได้</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Smart Contract</strong></td>
+                    <td>Code</td>
+                    <td>ทำงานเมื่อถูกเรียก มี state ของตัวเอง</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="margin-top:0.75rem; font-size:0.88rem; color:#9cc9d1;">EIP-7702 (Pectra) ให้ EOA delegate ไปที่ smart contract code ชั่วคราวได้ เปิดทาง sponsored transactions, batch operations และ key recovery</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Ethereum address คือ hex string 40 ตัวอักษรขึ้นต้นด้วย "0x" เช่น <code style="font-size:0.8rem; color:#9cc9d1;">0x742d35Cc6634C0532925a3b844Bc454e4438f44e</code> ซึ่งยาวและจำยาก — <strong>ENS (Ethereum Name Service)</strong> แก้ปัญหาด้วยการให้ register ชื่ออ่านได้อย่าง <code style="font-size:0.88rem; color:#9cc9d1;">alice.eth</code> แทน ทำงานคล้าย DNS ของเว็บไซต์
+            </p>
+            <p>
+              <strong>ERC-20</strong> คือมาตรฐาน token ที่เปลี่ยนทุกอย่าง ก่อน ERC-20 ทุก token ต้องเขียน custom code เอง wallet และ exchange ต้องรองรับทีละตัว ERC-20 กำหนด interface เดียวกัน (<code style="font-size:0.8rem;">transfer()</code>, <code style="font-size:0.8rem;">approve()</code>, <code style="font-size:0.8rem;">balanceOf()</code>) ทำให้ DEX, lending protocol, yield aggregator ทุกอันทำงานกับทุก token ได้ทันที นี่คือจุดเริ่มต้นของ "DeFi Cambrian explosion"
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Ethereum · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — Proof of Stake & The Merge
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 04 • Consensus</span>
+            <h2 class="book-page-title">The Merge — ลดพลังงาน 99.9% ด้วย Proof of Stake</h2>
+          </div>
+          <div class="book-page-index">Ethereum<br>PoS & Staking</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>15 กันยายน 2022: วันที่ Ethereum หยุดขุด</h3>
+            <p>The Merge คือการเปลี่ยน consensus mechanism จาก Proof of Work ไปสู่ Proof of Stake — หนึ่งในการ upgrade ระบบ live ที่ซับซ้อนที่สุดในประวัติศาสตร์ซอฟต์แวร์</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              แทนที่ miners แข่งกันใช้พลังงาน <strong>Validators</strong> ใน Proof of Stake lock ETH ไว้เป็น collateral (stake) เพื่อเข้าร่วมยืนยัน block ถ้าทำผิดกฎถูก <strong>slash</strong> — สูญเสีย ETH บางส่วนหรือทั้งหมด ผลลัพธ์: พลังงานลดลง &gt;99.9% ขณะที่ security ยังคงแข็งแกร่ง
+            </p>
+            <p>
+              เวลาบน Ethereum แบ่งเป็น <strong>Slot</strong> (12 วินาที) และ <strong>Epoch</strong> (32 slots ≈ 6.4 นาที) แต่ละ slot protocol สุ่มเลือก validator หนึ่งคนเป็น <em>proposer</em> สร้าง block ส่วนที่เหลือ <em>attest</em> (vote cryptographic) ว่า block นั้น valid ใน practice validators ส่วนใหญ่ไม่ได้สร้าง block เอง แต่ซื้อ block สำเร็จรูปจาก <strong>block builders</strong> ผ่าน MEV-Boost เพราะการเรียง transaction ให้ได้กำไรสูงสุดมีมูลค่ามหาศาล
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Concept</span>
+              <span>Finality — เมื่อ transaction ย้อนกลับไม่ได้</span>
+            </div>
+            <h3 class="callout-title">2 epoch (~12.8 นาที) สู่ความถาวร</h3>
+            <p>Block ถูก <strong>justify</strong> เมื่อ 2/3 ของ validators attest รับรอง จากนั้น epoch ถัดไปถ้า supermajority confirm อีกครั้ง block นั้น <strong>finalize</strong> — ไม่สามารถ reverse ได้โดยไม่ถูก slash จำนวนมหาศาล ซึ่งแตกต่างจาก Bitcoin ที่ไม่มี finality จริง ๆ มีแค่ "deeper confirmation = more secure"</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Slashing</strong> ทำงานแบบ asymmetric: โทษปกติสำหรับ isolated mistake เล็กน้อย แต่เมื่อ validators หลายคน misbehave พร้อมกัน (correlated fault) บทลงโทษ scale ขึ้นตาม proportion ของ stake ที่เกี่ยวข้อง นี่คือเหตุผลว่าทำไม "attack ด้วย coordinated validators" ถึงมีต้นทุนสูงมาก นอกจาก slashing ยังมี <strong>inactivity leak</strong> ที่ค่อย ๆ ลด balance ของ validators ที่ offline ช่วงที่ network partition ทำให้ active validators สามารถ reclaim supermajority และ finalize chain ต่อได้
+            </p>
+            <p>
+              หลัง Pectra upgrade (EIP-7251) validator scale effective balance ได้สูงสุด 2,048 ETH แทนที่จะติดที่ 32 ETH เพียงอย่างเดียว ทำให้ large operators รวม validators หลายอันเข้าด้วยกัน ลด overhead ด้านการบริหาร ขณะที่ solo stakers ยังใช้ 32 ETH ได้ตามปกติ
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Ethereum · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — Liquid Staking & Restaking
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 04 • Liquid Staking</span>
+            <h2 class="book-page-title">Lido, Rocket Pool และ EigenLayer Restaking</h2>
+          </div>
+          <div class="book-page-index">Ethereum<br>LST & Restaking</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ปัญหา: ETH ที่ stake ไว้ใช้ประโยชน์ต่อไม่ได้</h3>
+            <p>เมื่อ lock ETH เพื่อ staking คุณได้ yield แต่ ETH นั้นถูกแช่แข็ง ไม่สามารถใช้ใน DeFi ได้ Liquid Staking แก้ปัญหานี้</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Liquid Staking Protocols</strong> รับ ETH จากผู้ใช้ นำไป stake กับ validators แล้วออก <strong>LST (Liquid Staking Token)</strong> ที่ represent ส่วนแบ่งของ stake pool พร้อม yield สะสม LST เป็น token ปกติที่ trade ได้ ใช้ใน DeFi ได้ — staking yield + DeFi yield ในเวลาเดียวกัน
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Reference</span>
+              <span>LST Protocol Comparison</span>
+            </div>
+            <h3 class="callout-title">Lido (stETH) vs Rocket Pool (rETH)</h3>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr><th></th><th>Lido (stETH)</th><th>Rocket Pool (rETH)</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Market Share</strong></td>
+                    <td>~85% ของ LST market</td>
+                    <td>~5% ของ LST market</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Token Mechanic</strong></td>
+                    <td>Rebasing — balance เพิ่มทุกวัน</td>
+                    <td>Exchange rate — 1 rETH = ETH มากขึ้นเรื่อย ๆ</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Operators</strong></td>
+                    <td>Curated set + permissionless</td>
+                    <td>Permissionless, 8 ETH minimum</td>
+                  </tr>
+                  <tr>
+                    <td><strong>จุดเสี่ยง</strong></td>
+                    <td>Concentration risk (25% ของ staked ETH)</td>
+                    <td>Liquidity depth น้อยกว่า</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Restaking (EigenLayer)</strong> ยกระดับอีกชั้น: ผู้ที่ stake ETH อยู่แล้วสามารถ "restake" เพื่อ secure protocols อื่นพร้อมกัน เรียกว่า <strong>AVS (Actively Validated Services)</strong> เช่น data availability layers, oracle networks, cross-chain bridges — แต่ละ AVS มีกฎ slashing เพิ่มเติมของตัวเอง ได้ yield เพิ่ม แต่เสี่ยงเพิ่มด้วย
+            </p>
+            <p>
+              ความจริงในปัจจุบัน (ต้นปี 2026): restaking ยังอยู่ในช่วงต้น rewards ส่วนใหญ่มาจาก incentive programs และ token airdrops ไม่ใช่ durable fee revenue ที่แท้จริงจาก AVS demand ผู้ restake กำลังรับ tail risk ด้าน smart contract, governance, correlated slashing โดยยังไม่มีหลักฐานชัดว่า fee market จะ sustain ได้ — ยังเป็นการ bet ต่ออนาคตของ EigenLayer ecosystem มากกว่า cash-flow asset class
+            </p>
+          </div>
+
+          <div class="callout warning-box">
+            <div class="callout-meta">
+              <span class="status-pill warning">Risk</span>
+              <span>LST & Restaking Risks</span>
+            </div>
+            <h3 class="callout-title">ความเสี่ยงที่ซ้อนกันหลายชั้น</h3>
+            <p>LST: smart contract bug, slashing จาก validator pool, liquidity risk (stETH depegged ปี 2022) — Restaking เพิ่ม: correlated slashing across AVSs, withdrawal delays ยาวกว่าปกติ (~14-17 วัน + beacon chain exit), liquidity cascade จาก LRT depegging ถ้าซื้อ protocol เหล่านี้ ต้องเข้าใจว่า risk stack ซ้อนกันกี่ชั้น</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Ethereum · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — Layer 2 Rollups & EIP-4844
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 04 • Layer 2 Scaling</span>
+            <h2 class="book-page-title">Rollups, Blobs และอนาคตของ Ethereum Scaling</h2>
+          </div>
+          <div class="book-page-index">Ethereum<br>L2 & Rollups</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ทำไม Ethereum L1 ถึงยังแพงและช้า?</h3>
+            <p>ทุก full node ต้อง re-execute ทุก transaction เพื่อ verify — นี่คือ trade-off ของ decentralization ที่ทำให้ L1 throughput จำกัด Rollups ย้าย computation ออกไป แต่ยัง inherit security จาก L1</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Optimistic Rollups</strong> (Arbitrum, Optimism, Base) ใช้แนวคิด "innocent until proven guilty" — assume ว่าทุก transaction valid แล้ว post state update ไปที่ L1 ทันที มีช่วง <strong>challenge period 7 วัน</strong> ที่ใครก็ได้ submit fraud proof หากพบความผิดปกติ ข้อเสีย: ถอนเงินกลับ L1 ต้องรอ 7 วัน แต่มี third-party liquidity providers ที่ให้เงินก่อนแลกกับค่าธรรมเนียม
+            </p>
+            <p>
+              <strong>ZK Rollups</strong> (Starknet, zkSync, Scroll) ใช้ <strong>validity proofs</strong> — พิสูจน์ด้วยคณิตศาสตร์ว่าทุก transaction ถูกต้องก่อน post ไป L1 ไม่มี challenge period — ถอนเงินได้ทันทีหลัง proof ถูก verify (ใช้เวลา minutes ถึง hours แล้วแต่ load) แต่การสร้าง proof ซับซ้อนและใช้ computational resource สูงกว่า proof systems แต่ละแบบ (SNARKs, STARKs) มี trade-off ด้าน proof size, trusted setup, และ quantum resistance
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Upgrade</span>
+              <span>EIP-4844 — Dencun (มีนาคม 2024)</span>
+            </div>
+            <h3 class="callout-title">Blobs: ลด Rollup Cost ลง 10-100x</h3>
+            <p>ก่อน EIP-4844 rollups ต้องเก็บ data ใน expensive calldata บน L1 ทำให้ data availability คิดเป็น 80-95% ของ cost ทั้งหมด EIP-4844 แนะนำ <strong>Blobs</strong> (~128KB) ที่มี fee market แยก เก็บแค่ ~18 วันแล้วลบทิ้ง (แต่ KZG commitment ยังอยู่เพื่อ verify) ผล: Rollup fees ลดลงอย่างมาก และเป็นก้าวแรกสู่ full danksharding</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ข้อควรระวัง: rollups ส่วนใหญ่ยังมี <strong>centralized sequencer</strong> — entity เดียวที่ควบคุม transaction ordering ทั้งหมดบน L2 ซึ่งมีความเสี่ยงด้าน censorship และ single point of failure อยู่ทีมพัฒนากำลัง decentralize sequencers แต่ยังเป็น work in progress
+            </p>
+            <p>
+              ไม่ใช่ทุก rollup ให้ความสำคัญกับ decentralization เท่ากัน MegaETH เลือก single sequencer และ 10ms miniblocks เพื่อ target 100,000 TPS — รับ trade-off censorship risk เพื่อ performance ระดับ consumer app นี่คือ spectrum ที่ต่างจาก base Ethereum อย่างมาก ต้องทำความเข้าใจก่อนฝากความไว้วางใจ
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Ethereum · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-03-bitcoin.html">
+          <span>Previous</span>
+          <strong>บทที่ 3: Bitcoin — เงินดิจิทัลที่เกิดมาเพื่อความขาดแคลน</strong>
+        </a>
+        <a href="./chapter-05-solana.html" class="nav-card">
+          <span>Next</span>
+          <strong>Chapter 05: Solana — บล็อกเชนความเร็วสูง</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        canvas.style.display = 'none';
+        return;
+      }
+      const scene    = new THREE.Scene();
+      const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const COUNT   = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT * 3; i++) posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+
+      const makeTexture = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16,16,0,16,16,16);
+        g.addColorStop(0,   'rgba(156,201,209,1)');
+        g.addColorStop(0.2, 'rgba(156,201,209,0.8)');
+        g.addColorStop(1,   'rgba(156,201,209,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
+        const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+      };
+
+      const mat = new THREE.PointsMaterial({ size: 0.05, map: makeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 });
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh);
+      camera.position.z = 4;
+
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', e => { mouseX = e.clientX - window.innerWidth/2; mouseY = e.clientY - window.innerHeight/2; });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        mesh.rotation.y += 0.0008; mesh.rotation.x += 0.0004;
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) { const i3 = i*3; pos[i3+1] = posOrig[i3+1] + Math.sin(t*0.3 + posOrig[i3]) * 0.18; }
+        geo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    });
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

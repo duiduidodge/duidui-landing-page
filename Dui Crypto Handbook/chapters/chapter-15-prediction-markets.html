@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 15: Prediction Markets — ตลาดที่เดิมพันกับความจริง • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="Polymarket, Kalshi, Gnosis, Augur, binary outcome tokens, optimistic oracle, 2024 US election — ทำความเข้าใจ Prediction Markets ฉบับสมบูรณ์สำหรับนักลงทุนไทย">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed; inset: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none; opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed; top: 20%; right: 5%;
+      width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(34,211,238,0.05) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page-shell { position: relative; z-index: 10; padding-top: 0; }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Accent: cyan #22d3ee ─────────────────────────────────────── */
+    .digest-list .digest-index {
+      background: rgba(34,211,238,0.15); color: #22d3ee;
+      border: 1px solid rgba(34,211,238,0.35);
+    }
+    .info-chip {
+      border-left: 3px solid rgba(34,211,238,0.45);
+      background: rgba(34,211,238,0.05) !important;
+    }
+    .info-chip strong { color: #22d3ee; }
+    .table-shell thead th {
+      background: rgba(34,211,238,0.1); color: #22d3ee;
+      border-bottom: 1px solid rgba(34,211,238,0.3);
+    }
+    .table-shell tbody tr:nth-child(odd) td  { background: rgba(34,211,238,0.02); }
+    .table-shell tbody tr:hover td           { background: rgba(34,211,238,0.06); }
+
+    /* ── Stats row ───────────────────────────────────────────────── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:580px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+    .stat-card {
+      border-radius: 10px; padding: 0.8rem 0.85rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(34,211,238,0.2);
+      text-align: center;
+    }
+    .stat-value { font-size: 1.25rem; font-weight: 800; color: #22d3ee; letter-spacing: -0.02em; line-height: 1.1; }
+    .stat-label { font-size: 0.70rem; color: #64748b; margin-top: 0.2rem; font-weight: 500; }
+
+    /* ── Platform timeline ───────────────────────────────────────── */
+    .platform-timeline { border-radius: 10px; overflow: hidden; border: 1px solid rgba(34,211,238,0.18); margin: 1.25rem 0; }
+    .timeline-row { display: flex; align-items: flex-start; gap: 0.85rem; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .timeline-row:last-child { border-bottom: none; }
+    .timeline-row:nth-child(odd)  { background: rgba(34,211,238,0.03); }
+    .timeline-row:nth-child(even) { background: rgba(255,255,255,0.015); }
+    .timeline-date  { min-width: 72px; font-size: 0.72rem; font-weight: 700; color: #22d3ee; font-family: monospace; padding-top: 0.1rem; flex-shrink: 0; }
+    .timeline-title { font-size: 0.82rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.12rem; }
+    .timeline-desc  { font-size: 0.82rem; color: #8a9aaa; line-height: 1.45; }
+
+    /* ── Platform comparison cards ───────────────────────────────── */
+    .platform-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:560px) { .platform-grid { grid-template-columns: 1fr; } }
+    .platform-card {
+      border-radius: 10px; padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    }
+    .platform-card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; }
+    .platform-card-name   { font-size: 0.88rem; font-weight: 700; color: #e2e8f0; }
+    .platform-card-tag    { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.08em; padding: 0.15rem 0.45rem; border-radius: 4px; }
+    .platform-card p { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+    .platform-card-stat { font-size: 0.72rem; font-weight: 700; margin-top: 0.3rem; }
+
+    .nav-card--disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 15</span>
+  <button class="chapter-picker-btn" data-current="15" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background:linear-gradient(90deg,#22d3ee,#67e8f9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;letter-spacing:0.16em;">Part 5 • Advanced Themes &amp; Future Risks</div>
+          <h1>บทที่ 15: Prediction Markets</h1>
+          <p class="lede">
+            ในคืนการเลือกตั้งสหรัฐ 2024 ขณะที่นักวิจารณ์ทางทีวียังวิเคราะห์ข้อมูลโพลล์ ตลาดอย่าง Polymarket (แพลตฟอร์ม prediction market แบบกระจายศูนย์) ให้ราคาชนะของ Trump สูงเกิน 60% มาหลายสัปดาห์ก่อนหน้า — และพิสูจน์แล้วว่าแม่นยำกว่า ปี 2024 เป็นปีที่ Prediction Markets ก้าวจากมุมมืดสู่แสงสว่างด้วย trading volume รวมกว่า $3 พันล้าน และ Polymarket ทำ volume เกิน $1 พันล้านต่อเดือนหลังการเลือกตั้ง จึงมีคำถามสำคัญว่า: ตลาดเหล่านี้คือเครื่องมือรวบรวมข้อมูลที่ทรงพลังที่สุดที่มนุษย์เคยสร้าง หรือเป็นเพียงคาสิโนออนไลน์อีกรูปแบบหนึ่ง?
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          The market was not merely predicting the election — it was aggregating the private knowledge of thousands of informed bettors in real time, something no poll could replicate.
+          <cite>— Robin Hanson, Economist &amp; Prediction Market Pioneer</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_15_prediction_markets.png" alt="Chapter 15 Prediction Markets Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — Core Mechanism
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 15 • Foundations</span>
+            <h2 class="book-page-title">ตลาดที่เดิมพันกับความจริง</h2>
+          </div>
+          <div class="book-page-index">Prediction<br>Markets</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ตลาดที่เดิมพันกับความจริง</h3>
+            <p>Prediction market (ตลาดทำนาย) ไม่ใช่แค่การพนัน — มันคือกลไกรวบรวมข้อมูลที่ให้ผู้คนที่มีความรู้เฉพาะทางแสดงความเชื่อออกมาผ่านเงินจริง ราคาในตลาดจึงสะท้อน "ความน่าจะเป็นรวมหมู่" ที่แม่นยำกว่าโพลล์ใดๆ</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ลองนึกถึงคืนการเลือกตั้ง ขณะที่ผู้วิเคราะห์ทางทีวียังนั่งถกเถียงกันโดยใช้ข้อมูลโพลล์ที่เก็บมาเมื่อสัปดาห์ก่อน Prediction Markets กำลังประมวลผลข้อมูลจากผู้คนทั่วโลกแบบ real-time ผู้ที่รู้ว่าคูหาเลือกตั้งในชนบท Pennsylvania มีแถวยาวผิดปกติสามารถ buy token ได้ทันที ผู้ที่ทำงานหาเสียงแล้วรู้สึกถึงพลังงานในพื้นที่ก็เช่นกัน
+            </p>
+            <p>
+              กลไกพื้นฐานของ Prediction Market คือ <strong>Binary Outcome Tokens</strong> (โทเคนผลลัพธ์แบบสองทาง): สมมติตลาดถามว่า "Candidate A จะชนะหรือไม่?" คุณสามารถซื้อ token "YES" ในราคา 45 เซ็นต์ — ถ้า Candidate A ชนะจริง token นั้นจ่ายคืน $1.00 ทำให้คุณกำไร 55 เซ็นต์ ถ้าแพ้ token มูลค่าเป็นศูนย์ ราคาของ YES token ณ ขณะใดขณะหนึ่ง จึงเป็นตัวเลขที่ตลาดประเมินว่าเหตุการณ์นั้นน่าจะเกิดขึ้น — ในกรณีนี้ 45%
+            </p>
+            <p>
+              ต่างจากโพลล์ที่ถามความคิดเห็น ผู้เข้าร่วม Prediction Market ต้อง <strong>วางเงินตาม</strong>ความเชื่อของตัวเอง แรงกดดันทางการเงินนี้กรองเอาการพูดเพื่อเอาใจหรือพูดตามกระแสออกไป เหลือแต่ผู้ที่มั่นใจในข้อมูลที่ตนมีจริงๆ
+            </p>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-value">$3B+</div>
+              <div class="stat-label">Trading volume การเลือกตั้ง 2024</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">&gt;50%</div>
+              <div class="stat-label">การเลือกตั้งที่ตลาดแม่นกว่าโพลล์</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">&lt;5%</div>
+              <div class="stat-label">Polling response rates ปัจจุบัน</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">$1B+</div>
+              <div class="stat-label">Polymarket monthly volume หลัง 2024</div>
+            </div>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Concept</span></div>
+            <h3 class="callout-title">ทำไม Prediction Markets จึงแม่นยำกว่า?</h3>
+            <ul style="margin:0.5rem 0 0;padding-left:1.2rem;font-size:0.79rem;color:#8a9aaa;line-height:1.75;">
+              <li><strong style="color:#22d3ee;">Financial Stake = Honesty Incentive</strong> — ต้องวางเงินจริง กรองผู้พูดตามกระแสออก เหลือแต่คนที่มีข้อมูลและมั่นใจ</li>
+              <li><strong style="color:#67e8f9;">Permissionless Access</strong> — ใครก็เข้าร่วมได้ รวมถึง "insiders" ที่มีข้อมูลเฉพาะทาง เช่น นักวิจัยสนาม เจ้าหน้าที่หาเสียง หรือนักวิเคราะห์ข้อมูลอิสระ</li>
+              <li><strong style="color:#22d3ee;">Continuous Updating</strong> — ราคาอัปเดต real-time ตามข้อมูลใหม่ ต่างจากโพลล์ที่เป็น snapshot ณ วันที่เก็บข้อมูล</li>
+              <li><strong style="color:#67e8f9;">Information Cascades</strong> — เมื่อ "smart money" เข้าซื้อ ราคาเปลี่ยน ส่งสัญญาณให้ผู้อื่นอัปเดตความเชื่อตาม สร้าง chain reaction ของการรวบรวมข้อมูล</li>
+            </ul>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Binary Outcome Tokens — กลไกที่รับประกันความยุติธรรม:</strong> ใน Polymarket การ mint 1 USDC จะได้ 1 YES token + 1 NO token เสมอ เมื่อเหตุการณ์สิ้นสุด token ที่ถูกต้องจ่ายคืน $1 อีกอันมูลค่าเป็นศูนย์ ระบบนี้ทำให้ราคา YES + NO = $1 ตลอดเวลา และ <strong>ไม่มี counterparty risk</strong> — protocol เป็นผู้ดูแล collateral ทั้งหมด ไม่ใช่คู่สัญญา
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Prediction Markets · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — Decentralization & Regulatory Tension
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 15 • Regulation</span>
+            <h2 class="book-page-title">เหตุผลที่ต้องการ Decentralization — และความตึงเครียดกับกฎหมาย</h2>
+          </div>
+          <div class="book-page-index">Prediction<br>Regulation</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>เหตุผลที่ต้องการ Decentralization — และความตึงเครียดกับกฎหมาย</h3>
+            <p>Decentralization ไม่ใช่แค่อุดมการณ์สำหรับ Prediction Markets — มันเป็นเงื่อนไขเชิงฟังก์ชันที่ทำให้ตลาดทำงานได้ดีที่สุด แต่คุณสมบัติเดียวกันนี้ทำให้หน่วยงานกำกับดูแลอึดอัด</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ข้อได้เปรียบของ Decentralization ใน Prediction Markets มีสี่ด้านหลัก: <strong>ความโปร่งใส on-chain</strong> — ทุก order, position, และ settlement บันทึกบน blockchain ที่ทุกคนตรวจสอบได้ ไม่มีใครสามารถ manipulate ผลลัพธ์หลังเหตุการณ์; <strong>Censorship Resistance</strong> — ไม่มี gatekeeper ที่สามารถปิดตลาดที่ "ไม่สะดวก" ทางการเมือง; <strong>Permissionless Global Access</strong> — นักวิจัยในโตเกียว เกษตรกรในเคนยา หรือนักลงทุนในบราซิลเข้าร่วมได้เท่าเทียมกัน; <strong>No KYC = Insider Information Flows Freely</strong> — เจ้าหน้าที่รัฐที่รู้ข้อมูลนโยบายก่อนเปิดเผย หรือนักวิจัยที่มีข้อมูลพิเศษ สามารถ trade ได้โดยไม่เปิดเผยตัวตน ทำให้ข้อมูลไหลเข้าราคาโดยตรง
+            </p>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>ความตึงเครียดด้านกฎหมาย:</strong> สิ่งที่ Prediction Market เรียกว่า "superior information aggregation" นั้น หน่วยงานกำกับดูแลเรียกว่า "insider trading" CFTC (Commodity Futures Trading Commission) ดำเนินคดีกับ Polymarket ในปี 2022 โดยอ้างว่าให้บริการ event-based binary options แก่ลูกค้าสหรัฐโดยไม่มีใบอนุญาต Polymarket จ่ายเงิน <strong>$1.4 ล้าน settlement</strong> และบล็อก IP ผู้ใช้สหรัฐ — แต่ไม่ได้ยุติการดำเนินงาน
+          </div>
+
+          <div class="table-shell" style="margin-top:1.25rem;">
+            <div class="table-topbar"><div>
+              <h3>Polymarket vs Kalshi — สองแนวทางสู่ Prediction Markets</h3>
+              <p class="caption">ทั้งคู่ต้องการจุดหมายเดียวกัน แต่เลือกเส้นทางตรงข้ามกัน</p>
+            </div></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>มิติ</th><th>Polymarket</th><th>Kalshi</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><strong>แนวทาง</strong></td>
+                    <td>Offshore + geo-block</td>
+                    <td>CFTC-regulated DCM</td>
+                  </tr>
+                  <tr>
+                    <td><strong>KYC</strong></td>
+                    <td style="color:#4ade80;">ไม่บังคับ (นอกสหรัฐ)</td>
+                    <td style="color:#f5a623;">บังคับ</td>
+                  </tr>
+                  <tr>
+                    <td><strong>กฎหมาย</strong></td>
+                    <td>จดทะเบียน Cayman Islands</td>
+                    <td>ได้รับใบอนุญาต CFTC อย่างเป็นทางการ</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Settlement</strong></td>
+                    <td>USDC on-chain (Polygon)</td>
+                    <td>USD ผ่านระบบธนาคาร</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Liquidity Model</strong></td>
+                    <td>AMM + order book hybrid</td>
+                    <td>CLOB แบบดั้งเดิม</td>
+                  </tr>
+                  <tr>
+                    <td><strong>US Access</strong></td>
+                    <td style="color:#f87171;">บล็อกทางการ (VPN ได้)</td>
+                    <td style="color:#4ade80;">เปิดเต็มรูปแบบ</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Polymarket เลือกเส้นทาง offshore: จดทะเบียนใน Cayman Islands, ให้บริการทั่วโลกยกเว้นสหรัฐ (geo-block), ใช้ Polygon blockchain เพื่อ settlement แบบ permissionless ด้วย USDC ผลคือ liquidity สูง, market variety กว้าง, แต่ผู้ใช้สหรัฐต้องใช้ VPN และรับ legal risk เอง
+            </p>
+            <p>
+              Kalshi เลือกทิศทางตรงข้าม: สู้คดีกับ CFTC เป็นเวลาหลายปีจนได้รับการรับรองเป็น Designated Contract Market (DCM) แห่งแรกในประวัติศาสตร์สำหรับ event contracts บริการในสหรัฐได้อย่างถูกกฎหมาย แต่แลกกับ KYC บังคับและ market selection ที่อยู่ภายใต้การกำกับ การพัฒนาล่าสุดที่น่าสนใจ: <strong>Polymarket เข้าซื้อกิจการ QCEX</strong> exchange ที่ได้รับใบอนุญาตในสหรัฐ เพื่อเปิดรุ่น regulated version — กลยุทธ์ dual-track ที่รันทั้งสองโลกพร้อมกัน
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Prediction Markets · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — Early Failures: Gnosis & Augur
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 15 • History</span>
+            <h2 class="book-page-title">เรียนรู้จากความล้มเหลวของ Gnosis และ Augur</h2>
+          </div>
+          <div class="book-page-index">Prediction<br>Failures</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>เรียนรู้จากความล้มเหลวของ Gnosis และ Augur</h3>
+            <p>ก่อน Polymarket จะประสบความสำเร็จ มีผู้บุกเบิกสองรายที่มีเทคโนโลยีที่ดีกว่าแต่ล้มเหลวด้วยเหตุผลที่ฟังดูเรียบง่าย: ไม่มีคนใช้งานจริง</p>
+          </div>
+
+          <div class="platform-timeline">
+            <div class="timeline-row">
+              <div class="timeline-date">2017</div>
+              <div>
+                <div class="timeline-title">Gnosis — ระดมทุน $12.5M ใน 12 นาที แล้วเงียบหาย</div>
+                <div class="timeline-desc">ICO ที่ร้อนแรงที่สุดในปีนั้น Gnosis ออกแบบระบบ dual-token ที่ซับซ้อน: GNO token สำหรับถือ + OWL token สำหรับจ่าย fee ใน market ที่สร้าง ทีมงานมุ่งเน้น technical infrastructure แบบ "build it and they will come" แต่ markets ที่สร้างขึ้นไม่มีแรงดึงดูด ไม่มี liquidity ไม่มี user จริงๆ</div>
+              </div>
+            </div>
+            <div class="timeline-row">
+              <div class="timeline-date">2018</div>
+              <div>
+                <div class="timeline-title">Augur — Decentralization สุดขีดที่ทำให้ใช้งานไม่ได้</div>
+                <div class="timeline-desc">Augur ใช้ระบบ REP token เพื่อ resolution แบบ fully decentralized: token holders รายงานผลลัพธ์จริง ถ้ารายงานถูกต้องได้ fee ถ้าโกหกเสีย stake แนวคิดสวยงาม แต่การ resolve market ใช้เวลาหลายสัปดาห์ ดึงดูด "assassination markets" ที่เดิมพันบนการเสียชีวิตของคนจริงๆ และ Ethereum gas fees ทำให้การเดิมพันเล็กน้อยไม่คุ้มทุนโดยสิ้นเชิง</div>
+              </div>
+            </div>
+            <div class="timeline-row">
+              <div class="timeline-date">2020–</div>
+              <div>
+                <div class="timeline-title">Polymarket — Pragmatic Hybrid ที่ได้ผล</div>
+                <div class="timeline-desc">เรียนรู้จากความล้มเหลวทั้งหมด: ใช้ Polygon แทน Ethereum mainnet (gas แทบฟรี), USDC denominated (ไม่ต้อง wrap token ซับซ้อน), UI เรียบง่ายซ่อน crypto complexity ไว้หลังฉาก จนผู้ใช้ทั่วไปเข้าใจได้ทันที</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Gnosis ล้มเหลวเพราะ <strong>premature optimization</strong> — ออกแบบระบบที่ซับซ้อนเพื่อ solve ปัญหาที่ยังไม่เกิด ตอนที่เปิดตัวในปี 2017 ไม่มี markets ที่ compelling ไม่มี liquidity ไม่มีเหตุผลให้คนมาใช้ infrastructure ที่ดีแค่ไหนก็ไม่สำคัญ
+            </p>
+            <p>
+              Augur เลือก <strong>decentralization เป็นอุดมการณ์</strong> แทนที่จะเป็นเครื่องมือ ระบบ REP-based resolution ที่ไม่มีจุดควบคุมกลางฟังดูดีในทางทฤษฎี แต่ในทางปฏิบัติทำให้ตลาดใช้เวลาสัปดาห์กว่าจะ settle ผู้ใช้ที่ต้องการทราบผลเลือกตั้งในคืนวันเลือกตั้งต้องรอหลายสัปดาห์ ยิ่งกว่านั้น ระบบ anonymous + permissionless เปิดโอกาสให้เกิด markets ที่สังคมยอมรับไม่ได้
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Concept</span></div>
+            <h3 class="callout-title">The Chicken-and-Egg Problem</h3>
+            <p style="font-size:0.79rem;color:#8a9aaa;margin:0.5rem 0 0;line-height:1.65;">Prediction Market สองด้านของตลาดต้องมาพร้อมกัน: <strong style="color:#22d3ee;">Traders</strong> ต้องการ liquidity เพียงพอเพื่อ enter/exit positions ได้ราบรื่น ขณะที่ <strong style="color:#67e8f9;">Liquidity Providers</strong> ต้องการ traders เพียงพอเพื่อ earn fees คุ้มค่า ถ้าไม่มีฝ่ายใดฝ่ายหนึ่งมาก่อน ฝ่ายอื่นก็ไม่มา — นี่คือเหตุผลที่ Gnosis และ Augur ล้มเหลวแม้เทคโนโลยีจะดีกว่า Polymarket ในหลายมิติ</p>
+          </div>
+
+          <div class="callout warning">
+            <strong>บทเรียนสำคัญจาก Gnosis &amp; Augur:</strong>
+            <ul style="margin:0.5rem 0 0;padding-left:1.2rem;font-size:0.79rem;color:#c8d4e0;line-height:1.7;">
+              <li>Decentralization ideology ไม่เท่ากับ good UX — ผู้ใช้จริงต้องการความสะดวก ไม่ใช่ pure decentralization</li>
+              <li>ถ้าไม่มี liquidity แม้ technology ที่ดีก็ล้มเหลว — network effect สำคัญกว่า technical superiority</li>
+              <li>Gas fees มีผลกระทบจริงต่อ market economics — เดิมพัน $10 ที่เสีย $5 เป็น gas ไม่สมเหตุสมผล</li>
+              <li>Timing สำคัญ — Augur เปิดตัวในช่วง crypto bear market ปี 2018 โดยไม่มี "killer use case" ที่ชัดเจน</li>
+            </ul>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Prediction Markets · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — Polymarket Breakthrough
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 15 • Breakthrough</span>
+            <h2 class="book-page-title">2024 Election เปลี่ยน Prediction Markets ตลอดกาล</h2>
+          </div>
+          <div class="book-page-index">Prediction<br>Polymarket</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>2024 Election เปลี่ยน Prediction Markets ตลอดกาล</h3>
+            <p>Polymarket ไม่ได้ประสบความสำเร็จเพราะเทคโนโลยีที่เหนือกว่า แต่เพราะการตัดสินใจออกแบบที่ถูกต้องตั้งแต่ต้น และได้ "killer use case" ที่ทำให้ mainstream media พูดถึงตลอดปี 2024</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              การตัดสินใจออกแบบหลักของ Polymarket มีสามข้อที่แก้ปัญหาของ Gnosis และ Augur โดยตรง: สร้างบน <strong>Polygon</strong> แทน Ethereum mainnet ทำให้ gas fee แทบเป็นศูนย์ (เดิมพัน $1 ก็คุ้มทุน); ใช้ <strong>USDC as collateral</strong> ทั้งหมดโดยไม่มี native token ที่ซับซ้อน ผู้ใช้ไม่ต้องเข้าใจ crypto เพื่อใช้งาน; และซ่อน blockchain complexity ทั้งหมดไว้หลัง UI ที่เรียบง่าย — ผู้ใช้เห็นแค่ "Trump Win?" พร้อม slider ราคา
+            </p>
+            <p>
+              ความสำเร็จในการ curate markets (เลือกเฉพาะหัวข้อที่มีคนสนใจ), จัดหา professional liquidity providers เพื่อ bootstrap market depth, และ UI ที่ใช้งานง่ายทำให้ Polymarket สร้าง network effect ได้ในที่สุด
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Technical Design</span></div>
+            <h3 class="callout-title">Optimistic Oracle Resolution — สมดุลระหว่างความเร็วและความถูกต้อง</h3>
+            <ul style="margin:0.5rem 0 0;padding-left:1.2rem;font-size:0.79rem;color:#8a9aaa;line-height:1.75;">
+              <li><strong style="color:#22d3ee;">ขั้นตอน 1 — Propose:</strong> ใครก็ได้ propose ผลลัพธ์ของ market โดยวาง bond $750 USDC เป็นหลักประกัน</li>
+              <li><strong style="color:#67e8f9;">ขั้นตอน 2 — Dispute Window:</strong> เปิดให้ทุกคน dispute ภายใน 2 ชั่วโมง ถ้าไม่มีใคร dispute proposal ถือว่าได้รับการยอมรับ</li>
+              <li><strong style="color:#22d3ee;">ขั้นตอน 3 — Fallback Vote:</strong> ถ้ามี dispute ปัญหาส่งต่อให้ UMA Protocol token holders ลงคะแนน ผู้ vote ถูกต้องได้รางวัล ผู้ vote ผิดเสีย stake</li>
+              <li><strong style="color:#67e8f9;">ผลลัพธ์:</strong> ตลาดส่วนใหญ่ settle ภายใน 2-4 ชั่วโมงหลังเหตุการณ์ เร็วกว่า Augur ที่ใช้สัปดาห์ถึง 100 เท่า</li>
+            </ul>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              การเลือกตั้ง 2024 เป็น catalyst ที่ Polymarket รอคอย: ราคา Trump อัปเดต real-time ตลอดช่วงดราม่าที่เปลี่ยนไวที่สุดในประวัติศาสตร์การเมือง — Manhattan conviction ทำให้ราคา Trump ร่วงจาก 54% เหลือ 47% แล้วฟื้นกลับ 52% ภายในสองวัน; การถอนตัวของ Biden ทำให้ Harris surge จาก 15% เป็น 38% <strong>ภายใน 24 ชั่วโมงเดียว</strong> สร้าง price discovery ที่ไม่มีใครในโลกสื่อกระแสหลักทำได้เร็วกว่า
+            </p>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Full Collateralization Model:</strong> 1 USDC mint ได้ 1 YES token + 1 NO token เสมอ และทั้งคู่รวมกันจะ redeem ได้ 1 USDC เสมอหลัง resolution Protocol เก็บ collateral ไว้ใน smart contract ที่ audit แล้ว ไม่มีฝ่ายใดสามารถ default ได้ เพราะ payout guarantee ด้วย math ของ contract ไม่ใช่ credit ของคู่สัญญา
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Prediction Markets · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — The French Whale & Media Effects
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 15 • Case Study</span>
+            <h2 class="book-page-title">ตลาดที่แม่นยำ หรือ Whale ที่รวยกว่าทุกคน?</h2>
+          </div>
+          <div class="book-page-index">Prediction<br>Whale Study</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ตลาดที่แม่นยำ หรือ Whale ที่รวยกว่าทุกคน?</h3>
+            <p>กรณีของ "Théo" นักลงทุนชาวฝรั่งเศสที่วาง $80M บน Trump win เป็น case study ที่สมบูรณ์แบบว่า prediction market "ทำงาน" อย่างที่ควรจะเป็น หรือมีช่องโหว่ที่ dangerous กว่าที่คิด</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Théo หรือชื่อเต็มว่า Théo Cornot ชาวฝรั่งเศสในวัย 30 ต้นๆ เปิด 11 accounts บน Polymarket เพื่อวาง position รวม $80 ล้านในการ bet ที่ Trump จะชนะการเลือกตั้ง 2024 เขาไม่ได้แค่ "เชื่อ" ว่า Trump จะชนะ — เขา <strong>ลงทุน</strong> ในความเชื่อนั้นอย่างจริงจัง: จ้าง YouGov ทำ "neighbor polling" แบบเฉพาะในรัฐ swing states สำคัญ — Pennsylvania, Michigan, Wisconsin — ด้วยเงินกว่า $100,000 เพื่อ validate methodolgy ของตัวเอง
+            </p>
+            <p>
+              Methodology ของเขาอิงบนสมมติฐาน "Shy Trump Voter" — ผู้มีสิทธิ์เลือกตั้งที่สนับสนุน Trump แต่ไม่บอกนักสำรวจเพราะ social stigma ร่วมกับการวิเคราะห์ว่าโพลล์ของปี 2016 และ 2020 มี systematic undercount ของกลุ่ม non-college educated voters อย่างต่อเนื่อง เขาสรุปว่าตลาดกำลัง underprice Trump อย่างมีนัยสำคัญ
+            </p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              นักวิจารณ์โต้แย้งว่า position ขนาด $80M ของ Théo ทำให้ราคา Trump ใน Polymarket พุ่งขึ้นเกินจริง สร้าง <strong>false narrative ใน media</strong> ว่า "market บอกว่า Trump จะชนะ" — ซึ่งส่งผลต่อการรับรู้ของสาธารณชน ทั้งที่ราคาอาจสะท้อนแค่คนๆ เดียวที่รวยมากพอ ฝ่ายปกป้อง Polymarket โต้ว่าตลาดมี two sides เสมอ: ถ้า Théo ผิด ผู้อื่นจะรวยด้วยการ bet ทางตรงข้าม ราคาจะ converge สู่ความจริงเองผ่าน arbitrage แรงกดดันทางการเงินของ $80M ตัดสินใจของเขายิ่งทำให้เขา motivated ทำ research ที่ดีที่สุดที่ทำได้
+            </p>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>ผลการเลือกตั้ง — ตลาดพิสูจน์ความถูกต้อง:</strong> Trump ชนะ Pennsylvania ด้วย 2.2%, Michigan ด้วย 1.4%, Wisconsin ด้วย 0.9% — ทุกรัฐที่ Polymarket ให้ Trump เป็น favourite ในช่วงโค้งสุดท้าย ขณะที่โพลล์แทบทุกสำนักชี้ว่าเป็น coin-flip จาก $80M position Chainalysis รายงานว่า Théo ทำกำไรได้ประมาณ <strong>$78.7 ล้าน</strong>
+          </div>
+
+          <div class="callout warning">
+            <strong>Thin Market Vulnerability — ข้อเตือนใจสำคัญ:</strong> ในตลาดที่ deep กว่านี้ $80M จะขยับ odds ได้น้อยกว่ามาก ความกังวลเรื่อง manipulation ไม่ใช่ว่า Théo โกหก แต่คือการ "ซื้อ narrative" ในสื่อ mainstream ได้เป็นวันหรือสัปดาห์ก่อนที่ opposing capital จะมาพอเพียงเพื่อ counterbalance การที่ Théo ถูกในครั้งนี้พิสูจน์ methodology ของเขา แต่ไม่ได้พิสูจน์ว่าตลาดจะ robust ต่อ whale ที่ <em>ผิด</em> ในอนาคต
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Prediction Markets · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 06 — Future Architecture & Key Takeaways
+           ============================================================ -->
+      <article class="book-page" id="page-06">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 15 • Future</span>
+            <h2 class="book-page-title">สองทาง: Permissionless Substrate vs Regulated Frontend</h2>
+          </div>
+          <div class="book-page-index">Prediction<br>Future</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>สองทาง: Permissionless Substrate vs Regulated Frontend</h3>
+            <p>อนาคตของ Prediction Markets อาจไม่ใช่การเลือกระหว่าง permissionless กับ regulated — แต่คือการที่ทั้งสองชั้นทำงานเสริมกันบน infrastructure เดียวกัน</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              วิวัฒนาการด้าน technical architecture กำลังเดินไปในทิศทางชัดเจน: <strong>On-chain custody + settlement</strong> — collateral อยู่ใน smart contracts ที่ทุกคนตรวจสอบได้ ไม่ใช่ custodian account; <strong>Off-chain order matching with on-chain verifiability</strong> — match orders บน server เพื่อ speed แต่ publish proof บน chain ให้ verify ได้; <strong>Yield-bearing collateral</strong> — แทนที่จะวาง idle USDC ใน market ที่ยังไม่ settle, collateral ไปฝากใน yield protocol ทำให้ผู้ใช้ได้ดอกเบี้ยระหว่างรอ — บางคนเรียกสิ่งนี้ว่า "market dollar" ที่ได้ yield และ expose ต่อ event พร้อมกัน
+            </p>
+            <p>
+              อีกแนวคิดสำคัญคือ <strong>plural interfaces</strong>: ถ้า protocol เป็น neutral infrastructure ที่ open source และ permissionless ใครก็สามารถสร้าง frontend บนมันได้ หาก Polymarket.com ถูกบล็อกในประเทศใด ก็มี interface อื่นๆ ที่เข้าถึง protocol เดียวกันได้ ความ resilience ของระบบไม่ได้ขึ้นกับการอยู่รอดของ company ใด company หนึ่ง
+            </p>
+          </div>
+
+          <div class="table-shell" style="margin-top:1.25rem;">
+            <div class="table-topbar"><div>
+              <h3>Two-Track Ecosystem — สองชั้นที่เสริมกัน</h3>
+              <p class="caption">อนาคตที่มีแนวโน้มสูงสุดคือทั้งสองชั้นอยู่ร่วมกันบน protocol ชั้นเดียวกัน</p>
+            </div></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>มิติ</th><th>Permissionless / Global</th><th>Regulated / Compliant</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><strong>ผู้ใช้หลัก</strong></td>
+                    <td>นักลงทุนทั่วโลก, researchers, insiders</td>
+                    <td>ผู้ใช้สหรัฐ, institutional traders</td>
+                  </tr>
+                  <tr>
+                    <td><strong>KYC</strong></td>
+                    <td style="color:#4ade80;">ไม่บังคับ</td>
+                    <td style="color:#f5a623;">บังคับ</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Settlement</strong></td>
+                    <td>On-chain USDC / stablecoin</td>
+                    <td>USD ผ่านระบบธนาคาร / CBDC</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Censorship Resistance</strong></td>
+                    <td style="color:#4ade80;">สูง — protocol ไม่มีจุดปิด</td>
+                    <td style="color:#f87171;">ต่ำ — อยู่ภายใต้กฎหมาย</td>
+                  </tr>
+                  <tr>
+                    <td><strong>US Legal Status</strong></td>
+                    <td style="color:#f87171;">Gray area / ถูกบล็อก</td>
+                    <td style="color:#4ade80;">ถูกกฎหมายเต็มรูปแบบ</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Key Takeaways</span></div>
+            <h3 class="callout-title">สรุปสิ่งที่ต้องจำจากบทนี้</h3>
+            <ol class="digest-list">
+              <li>
+                <span class="digest-index">01</span>
+                <div><strong>Binary outcome tokens + financial stake = การรวบรวมข้อมูลที่ซื่อสัตย์ในระดับ scale</strong>
+                <p>ราคาของ YES/NO token สะท้อนความเชื่อรวมหมู่ของผู้ที่วางเงินจริง กรองการพูดตามกระแสและให้น้ำหนักผู้ที่มีข้อมูลเฉพาะทางมากที่สุด</p></div>
+              </li>
+              <li>
+                <span class="digest-index">02</span>
+                <div><strong>Gnosis/Augur ล้มเหลวเพราะ decentralization ideology &gt; UX — Polymarket สำเร็จเพราะ pragmatic hybrid</strong>
+                <p>เทคโนโลยีที่ดีกว่าไม่ได้ชนะเสมอ network effect + ความเรียบง่ายในการใช้งาน + timing ที่ถูกต้องคือตัวแปรที่สำคัญกว่า</p></div>
+              </li>
+              <li>
+                <span class="digest-index">03</span>
+                <div><strong>Optimistic Oracle: propose → 2-hour dispute window → token holder vote fallback</strong>
+                <p>สมดุลระหว่างความเร็ว (settle ภายใน 2-4 ชั่วโมง) และความถูกต้อง (มี fallback mechanism) ที่แก้ปัญหา "weeks-long resolution" ของ Augur</p></div>
+              </li>
+              <li>
+                <span class="digest-index">04</span>
+                <div><strong>กรณี Théo: แรงจูงใจทางการเงินทำให้ลงทุน research $100K → กำไร $78.7M — นี่คือกลไกที่ทำงานถูกต้อง</strong>
+                <p>ไม่ว่าจะมองว่าเป็น manipulation หรือ information aggregation ผลลัพธ์คือ market ถูกต้อง ขณะที่โพลล์ทุกสำนักผิด ข้อกังวลที่แท้จริงคือ market ยังไม่ deep พอจะต้านทาน whale ที่ "ผิด"</p></div>
+              </li>
+              <li>
+                <span class="digest-index">05</span>
+                <div><strong>อนาคตสองชั้น: permissionless global protocol + regulated national frontends เสริมกัน ไม่ใช่แข่งขัน</strong>
+                <p>infrastructure ชั้นล่างที่ neutral ทำให้ทั้งสองชั้นทำงานได้พร้อมกัน นักลงทุนสหรัฐใช้ frontend ที่ compliant ส่วนนักวิจัยทั่วโลกเข้าถึง protocol โดยตรง</p></div>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Prediction Markets · Page 06</span>
+          <span class="page-number">06</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-14-depin.html">
+          <span>Previous</span>
+          <strong>บทที่ 14: DePIN — โครงสร้างพื้นฐานแบบกระจายศูนย์</strong>
+        </a>
+        <a class="nav-card" href="./chapter-16-quantum-resistance.html">
+          <span>Next</span>
+          <strong>บทที่ 16: Quantum Resistance — อนาคตของความปลอดภัยบล็อกเชน</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="../assets/js/mermaid-init.js"></script>
+  <script>
+    // Particle background
+    (function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W, H, dots;
+      const COLOR = '34,211,238';
+      const COUNT = 55;
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function init() {
+        dots = Array.from({ length: COUNT }, () => ({
+          x: Math.random() * W, y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.5 + 0.5,
+        }));
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        dots.forEach(d => {
+          d.x += d.vx; d.y += d.vy;
+          if (d.x < 0 || d.x > W) d.vx *= -1;
+          if (d.y < 0 || d.y > H) d.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${COLOR},0.55)`;
+          ctx.fill();
+        });
+        dots.forEach((a, i) => {
+          for (let j = i + 1; j < dots.length; j++) {
+            const b = dots[j];
+            const dist = Math.hypot(a.x - b.x, a.y - b.y);
+            if (dist < 110) {
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = `rgba(${COLOR},${0.12 * (1 - dist / 110)})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
+        });
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', () => { resize(); init(); });
+      resize(); init(); draw();
+    })();
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

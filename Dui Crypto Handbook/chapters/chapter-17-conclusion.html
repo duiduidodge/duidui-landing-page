@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 17: บทสรุป — ผู้เรียนรู้ที่แท้จริง • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="สังเคราะห์ความรู้จาก 17 บท — framework การประเมิน protocol, signal vs noise, patterns ที่ซ้ำกัน และ roadmap สำหรับนักลงทุน crypto ชาวไทย">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed; inset: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none; opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed; top: 20%; right: 5%;
+      width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(6,182,212,0.05) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page-shell { position: relative; z-index: 10; padding-top: 0; }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Accent: teal #06b6d4 ───────────────────────────────────────── */
+    .digest-list .digest-index {
+      background: rgba(6,182,212,0.15); color: #06b6d4;
+      border: 1px solid rgba(6,182,212,0.35);
+    }
+    .info-chip {
+      border-left: 3px solid rgba(6,182,212,0.45);
+      background: rgba(6,182,212,0.05) !important;
+    }
+    .info-chip strong { color: #06b6d4; }
+    .table-shell thead th {
+      background: rgba(6,182,212,0.1); color: #06b6d4;
+      border-bottom: 1px solid rgba(6,182,212,0.3);
+    }
+    .table-shell tbody tr:nth-child(odd) td  { background: rgba(6,182,212,0.02); }
+    .table-shell tbody tr:hover td           { background: rgba(6,182,212,0.06); }
+
+    /* ── Stats row ────────────────────────────────────────────────────── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:580px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+    .stat-card {
+      border-radius: 10px; padding: 0.8rem 0.85rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(6,182,212,0.2);
+      text-align: center;
+    }
+    .stat-value { font-size: 1.25rem; font-weight: 800; color: #06b6d4; letter-spacing: -0.02em; line-height: 1.1; }
+    .stat-label { font-size: 0.70rem; color: #64748b; margin-top: 0.2rem; font-weight: 500; }
+
+    /* ── Understanding Stack (5 Layers) ──────────────────────────────── */
+    .understanding-stack { border-radius: 12px; overflow: hidden; border: 1px solid rgba(6,182,212,0.15); margin: 1.25rem 0; }
+    .understanding-layer { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.7rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .understanding-layer:last-child { border-bottom: none; }
+    .understanding-badge {
+      min-width: 96px; font-size: 0.63rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.22rem 0.5rem; border-radius: 5px; text-align: center; flex-shrink: 0; margin-top: 0.15rem;
+    }
+    .understanding-body h4 { font-size: 0.83rem; font-weight: 700; color: #e2e8f0; margin: 0 0 0.12rem; }
+    .understanding-body p  { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.45; }
+
+    /* ── Framework Card ───────────────────────────────────────────────── */
+    .framework-card {
+      border-radius: 10px; padding: 0.85rem 1rem;
+      background: rgba(6,182,212,0.04); border: 1px solid rgba(6,182,212,0.15);
+      margin-bottom: 0.55rem;
+      display: flex; gap: 0.75rem; align-items: flex-start;
+    }
+    .framework-num {
+      min-width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(6,182,212,0.15); border: 1px solid rgba(6,182,212,0.35);
+      color: #06b6d4; font-size: 0.82rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .framework-body h4 { font-size: 0.83rem; font-weight: 700; color: #e2e8f0; margin: 0 0 0.2rem; }
+    .framework-body p  { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+
+    /* ── Roadmap Level Card ───────────────────────────────────────────── */
+    .roadmap-level {
+      border-radius: 10px; padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 0.55rem;
+    }
+    .roadmap-level-header { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.35rem; }
+    .roadmap-level-badge {
+      font-size: 0.6rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.18rem 0.5rem; border-radius: 5px;
+    }
+    .roadmap-level-title { font-size: 0.85rem; font-weight: 700; color: #e2e8f0; }
+    .roadmap-level ul { margin: 0; padding-left: 1.1rem; font-size: 0.83rem; color: #8a9aaa; line-height: 1.7; }
+
+    /* ── Pattern block ────────────────────────────────────────────────── */
+    .pattern-block {
+      border-left: 3px solid rgba(6,182,212,0.4);
+      padding: 0.6rem 0.9rem;
+      background: rgba(6,182,212,0.03);
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 0.75rem;
+    }
+    .pattern-block strong { color: #06b6d4; }
+
+    .nav-card--disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 17</span>
+  <button class="chapter-picker-btn" data-current="17" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background:linear-gradient(90deg,#06b6d4,#0891b2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;letter-spacing:0.16em;">Part 5 • Advanced Themes &amp; Future Risks</div>
+          <h1>บทที่ 17: บทสรุป</h1>
+          <p class="lede">
+            ตลอด 17 บทที่ผ่านมา คุณได้เดินทางจากรากฐานของ custody และ security ไปจนถึงขอบฟ้าของ quantum cryptography — ไม่ใช่แค่การรู้จัก "คำศัพท์คริปโต" แต่เป็นการเข้าใจว่าระบบเหล่านี้ทำงานอย่างไรและทำไมมันถึงออกแบบมาเช่นนี้ บัดนี้คุณมีกรอบความคิดที่จะใช้ประเมิน protocol ใหม่ อ่าน narrative ตลาด และป้องกันตัวเองจากความเสี่ยงที่แท้จริงได้อย่างชาญฉลาด ก้าวต่อไปไม่ใช่การหยุดเรียนรู้ แต่คือการนำ mental models เหล่านี้ไปทดสอบกับโลกจริงด้วยความระมัดระวังและความอยากรู้อยู่เสมอ
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          ความรู้ไม่ได้ปกป้องคุณ — แต่การ<em>เข้าใจ</em>ทำได้ ความแตกต่างอยู่ที่ว่าคุณรู้ว่าคำถามที่ถูกต้องคืออะไร
+          <cite>— DuiDui's Crypto Handbook, บทสรุป</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_17_conclusion.png" alt="Chapter 17 Conclusion Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — The Map You Now Have
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 17 • Synthesis</span>
+            <h2 class="book-page-title">แผนที่ที่คุณมีแล้ว — 5 ชั้นแห่งความเข้าใจ</h2>
+          </div>
+          <div class="book-page-index">บทสรุป<br>Overview</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>คุณจบการเดินทางผ่าน 17 บทแล้ว</h3>
+            <p>จากคำถามพื้นฐาน "seed phrase คืออะไร?" ไปจนถึง "quantum computer จะทำลาย Bitcoin ได้ไหม?" — คุณผ่านทุกชั้นของ crypto ecosystem มาแล้ว</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              หลายคนที่เริ่มต้นใน crypto รู้จัก <em>"ชื่อสิ่งต่าง ๆ"</em> — Bitcoin, DeFi, NFT, Layer 2 แต่ไม่เข้าใจว่าสิ่งเหล่านั้น <strong>ทำงานอย่างไร</strong> และ <strong>ทำไมมันถึงออกแบบมาเช่นนั้น</strong> หนังสือเล่มนี้ไม่ได้ให้คุณจำคำศัพท์ — มันให้ <strong>mental models</strong> ที่นำไปใช้ได้กับ protocol ใหม่ที่ยังไม่เคยมีในวันที่หนังสือนี้ถูกเขียน
+            </p>
+            <p>
+              ความแตกต่างระหว่าง "รู้จักคริปโต" กับ "เข้าใจคริปโต" นั้นสำคัญมาก คนที่รู้จักสามารถบอกชื่อ blockchain ได้ แต่คนที่เข้าใจสามารถถามได้ว่า: <em>ใครควบคุม validators? fee ไหลไปที่ไหน? อะไรที่จะทำให้มันล้มเหลวได้?</em> นั่นคือความแตกต่างระหว่างนักลงทุนที่รอดและคนที่เสียเงินทุกรอบ cycle
+            </p>
+          </div>
+
+          <div class="understanding-stack">
+            <div class="understanding-layer" style="background:rgba(6,182,212,0.07);">
+              <div class="understanding-badge" style="background:rgba(6,182,212,0.18);color:#06b6d4;">Layer 5<br>อนาคต</div>
+              <div class="understanding-body">
+                <h4>Quantum, Prediction Markets — Forward-Looking Risks &amp; Tools</h4>
+                <p>Quantum threat timelines, NIST post-quantum standards, Kalshi/Polymarket mechanics — ความเสี่ยงและโอกาสที่กำลังจะมา</p>
+              </div>
+            </div>
+            <div class="understanding-layer">
+              <div class="understanding-badge" style="background:rgba(20,184,166,0.15);color:#14b8a6;">Layer 4<br>ความเป็นเจ้าของ</div>
+              <div class="understanding-body">
+                <h4>NFTs, Governance, DePIN — Ownership &amp; Coordination</h4>
+                <p>ERC-721/1155, DAO voting mechanics, DePIN emission models — สิ่งที่เป็น "เจ้าของ" จริงในโลก on-chain</p>
+              </div>
+            </div>
+            <div class="understanding-layer">
+              <div class="understanding-badge" style="background:rgba(59,130,246,0.15);color:#60a5fa;">Layer 3<br>ตลาด</div>
+              <div class="understanding-body">
+                <h4>Markets &amp; Finance — How Money Flows On-Chain</h4>
+                <p>AMM, MEV, stablecoins, RWA, market microstructure — เงินไหลอย่างไรใน DeFi และ on-chain markets</p>
+              </div>
+            </div>
+            <div class="understanding-layer">
+              <div class="understanding-badge" style="background:rgba(99,102,241,0.15);color:#818cf8;">Layer 2<br>โครงสร้าง</div>
+              <div class="understanding-body">
+                <h4>Blockchains — Bitcoin, Ethereum, Solana, L1s ทำงานต่างกันอย่างไร</h4>
+                <p>Consensus mechanisms, EVM, Sealevel, tradeoff triangle — ทำไม blockchain แต่ละตัวถึงออกแบบมาต่างกัน</p>
+              </div>
+            </div>
+            <div class="understanding-layer">
+              <div class="understanding-badge" style="background:rgba(168,85,247,0.15);color:#c084fc;">Layer 1<br>ฐานราก</div>
+              <div class="understanding-body">
+                <h4>Custody &amp; Security — Your First Line of Defense</h4>
+                <p>Seed phrases, hardware wallets, hot vs cold storage, phishing patterns — สิ่งที่ต้องเข้าใจก่อนทุกอย่าง</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Coverage Reality:</strong> หนังสือเล่มนี้ครอบคลุม ~90% ของสิ่งที่สำคัญสำหรับผู้ใช้คริปโตชาวไทย 99% — เนื้อหาที่เหลือคือรายละเอียดเชิงเทคนิคลึกมากหรือ niche use cases ที่ยังคงเปลี่ยนแปลงอยู่ทุกวัน เป้าหมายคือให้คุณ <strong>เข้าใจระบบพอที่จะเรียนรู้ส่วนที่เหลือด้วยตัวเอง</strong>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">บทสรุป · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — Framework: Evaluating Any Protocol
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 17 • Frameworks</span>
+            <h2 class="book-page-title">วิธีประเมิน Protocol, Chain, หรือ Token ใหม่</h2>
+          </div>
+          <div class="book-page-index">บทสรุป<br>Framework</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>วิธีประเมิน protocol, chain, หรือ token ใหม่</h3>
+            <p>ทุก cycle จะมี protocol ใหม่ที่คุณยังไม่รู้จัก แต่ 5 คำถามนี้ใช้ได้กับทุกอย่าง — ไม่ว่าจะเป็น L1 ใหม่, DeFi protocol, หรือ token ที่ยังไม่มีใครพูดถึง</p>
+          </div>
+
+          <div class="framework-card">
+            <div class="framework-num">1</div>
+            <div class="framework-body">
+              <h4>Who controls what? — ใครควบคุมอะไร?</h4>
+              <p>ดู validator set, multisig signers, foundation treasury, DAO quorum — ใครสามารถ halt, upgrade, หรือ drain protocol ได้? Emergency key อยู่ที่ไหน? ถ้าตอบไม่ได้ หรือ "ไม่มีใคร" — นั่นคือ answer ที่ต้องตรวจสอบให้ถี่ถ้วนที่สุด</p>
+            </div>
+          </div>
+
+          <div class="framework-card">
+            <div class="framework-num">2</div>
+            <div class="framework-body">
+              <h4>Where does value go? — เงินไหลไปที่ไหน?</h4>
+              <p>ติดตาม fee flows: protocol revenue, token burns, buyback programs, team vesting schedules, VC cliff dates — follow the money เสมอ ถ้า token price ขึ้นแต่ protocol revenue ไม่เพิ่ม มีบางอย่างที่ไม่สมดุล</p>
+            </div>
+          </div>
+
+          <div class="framework-card">
+            <div class="framework-num">3</div>
+            <div class="framework-body">
+              <h4>What would kill it? — อะไรที่จะทำให้มันล้มเหลว?</h4>
+              <p>ระบุ attack vectors ที่สำคัญ: regulatory (OFAC, SEC), technical (smart contract bug, oracle manipulation), economic (bank run on stablecoin, liquidity crisis), social (team exit, community split) — protocol ที่ดีรู้จักจุดอ่อนของตัวเองและมี mitigation plan</p>
+            </div>
+          </div>
+
+          <div class="framework-card">
+            <div class="framework-num">4</div>
+            <div class="framework-body">
+              <h4>Is growth real or subsidized? — การเติบโตจริงหรือ incentive-driven?</h4>
+              <p>TVL, volume, user numbers — มาจาก organic demand หรือ token emissions? ลองถามว่า: <em>ถ้าหยุด incentive พรุ่งนี้ จะเกิดอะไรขึ้น?</em> Post-incentive retention ต่ำมากคือสัญญาณ mercenary capital ที่จะหนีทันที incentive หมด</p>
+            </div>
+          </div>
+
+          <div class="framework-card">
+            <div class="framework-num">5</div>
+            <div class="framework-body">
+              <h4>Does the token need to exist? — token จำเป็นแค่ไหน?</h4>
+              <p>ถ้า protocol นี้ทำงานได้สมบูรณ์โดยไม่ต้องมี native token — token นั้นอาจมีไว้เพื่อ fundraise จากนักลงทุนมากกว่าจะเป็น essential component ถามว่า token capture value จาก protocol อย่างไร? ถ้าตอบไม่ได้ชัดเจน เป็น red flag</p>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              สมมติมี DeFi protocol ใหม่ชื่อ "NovaDEX" โฆษณาว่า <em>"ไม่มี IL, yield 40% APY, backed by top VCs"</em> — ลองใช้ framework: (1) ใครควบคุม? — มี 3/5 multisig; 3 ใน 5 คือ team (ปัญหา) (2) เงินไหลไปไหน? — fee 0.3% ไปที่ LP, team ถือ 25% token supply ด้วย 6-month cliff (3) อะไรจะทำให้ล้มเหลว? — ถ้า team dump หลัง cliff; smart contract ยังไม่ audit (4) การเติบโตจริงไหม? — TVL $200M จาก NOVA token emissions; organic users น้อยมาก (5) token จำเป็นไหม? — protocol ทำงานโดยไม่ต้องมี NOVA token ได้ทั้งหมด
+            </p>
+            <p>
+              จากการถาม 5 คำถาม ภายใน 10 นาทีคุณพบว่า NovaDEX มีปัญหาโครงสร้างหลายจุด — โดยไม่ต้องอ่าน whitepaper 50 หน้า นั่นคือประโยชน์ของ framework ที่ดี
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">บทสรุป · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — Signal vs Noise
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 17 • Critical Thinking</span>
+            <h2 class="book-page-title">Signal vs Noise — วิธีอ่านตลาดคริปโตต่อจากนี้</h2>
+          </div>
+          <div class="book-page-index">บทสรุป<br>Signal/Noise</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>วิธีอ่านตลาดคริปโตต่อจากนี้</h3>
+            <p>ทุก narrative ใน crypto มีสิ่งที่โฆษณาและสิ่งที่ต้องตรวจสอบจริง — ตารางนี้ช่วยให้คุณแยก signal ออกจาก noise ได้เร็วขึ้น</p>
+          </div>
+
+          <div class="table-shell">
+            <div class="table-topbar"><div>
+              <h3>Signal vs Noise Matrix — สิ่งที่พูดกัน vs สิ่งที่ต้องตรวจสอบจริง</h3>
+              <p class="caption">ใช้คอลัมน์ "ตรวจสอบจริง" ทุกครั้งก่อนตัดสินใจลงทุน</p>
+            </div></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>สิ่งที่พูดกัน</th><th>ตรวจสอบจริง</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><strong style="color:#06b6d4;">"Revolutionary new blockchain"</strong></td>
+                    <td>Real differentiation vs marketing? Validator set ใครบ้าง? ใครควบคุม upgrade? เทียบ throughput จริงบน mainnet ไม่ใช่ testnet</td>
+                  </tr>
+                  <tr>
+                    <td><strong>"Massive TVL growth"</strong></td>
+                    <td>Incentive-driven หรือ organic? TVL มาจาก token emissions หรือ real yield? Post-incentive retention ที่ผ่านมาเป็นอย่างไร?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>"Top VCs backed"</strong></td>
+                    <td>Vesting schedule ของ VC vs retail lockup — cliff date ใกล้ไหม? VC ถือ % เท่าไหร่ในราคาเท่าไหร่เทียบกับ public price?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>"Real-world use case"</strong></td>
+                    <td>Actual paying customers มีไหม? Revenue มาจาก product หรือ token emissions? Retention post-subsidy เป็นอย่างไร?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>"Decentralized governance"</strong></td>
+                    <td>Actual voter participation (โดยทั่วไป 3-5% เท่านั้น) — ใครถือ voting power จริง? Emergency multisig อยู่ที่ไหน?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>"Institutional adoption"</strong></td>
+                    <td>Custody vs usage — institution ถือ BTC ใน custody เฉย ๆ หรือ actually use protocol? On-chain evidence มีไหม?</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Meta-Pattern ที่สำคัญที่สุด:</strong> ทุก crypto cycle มี narrative ใหม่ — DeFi Summer (2020) → NFT Boom (2021) → L2 Wars (2022-23) → RWA / DePIN / AI Agents (2024-25) แต่ <strong>dynamics พื้นฐานซ้ำเดิมทุกรอบ</strong>: hype builds, smart money exits early, retail holds the bag, narrative dies, new narrative begins ชื่อเปลี่ยนแต่โครงสร้างไม่เปลี่ยน
+          </div>
+
+          <div class="book-prose">
+            <p>
+              เครื่องมือที่ดีที่สุดในการกรอง noise ไม่ใช่ data feed หรือ analytics platform — มันคือ <strong>ความรู้เรื่อง incentive structures</strong> ที่คุณสะสมมาตลอด 17 บทนี้ คนที่เข้าใจว่า Blur ใช้ BLUR token rewards เพื่อ bootstrap volume จะไม่แปลกใจเมื่อ volume หายไปหลัง incentive ลดลง คนที่เข้าใจว่า DePIN emissions ดึง mercenary capital จะไม่ตกใจเมื่อ network ขนาดเล็กลงหลัง emission schedule ชัน
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">บทสรุป · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — Recurring Patterns Across the Book
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 17 • Patterns</span>
+            <h2 class="book-page-title">บทเรียนที่ซ้ำกันทั่วทั้งหนังสือ</h2>
+          </div>
+          <div class="book-page-index">บทสรุป<br>Patterns</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>บทเรียนที่ซ้ำกันทั่วทั้งหนังสือ</h3>
+            <p>เมื่อมองย้อนกลับไปทั้ง 17 บท จะเห็น patterns พื้นฐาน 4 ข้อที่ปรากฏซ้ำในทุก layer ของ ecosystem</p>
+          </div>
+
+          <div class="pattern-block">
+            <div class="book-prose" style="margin:0;">
+              <p>
+                <strong>Pattern 1 — Incentive design determines everything (การออกแบบ incentive กำหนดทุกอย่าง):</strong> HYPE buyback mechanism ทำให้ผู้ trade สนับสนุน protocol โดยตรง — BAYC commercial rights ทำให้ holders กลายเป็น brand ambassadors ที่มีแรงจูงใจสร้าง IP — DePIN token emissions ดึง node operators ในช่วง cold start — airdrop farming สร้าง behavior ที่ project ต้องการชั่วคราว ทุกครั้งที่คุณเห็น "behavior ที่น่าประหลาดใจ" ใน crypto ให้หา incentive structure ก่อน นั่นคือคำตอบเสมอ
+              </p>
+            </div>
+          </div>
+
+          <div class="pattern-block">
+            <div class="book-prose" style="margin:0;">
+              <p>
+                <strong>Pattern 2 — Decentralization vs Speed tradeoff เป็น universal (ไม่มี free lunch):</strong> Bitcoin (most decentralized, slowest finality) → Ethereum (balanced with PoS) → Solana (high throughput, some validator concentration tradeoffs) → Hyperliquid (very fast, more centralized validator set) — ไม่มี blockchain ใดที่ได้ทุกอย่างพร้อมกัน ทุกการออกแบบคือ conscious tradeoff ระหว่าง security, decentralization, และ scalability รู้ว่า chain ที่คุณใช้อยู่ tradeoff อะไร
+              </p>
+            </div>
+          </div>
+
+          <div class="pattern-block">
+            <div class="book-prose" style="margin:0;">
+              <p>
+                <strong>Pattern 3 — Cold-start problems need subsidies which attract mercenary capital (bootstrap ด้วย subsidy ดึง mercenaries):</strong> DeFi liquidity mining ปี 2020, DePIN emissions เพื่อ bootstrap hardware network, prediction market incentives เพื่อสร้าง liquidity, airdrop farming เพื่อ grow user base — ทุก protocol ที่ bootstrap ด้วย token rewards เผชิญความท้าทายเดียวกัน: capital ที่มาเพราะ rewards ไม่ใช่ capital ที่ believes in the product เมื่อ rewards ลดลง capital ก็จากไป ถามเสมอว่า: <em>มี organic demand เหลืออยู่หลัง incentive หมดไหม?</em>
+              </p>
+            </div>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Pattern 4</span></div>
+            <h3 class="callout-title">Regulation Arrives for Everything That Succeeds</h3>
+            <p style="font-size:0.8rem;color:#8a9aaa;margin:0.35rem 0 0.65rem;">สิ่งใดก็ตามที่ใหญ่พอจะก่อความเสี่ยงต่อผู้ใช้ทั่วไป regulators จะเข้ามาในที่สุด</p>
+            <ul style="margin:0;padding-left:1.2rem;font-size:0.79rem;color:#c8d4e0;line-height:1.8;">
+              <li><strong style="color:#06b6d4;">DeFi</strong> — OFAC sanctions ต่อ Tornado Cash (2022), SEC actions ต่อ Uniswap</li>
+              <li><strong style="color:#06b6d4;">NFTs</strong> — copyright debates, wash trading investigations, IP enforcement</li>
+              <li><strong style="color:#06b6d4;">Prediction Markets</strong> — CFTC ต่อ Polymarket (2022), ongoing offshore structure debates</li>
+              <li><strong style="color:#06b6d4;">Stablecoins</strong> — MiCA ในยุโรป, Stablecoin Act ในสหรัฐ, MAS frameworks ในสิงคโปร์</li>
+              <li><strong style="color:#06b6d4;">DePIN</strong> — spectrum licensing ต่อ Helium, municipal regulations ต่อ node operators</li>
+              <li><strong style="color:#06b6d4;">DAOs</strong> — Ooki DAO case (CFTC sued DAO members) เป็น landmark ของ DAO legal liability</li>
+            </ul>
+            <p style="font-size:0.76rem;color:#8a9aaa;margin:0.65rem 0 0;">Regulation ไม่ใช่ศัตรูของ crypto — มันคือ friction ที่ทุก financial system ใหม่ต้องผ่าน การเข้าใจ regulatory landscape ช่วยให้คุณ position ได้ถูก ไม่ใช่แค่ survive แต่ thrive ในระยะยาว</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">บทสรุป · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — Risk Matrix & Personal Roadmap
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 17 • Action Plan</span>
+            <h2 class="book-page-title">Risk Matrix และ Personal Roadmap สำหรับคุณ</h2>
+          </div>
+          <div class="book-page-index">บทสรุป<br>Roadmap</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>จัดลำดับความสำคัญของสิ่งที่ต้องทำก่อน</h3>
+            <p>ไม่ใช่ทุก risk เท่ากัน และไม่ใช่ทุกทักษะต้องเรียนพร้อมกัน — ตารางนี้ช่วยจัด priority ให้ชัดเจน</p>
+          </div>
+
+          <div class="table-shell">
+            <div class="table-topbar"><div>
+              <h3>Risk Priority Matrix สำหรับนักลงทุน crypto ชาวไทย</h3>
+              <p class="caption">เรียงตามลำดับความเร่งด่วน — จัดการ Custody Risk ก่อนทุกอย่าง</p>
+            </div></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>ประเภท Risk</th><th>ตัวอย่างที่เกิดขึ้นจริง</th><th>วิธีจัดการ</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><strong style="color:#f87171;">Custody Risk</strong></td>
+                    <td>เสีย seed phrase, phishing, wallet drainer scripts</td>
+                    <td>Hardware wallet สำหรับ long-term holdings, burner wallet สำหรับ DeFi, revoke approvals สม่ำเสมอ</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#fb923c;">Protocol Risk</strong></td>
+                    <td>Smart contract bugs (Euler $197M), oracle manipulation, bridge exploits</td>
+                    <td>Diversify across protocols, เข้าใจ mechanism ก่อนใช้เงิน, ดู audit history</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#fbbf24;">Market Risk</strong></td>
+                    <td>90% drawdowns, BTC correlation ทุก altcoin, liquidity crunch</td>
+                    <td>Position sizing ที่ยอมรับได้ถ้าหายทั้งหมด, ไม่ใช้ leverage ที่ไม่เข้าใจ</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#a78bfa;">Counterparty Risk</strong></td>
+                    <td>FTX collapse, UST/LUNA depeg, Celsius bankruptcy</td>
+                    <td>Self-custody > exchange, diversify stablecoin issuers, ไม่ฝาก exchange เกินจำเป็น</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#60a5fa;">Regulatory Risk</strong></td>
+                    <td>Exchange freeze withdrawals, token delisted, DAO liability</td>
+                    <td>ใช้ compliant platforms, รู้กฎหมายไทย, เก็บ record ภาษี</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color:#06b6d4;">Quantum Risk (อนาคต)</strong></td>
+                    <td>Exposed legacy Bitcoin addresses, ECDSA vulnerability</td>
+                    <td>ไม่ reuse addresses, ติดตาม protocol upgrade plans, รู้ NIST PQC standards</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="callout concept-card" style="margin-top:1.1rem;">
+            <div class="callout-meta"><span class="term-chip">Learning Roadmap</span></div>
+            <h3 class="callout-title">3 ระดับการเรียนรู้ต่อจากนี้</h3>
+
+            <div class="roadmap-level" style="margin-top:0.65rem;">
+              <div class="roadmap-level-header">
+                <span class="roadmap-level-badge" style="background:rgba(74,222,128,0.15);color:#4ade80;">Level 1</span>
+                <span class="roadmap-level-title">เดือน 1-3 — รากฐานที่มั่นคง</span>
+              </div>
+              <ul>
+                <li>Master custody อย่างแท้จริง — hardware wallet, seed phrase management, approval hygiene</li>
+                <li>เข้าใจ Bitcoin และ Ethereum basics จน explain ให้คนอื่นได้</li>
+                <li>เรียนรู้การอ่าน token economics: supply schedule, vesting, fee flows</li>
+              </ul>
+            </div>
+
+            <div class="roadmap-level">
+              <div class="roadmap-level-header">
+                <span class="roadmap-level-badge" style="background:rgba(96,165,250,0.15);color:#60a5fa;">Level 2</span>
+                <span class="roadmap-level-title">เดือน 3-12 — On-chain Practitioner</span>
+              </div>
+              <ul>
+                <li>ใช้ DeFi protocols จริง — AMM, lending, perpetuals — เริ่มเล็กและเรียนรู้จากประสบการณ์</li>
+                <li>เรียนรู้ on-chain tools: Dune Analytics, Nansen, DefiLlama, block explorers</li>
+                <li>อ่านและเข้าใจ governance proposals จริง — ลงคะแนนหรืออย่างน้อยติดตาม rationale</li>
+                <li>เข้าใจ market microstructure — funding rates, open interest, liquidation cascades</li>
+              </ul>
+            </div>
+
+            <div class="roadmap-level">
+              <div class="roadmap-level-header">
+                <span class="roadmap-level-badge" style="background:rgba(6,182,212,0.15);color:#06b6d4;">Level 3</span>
+                <span class="roadmap-level-title">ปีที่ 2+ — Protocol-Level Understanding</span>
+              </div>
+              <ul>
+                <li>เข้าใจ architecture ระดับ protocol — อ่าน whitepaper, technical blog, audit reports</li>
+                <li>Contribute to governance — เสนอ proposals, engage กับ core developers</li>
+                <li>Evaluate new chains ด้วย first principles ไม่ใช่ hype</li>
+                <li>ติดตาม quantum resistance progress — NIST PQC migration, chain upgrade plans</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">บทสรุป · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 06 — Final Thoughts & Closing
+           ============================================================ -->
+      <article class="book-page" id="page-06">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 17 • Closing</span>
+            <h2 class="book-page-title">ความคิดสุดท้าย — สิ่งที่ DuiDui อยากฝากไว้</h2>
+          </div>
+          <div class="book-page-index">บทสรุป<br>Closing</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ปิดท้ายด้วยมุมมองที่สำคัญที่สุด</h3>
+            <p>ไม่ใช่ข้อสรุปด้านเทคนิค แต่คือมุมมองในการเดินต่อจากจุดนี้</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Crypto ยังคง "early" แม้จะผ่านมากว่า 15 ปีนับตั้งแต่ Bitcoin genesis block แต่ <strong>"early" ไม่ได้แปลว่า "safe"</strong> — มันหมายความว่ากฎยังถูกเขียนอยู่, exploits ยังเกิดขึ้นทุกสัปดาห์, และ mental models ที่ดีที่สุดยังถูกค้นพบและทดสอบอยู่ทุกวัน ความ "early" ของ crypto คือดาบสองคม: โอกาสมหาศาลสำหรับคนที่เข้าใจ และกับดักที่อันตรายสำหรับคนที่ไม่เข้าใจ
+            </p>
+            <p>
+              Edge ที่แท้จริงไม่ได้มาจากการหา <em>"100x token ถัดไป"</em> — มันมาจาก <strong>การเข้าใจระบบลึกพอที่จะหลีกเลี่ยง catastrophic losses ในขณะที่ยังมีส่วนร่วมกับ innovation จริง</strong> คนที่รอดและเติบโตใน crypto ระยะยาวไม่ใช่คนที่โชคดีกับ token ที่ถูกต้อง — มันคือคนที่เข้าใจว่า token ที่พวกเขาถืออยู่นั้นทำงานอย่างไร จึงรู้ว่าเมื่อไหร่ควรออก
+            </p>
+            <p>
+              สำหรับนักลงทุนและนักสำรวจ crypto ชาวไทย — สิ่งที่ DuiDui หวังมากที่สุดไม่ใช่ให้คุณรวย (แม้ว่าจะหวังเช่นนั้นด้วย) แต่คือ <strong>ให้คุณมีส่วนร่วมอย่างชาญฉลาด</strong> ชุมชน crypto ไทยกำลังเติบโต และต้องการผู้เข้าร่วมที่เข้าใจว่าตัวเองกำลังทำอะไรอยู่ — ไม่ใช่แค่คนที่ตามกระแส FOMO ทุกรอบ cycle คุณจบหนังสือเล่มนี้เพราะอยากเข้าใจ นั่นเป็นจุดเริ่มต้นที่ดีที่สุดแล้ว
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Key Takeaways</span></div>
+            <h3 class="callout-title">สิ่งสำคัญที่สุด 5 ข้อจากทั้งหนังสือ</h3>
+            <ol class="digest-list">
+              <li>
+                <span class="digest-index">01</span>
+                <div>
+                  <strong>Custody first — ไม่มีอะไรสำคัญกว่านี้</strong>
+                  <p>Seed phrase คือทุกอย่าง ถ้าเสียไป ทุกอย่างที่คุณถือหายตลอดกาล — ไม่มี customer service, ไม่มี recovery, ไม่มีข้อยกเว้น เรียนรู้เรื่องนี้ก่อนทุกสิ่ง</p>
+                </div>
+              </li>
+              <li>
+                <span class="digest-index">02</span>
+                <div>
+                  <strong>ไม่มี free lunch — yield ทุกอย่างมาจากที่ไหนสักที่</strong>
+                  <p>40% APY มาจากไหน? ถ้าตอบไม่ได้ชัดเจน — risk อยู่ที่คุณโดยที่คุณไม่รู้ ทุก yield มี source และทุก source มี risk</p>
+                </div>
+              </li>
+              <li>
+                <span class="digest-index">03</span>
+                <div>
+                  <strong>เข้าใจก่อนใช้เงิน — หนังสือนี้คือก้าวแรก ไม่ใช่ก้าวสุดท้าย</strong>
+                  <p>การอ่านจบหนังสือนี้เป็นจุดเริ่มต้นที่ดี แต่ ecosystem เปลี่ยนเร็ว — ยังคงต้องเรียนรู้ต่อเนื่อง ทดสอบด้วยเงินน้อยก่อนเสมอ</p>
+                </div>
+              </li>
+              <li>
+                <span class="digest-index">04</span>
+                <div>
+                  <strong>Decentralization is a spectrum — ไม่มีอะไร "fully decentralized" อย่างแท้จริง</strong>
+                  <p>ถามเสมอว่า: ใครถือ emergency key? ใครสามารถ pause contract ได้? ใครคือ core team ที่ตัดสินใจ upgrade? คำตอบบอกคุณว่า "decentralized" แค่ไหนจริง ๆ</p>
+                </div>
+              </li>
+              <li>
+                <span class="digest-index">05</span>
+                <div>
+                  <strong>The technology will outlast the speculation</strong>
+                  <p>Blockchain infrastructure — smart contracts, decentralized consensus, cryptographic ownership — จะยังคงอยู่แม้ speculation cycles ผ่านไปกี่รอบ Invest in understanding ไม่ใช่แค่ price exposure — นั่นคือสิ่งที่ outlast ทุก bear market</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">บทสรุป · Page 06</span>
+          <span class="page-number">06</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-16-quantum-resistance.html">
+          <span>Previous</span>
+          <strong>บทที่ 16: Quantum Resistance — อนาคตของความปลอดภัยบล็อกเชน</strong>
+        </a>
+        <a class="nav-card" href="../index.html">
+          <span>กลับไปหน้าหลัก</span>
+          <strong>กลับไปหน้าหลัก — DuiDui's Crypto Handbook</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="../assets/js/mermaid-init.js"></script>
+  <script>
+    // Particle background
+    (function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W, H, dots;
+      const COLOR = '6,182,212';
+      const COUNT = 55;
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function init() {
+        dots = Array.from({ length: COUNT }, () => ({
+          x: Math.random() * W, y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.5 + 0.5,
+        }));
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        dots.forEach(d => {
+          d.x += d.vx; d.y += d.vy;
+          if (d.x < 0 || d.x > W) d.vx *= -1;
+          if (d.y < 0 || d.y > H) d.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${COLOR},0.55)`;
+          ctx.fill();
+        });
+        dots.forEach((a, i) => {
+          for (let j = i + 1; j < dots.length; j++) {
+            const b = dots[j];
+            const dist = Math.hypot(a.x - b.x, a.y - b.y);
+            if (dist < 110) {
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = `rgba(${COLOR},${0.12 * (1 - dist / 110)})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
+        });
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', () => { resize(); init(); });
+      resize(); init(); draw();
+    })();
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

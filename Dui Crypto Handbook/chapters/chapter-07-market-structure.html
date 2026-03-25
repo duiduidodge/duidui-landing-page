@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 7: Market Structure — สนามซื้อขายคริปโต • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="CEX, Perpetuals, Funding Rate, ETFs, Strategy Playbook, Order Execution — เข้าใจโครงสร้างตลาดคริปโตฉบับสมบูรณ์">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+    #nano-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; opacity: 0.28; }
+    .ambient-glow {
+      position: fixed; top: 20%; right: 5%; width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(245,166,35,0.04) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+    .page-shell { position: relative; z-index: 10; padding-top: 0; }
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+    .chapter-topbar::before { display: none; }
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Product comparison grid ── */
+    .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1.5rem 0; }
+    @media (max-width: 600px) { .product-grid { grid-template-columns: 1fr; } }
+    .product-card { border-radius: 10px; padding: 0.9rem 1rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .product-card-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .product-card-sub { font-size: 0.72rem; color: #64748b; margin-bottom: 0.5rem; letter-spacing: 0.04em; }
+    .product-card ul { margin: 0; padding-left: 1.1rem; }
+    .product-card li { font-size: 0.8rem; color: #8a9aaa; line-height: 1.55; margin-bottom: 0.2rem; }
+
+    /* ── Funding rate explainer ── */
+    .funding-diagram { margin: 1.5rem 0; display: flex; flex-direction: column; gap: 0.6rem; }
+    .funding-row { display: flex; align-items: center; gap: 0.8rem; padding: 0.75rem 1rem; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); }
+    .funding-icon { flex-shrink: 0; width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .funding-icon.bull { background: rgba(74,222,128,0.12); border: 1px solid rgba(74,222,128,0.25); }
+    .funding-icon.bear { background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.25); }
+    .funding-body h4 { font-size: 0.88rem; font-weight: 700; color: #ede7dc; margin: 0 0 0.2rem; }
+    .funding-body p  { font-size: 0.8rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+
+    /* ── Exchange table ── */
+    .exchange-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.8rem; }
+    .exchange-table th { text-align: left; padding: 0.5rem 0.75rem; font-size: 0.73rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #475569; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .exchange-table td { padding: 0.55rem 0.75rem; color: #a1b0be; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; line-height: 1.5; }
+    .exchange-table tr:last-child td { border-bottom: none; }
+    .exchange-tag { display: inline-block; font-size: 0.67rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.1rem 0.45rem; border-radius: 999px; margin-right: 0.25rem; }
+    .exchange-tag.reg   { background: rgba(74,222,128,0.1);  color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+    .exchange-tag.off   { background: rgba(245,166,35,0.1);  color: #f5a623; border: 1px solid rgba(245,166,35,0.2); }
+    .exchange-tag.dex   { background: rgba(156,201,209,0.1); color: #9cc9d1; border: 1px solid rgba(156,201,209,0.2); }
+
+    /* ── ETF timeline ── */
+    .etf-timeline { display: flex; flex-direction: column; gap: 0.75rem; margin: 1.5rem 0; position: relative; }
+    .etf-timeline::before {
+      content: ''; position: absolute; left: 21px; top: 44px; bottom: 44px;
+      width: 2px; background: linear-gradient(180deg, rgba(247,147,26,0.45) 0%, rgba(98,126,234,0.45) 50%, rgba(245,166,35,0.35) 100%);
+    }
+    .etf-item { display: flex; gap: 1rem; align-items: stretch; position: relative; }
+    .etf-dot {
+      flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; margin-top: 0.15rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.67rem; font-weight: 800; letter-spacing: 0.03em;
+      /* solid dark fill so the timeline line doesn't bleed through */
+      background: #13161d;
+      position: relative; z-index: 2;
+    }
+    .etf-dot.btc { color: #f7931a; border: 2px solid rgba(247,147,26,0.6); box-shadow: 0 0 0 4px #13161d, 0 0 16px rgba(247,147,26,0.25); }
+    .etf-dot.eth { color: #627eea; border: 2px solid rgba(98,126,234,0.6);  box-shadow: 0 0 0 4px #13161d, 0 0 16px rgba(98,126,234,0.25); }
+    .etf-dot.alt { color: #f5a623; border: 2px solid rgba(245,166,35,0.55); box-shadow: 0 0 0 4px #13161d, 0 0 16px rgba(245,166,35,0.2); }
+    .etf-card {
+      flex: 1; border-radius: 12px; padding: 1.1rem 1.3rem;
+      background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.09);
+      display: flex; flex-direction: column; gap: 0.45rem;
+    }
+    .etf-card.btc { border-left: 3px solid rgba(247,147,26,0.6); }
+    .etf-card.eth { border-left: 3px solid rgba(98,126,234,0.6); }
+    .etf-card.alt { border-left: 3px solid rgba(245,166,35,0.55); }
+    .etf-date     { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+    .etf-date.btc { color: #f7931a; }
+    .etf-date.eth { color: #8fa8f4; }
+    .etf-date.alt { color: #f5a623; }
+    .etf-card h4  { font-size: 0.97rem; font-weight: 700; color: #f0ebe3; margin: 0; line-height: 1.4; }
+    .etf-card p   { font-size: 0.82rem; color: #b0bcc8; margin: 0; line-height: 1.65; }
+    .etf-stats    { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.25rem; }
+    .etf-stat {
+      font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem;
+      border-radius: 999px; letter-spacing: 0.03em;
+    }
+    .etf-stat.btc { background: rgba(247,147,26,0.12); color: #f7931a; border: 1px solid rgba(247,147,26,0.25); }
+    .etf-stat.eth { background: rgba(98,126,234,0.12); color: #627eea; border: 1px solid rgba(98,126,234,0.25); }
+    .etf-stat.alt { background: rgba(245,166,35,0.10); color: #f5a623; border: 1px solid rgba(245,166,35,0.25); }
+    .etf-stat.neu { background: rgba(156,201,209,0.10); color: #9cc9d1; border: 1px solid rgba(156,201,209,0.2); }
+
+    /* ── Strategy cards ── */
+    .strategy-list { display: flex; flex-direction: column; gap: 0.65rem; margin: 1.5rem 0; }
+    .strategy-card { border-radius: 10px; padding: 0.85rem 1rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); display: flex; gap: 0.9rem; align-items: flex-start; }
+    .strategy-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: rgba(245,166,35,0.12); border: 1px solid rgba(245,166,35,0.3); color: #f5a623; font-size: 0.82rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+    .strategy-body h4 { font-size: 0.88rem; font-weight: 700; color: #ede7dc; margin: 0 0 0.2rem; }
+    .strategy-body p  { font-size: 0.8rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+    .strategy-tag { display: inline-block; font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.1rem 0.45rem; border-radius: 999px; margin-right: 0.3rem; margin-top: 0.35rem; }
+    .strategy-tag.risk-low  { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+    .strategy-tag.risk-med  { background: rgba(245,166,35,0.1); color: #f5a623; border: 1px solid rgba(245,166,35,0.2); }
+    .strategy-tag.risk-high { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+
+    /* ── Order flow diagram ── */
+    .order-flow { display: flex; flex-direction: column; gap: 0.55rem; margin: 1.5rem 0; }
+    .order-row  { display: flex; align-items: stretch; gap: 0.5rem; }
+    .order-box  { flex: 1; padding: 0.7rem 0.8rem; border-radius: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); text-align: center; }
+    .order-box-label { font-size: 0.82rem; font-weight: 700; color: #ede7dc; margin-bottom: 0.15rem; }
+    .order-box-sub   { font-size: 0.7rem; color: #64748b; line-height: 1.4; }
+    .order-arrow { flex-shrink: 0; display: flex; align-items: center; color: rgba(255,255,255,0.25); font-size: 1rem; }
+    .order-box.maker { border-color: rgba(74,222,128,0.3); }
+    .order-box.taker { border-color: rgba(248,113,113,0.3); }
+    .order-box.match { border-color: rgba(245,166,35,0.3); background: rgba(245,166,35,0.05); }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true, securityLevel: "loose", theme: "base",
+      themeVariables: {
+        primaryColor: "#252a32", primaryTextColor: "#ede7dc",
+        primaryBorderColor: "#f5a623", lineColor: "#f5a623",
+        tertiaryColor: "#21252c", fontFamily: "Prompt, Noto Serif Thai, Kanit, sans-serif"
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 07</span>
+  <button class="chapter-picker-btn" data-current="07" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background: linear-gradient(90deg, #f5a623, #9cc9d1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; letter-spacing: 0.16em;">Part 3 • The Markets</div>
+          <h1>บทที่ 7: Market Structure — สนามซื้อขายคริปโต</h1>
+          <p class="lede">
+            ตลาดคริปโตไม่ใช่แค่ "ซื้อ-ขาย Bitcoin" — มีโครงสร้างซับซ้อนของ CEX, Perpetual Futures, ETF สถาบัน และกลยุทธ์ระดับ hedge fund ที่ขับเคลื่อนราคาทุกวินาที บทนี้จะถอดรหัสทุกองคาพยพของสนามซื้อขายที่คุณต้องรู้
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          Perpetual futures represent one of crypto's most innovative contributions to finance — solving the expiry problem and enabling continuous leveraged exposure.
+          <span style="display:block; font-size: 0.85em; color: #9cc9d1; margin-top: 0.5rem; font-style: normal; font-family: 'Prompt', sans-serif;">"Perpetual futures คือนวัตกรรมที่คริปโตมอบให้โลกการเงิน — ไม่มีวันหมดอายุ ใช้ funding rate แทนการ roll สัญญา"</span>
+          <cite>BitMEX — Arthur Hayes, ผู้ก่อตั้ง BitMEX (2016)</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_07_market_structure.png" alt="Chapter 7 Market Structure Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — CEX Architecture & Core Products
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 07 • Exchange Architecture</span>
+            <h2 class="book-page-title">CEX & Core Products — รากฐานของตลาดคริปโต</h2>
+          </div>
+          <div class="book-page-index">Exchange<br>Basics</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Centralized Exchange (CEX) คืออะไร?</h3>
+            <p>CEX คือ custodial venue ที่ดูแล order book, matching engine และเก็บรักษา collateral ของ user ทำให้รองรับ leverage, สัญญาซับซ้อน และ high-frequency trading ได้ แลกกับ counterparty risk ที่ user ต้องรับ</p>
+          </div>
+
+          <div class="product-grid">
+            <div class="product-card">
+              <div class="product-card-title" style="color: #f5a623;">Spot Trading</div>
+              <div class="product-card-sub">รากฐานของตลาด</div>
+              <ul>
+                <li>แลกเปลี่ยน asset ทันที — เช่น USD → BTC</li>
+                <li>ส่วนใหญ่ quote ด้วย USDT/USDC ไม่ใช่ fiat โดยตรง</li>
+                <li>เปิด 24/7 ไม่มีวันหยุด (ต่างจาก NYSE)</li>
+                <li>Settlement T+0 บน internal ledger</li>
+                <li>DEX คิดเป็น 10–20% ของ spot volume รวม</li>
+              </ul>
+            </div>
+            <div class="product-card">
+              <div class="product-card-title" style="color: #9945ff;">Perpetual Futures</div>
+              <div class="product-card-sub">นวัตกรรมที่คริปโตมอบให้โลก</div>
+              <ul>
+                <li>ไม่มีวันหมดอายุ — ถือได้ตลอดกาล</li>
+                <li>Funding rate ดึงราคาให้ใกล้ spot อยู่เสมอ</li>
+                <li>Mark price ป้องกัน liquidation จาก manipulation</li>
+                <li>~70% ของ BTC trading volume ทั้งหมด</li>
+                <li>Leverage สูงถึง 100x บน offshore CEX</li>
+              </ul>
+            </div>
+            <div class="product-card">
+              <div class="product-card-title" style="color: #627eea;">Options</div>
+              <div class="product-card-sub">สิทธิ์ ไม่ใช่พันธะ</div>
+              <ul>
+                <li>Call = สิทธิ์ซื้อ, Put = สิทธิ์ขาย</li>
+                <li>ป้องกัน tail risk และ express volatility view</li>
+                <li>Deribit ครอง ~85% ของ crypto options OI</li>
+                <li>~2% ของ total derivatives volume</li>
+                <li>IBIT options แข่งกับ Deribit BTC options OI แล้ว</li>
+              </ul>
+            </div>
+            <div class="product-card">
+              <div class="product-card-title" style="color: #9cc9d1;">Dated Futures</div>
+              <div class="product-card-sub">สัญญาแบบดั้งเดิม มีวันหมดอายุ</div>
+              <ul>
+                <li>หมดอายุตามวันที่กำหนด (quarterly)</li>
+                <li>CME BTC futures = ช่องทางหลักของสถาบัน</li>
+                <li>Cash-settled ที่ CME ต่อ reference index</li>
+                <li>CME avg. daily volume &gt;$10B ปี 2025</li>
+                <li>เป็นส่วนหนึ่งของ SEC approval สำหรับ spot ETF</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="section-intro" style="margin-top: 1rem;">
+            <h3>Perpetual Funding Rate — กลไกที่ผูก Perp ไว้กับ Spot</h3>
+          </div>
+
+          <div class="funding-diagram">
+            <div class="funding-row">
+              <div class="funding-icon bull">📈</div>
+              <div class="funding-body">
+                <h4>Perp &gt; Spot (Contango) — Longs จ่าย Shorts</h4>
+                <p>ตลาดขาขึ้น traders ต้องการ long leverage ดัน perp price สูงกว่า spot Longs จ่าย funding ให้ shorts ทุก 8 ชั่วโมง (Binance cap ±0.3%/8h) ดึงราคาลงมาหา spot</p>
+              </div>
+            </div>
+            <div class="funding-row">
+              <div class="funding-icon bear">📉</div>
+              <div class="funding-body">
+                <h4>Perp &lt; Spot (Backwardation) — Shorts จ่าย Longs</h4>
+                <p>ตลาดขาลง shorts ล้น ดัน perp ต่ำกว่า spot Shorts จ่าย funding ให้ longs ดึงราคาขึ้นมาหา spot — เป็น signal ที่ trader มืออาชีพจับตาเพื่อหา long entry</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Mark Price vs Last Price:</strong> Mark price คือ fair value ที่ exchange คำนวณจากหลาย inputs (index price, spread, basis) ใช้ในการ trigger liquidation และคำนวณ unrealized PnL Last price คือราคาล่าสุดที่ trade จริง — อาจผิดเพี้ยนช่วง flash crash ถ้า exchange ใช้ last price trigger liquidation จะมี manipulation ได้ง่ายกว่ามาก
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Market Structure · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <!-- ============================================================
+           PAGE 02 — Exchange Landscape
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 07 • Exchange Landscape</span>
+            <h2 class="book-page-title">Exchange Landscape — Regulated vs Offshore และ Market Leaders</h2>
+          </div>
+          <div class="book-page-index">Exchange<br>Landscape</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Regulated vs Offshore — Trade-off หลักของตลาด</h3>
+            <p>Exchange แต่ละแห่งอยู่บน spectrum จาก heavily regulated ที่ถูกกฎหมายทุกประเทศ ไปจนถึง offshore ที่ product กว้างกว่าแต่ counterparty risk สูงกว่า</p>
+          </div>
+
+          <table class="exchange-table">
+            <thead>
+              <tr>
+                <th>Exchange</th>
+                <th>ประเภท</th>
+                <th>จุดเด่น</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color:#ede7dc;">Binance</strong></td>
+                <td><span class="exchange-tag off">Offshore</span></td>
+                <td>~40% spot market share ปี 2025, token listing กว้างที่สุด, BTC/ETH perp liquidity ลึกสุด</td>
+              </tr>
+              <tr>
+                <td><strong style="color:#ede7dc;">Coinbase</strong></td>
+                <td><span class="exchange-tag reg">US Regulated</span></td>
+                <td>Publicly listed (NASDAQ), institutional flows ใหญ่สุดใน US, ซื้อ Deribit $2.9B ปี 2025</td>
+              </tr>
+              <tr>
+                <td><strong style="color:#ede7dc;">Bybit / OKX</strong></td>
+                <td><span class="exchange-tag off">Offshore</span></td>
+                <td>แข่งกัน #2/#3 ใน perp volume, high leverage, unified margin accounts</td>
+              </tr>
+              <tr>
+                <td><strong style="color:#ede7dc;">Deribit</strong></td>
+                <td><span class="exchange-tag off">Offshore</span></td>
+                <td>~85% crypto options OI, standard venue สำหรับ volatility strategies (ปัจจุบัน owned by Coinbase)</td>
+              </tr>
+              <tr>
+                <td><strong style="color:#ede7dc;">CME</strong></td>
+                <td><span class="exchange-tag reg">US CFTC</span></td>
+                <td>Regulated BTC/ETH futures + options, primary gateway สำหรับ institutional hedging, avg. daily vol &gt;$10B</td>
+              </tr>
+              <tr>
+                <td><strong style="color:#ede7dc;">Hyperliquid</strong></td>
+                <td><span class="exchange-tag dex">DEX Perp</span></td>
+                <td>Largest DEX perp by volume ต้นปี 2026, 1hr funding interval, fully on-chain order book</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="section-intro" style="margin-top: 1rem;">
+            <h3>Regulated vs Offshore: ต้องรู้อะไรก่อนเลือก?</h3>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Regulated Exchange ข้อดี:</strong> banking rails ที่แข็งแกร่ง, KYC/AML standard สูง, segregated customer funds ตาม CFTC rules, ลดความเสี่ยง sudden shutdown แต่ product scope แคบกว่า leverage ต่ำกว่า และบางประเทศเข้าไม่ได้
+            </p>
+            <p>
+              <strong>Offshore Exchange ข้อดี:</strong> leverage สูงถึง 100x, token listing เร็วและกว้าง, product หลากหลายกว่า แต่ counterparty risk สูงกว่า (Binance ต้องจ่าย settlement ให้ US DOJ ปี 2023 กรณี AML), อาจถูก regulatory crackdown กะทันหัน
+            </p>
+            <p>
+              <strong>Insurance Fund vs CFTC Segregation:</strong> Offshore exchanges เช่น Binance มี SAFU fund เป็น extra protection แต่ไม่ใช่ข้อกำหนดทางกฎหมาย ต่างจาก CFTC ที่กำหนด strict segregation เป็น law
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Market Structure · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <!-- ============================================================
+           PAGE 03 — Institutional Adoption: ETFs & Corporate Treasury
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 07 • Institutional Access</span>
+            <h2 class="book-page-title">Spot ETFs & Corporate Treasury — เงินสถาบันไหลเข้าคริปโตยังไง?</h2>
+          </div>
+          <div class="book-page-index">ETF &<br>Treasury</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Spot ETF — เปิดประตูให้ Pension Fund และ 401(k) ซื้อ BTC</h3>
+            <p>ETF ทำให้นักลงทุนสถาบันที่ไม่สามารถถือ native token ได้ตาม mandate สามารถซื้อ BTC/ETH ผ่าน brokerage ปกติ — เหมือนซื้อหุ้น Apple</p>
+          </div>
+
+          <div class="etf-timeline">
+            <div class="etf-item">
+              <div class="etf-dot btc">BTC</div>
+              <div class="etf-card btc">
+                <div class="etf-date btc">มกราคม 2024</div>
+                <h4>US Spot Bitcoin ETF Approved — ประวัติศาสตร์ 10 ปีสำเร็จ</h4>
+                <p>SEC อนุมัติ spot BTC ETF หลังถูกปฏิเสธมานาน 10 ปี BlackRock IBIT สะสม AUM ใกล้ $75B ในปีแรก กลายเป็น fastest-growing ETF launch in history ประมาณ 86% ของ crypto ETF AUM ทั้งหมดอยู่ใน Bitcoin ETF</p>
+                <div class="etf-stats">
+                  <span class="etf-stat btc">IBIT AUM ~$75B</span>
+                  <span class="etf-stat btc">86% of crypto ETF AUM</span>
+                  <span class="etf-stat neu">Fastest-growing ETF ever</span>
+                </div>
+              </div>
+            </div>
+            <div class="etf-item">
+              <div class="etf-dot eth">ETH</div>
+              <div class="etf-card eth">
+                <div class="etf-date eth">กรกฎาคม 2024</div>
+                <h4>Spot Ether ETF เปิดตัว — และปัญหา Staking</h4>
+                <p>ETH spot ETF เริ่มซื้อขาย รุ่นแรกไม่มี staking เพราะ SEC กังวล แต่ปี 2025 เริ่มมี staking-enabled structures เช่น Grayscale และ BlackRock filing — จะ route validator power ผ่าน fund complex แทน native wallets และส่ง staking yield กลับไปให้ผู้ถือ ETF</p>
+                <div class="etf-stats">
+                  <span class="etf-stat eth">~12% of crypto ETF AUM</span>
+                  <span class="etf-stat eth">Staking yield coming 2025</span>
+                  <span class="etf-stat neu">BlackRock + Grayscale filing</span>
+                </div>
+              </div>
+            </div>
+            <div class="etf-item">
+              <div class="etf-dot alt">ALT</div>
+              <div class="etf-card alt">
+                <div class="etf-date alt">กันยายน–พฤศจิกายน 2025</div>
+                <h4>Altcoin ETF Wave — SOL, XRP ขึ้น Nasdaq</h4>
+                <p>SEC ออก "generic listing standards" เปิดทาง altcoin ETF โดยไม่ต้องขอ approval ทีละตัว Bitwise BSOL (Solana staking ETF) เปิดตัว ต.ค. 2025, Canary XRPC (XRP spot ETF) เปิดตัว พ.ย. 2025 บน Nasdaq — launch-year records ทั้งคู่</p>
+                <div class="etf-stats">
+                  <span class="etf-stat alt">BSOL — First US SOL ETF</span>
+                  <span class="etf-stat alt">XRPC — First US XRP ETF</span>
+                  <span class="etf-stat neu">Generic listing standards</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-intro" style="margin-top: 1rem;">
+            <h3>Strategy (MicroStrategy) Playbook — Corporate Bitcoin Treasury</h3>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Michael Saylor พัฒนา playbook ใหม่: ระดมทุนผ่าน <strong>convertible bonds อัตราดอกเบี้ย 0%</strong> (นักลงทุนยอมรับดอกเบี้ย 0% เพราะ conversion option มีค่า) และ <strong>secondary stock offering</strong> แล้วเอาเงินซื้อ Bitcoin ต่อเนื่อง ผลลัพธ์: ต้นปี 2026 ถือ ~690,000 BTC มูลค่า ~$64B
+            </p>
+            <p>
+              <strong>กลไกเสริมกัน:</strong> ซื้อ BTC → balance sheet โต → stock premium สูง → ออก bond/stock ได้ถูกขึ้น → ซื้อ BTC เพิ่ม — วงจรนี้ทำงานตราบใดที่ (1) Bitcoin ขึ้นระยะยาว (2) stock premium ยังอยู่ (3) capital markets ยังเปิดรับ
+            </p>
+            <p>
+              <strong>ความเสี่ยงหลัก:</strong> ไม่มี forced liquidation แบบ margin loan เพราะ bonds ไม่ได้ค้ำด้วย BTC โดยตรง แต่ถ้า premium หาย → ระดมทุนแพงขึ้น → flywheel ช้าลง ปี 2026 premium ลดลงมากแล้วจากจุดสูงสุด Maturities กระจาย 2028–2032 ลด pressure ในปีใดปีหนึ่ง
+            </p>
+            <p>
+              <strong>DAT Trend:</strong> model นี้ถูก copy ไปทำกับ ETH (BitMine $10.8B, SharpLink $2.6B) และ SOL (Forward Industries $940M) เพิ่ม yield จาก staking แต่รับ smart contract risk ที่ Bitcoin treasury ไม่มี
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Market Structure · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <!-- ============================================================
+           PAGE 04 — Perpetual Strategies
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 07 • Trading Strategies</span>
+            <h2 class="book-page-title">5 กลยุทธ์ Perpetual Futures — จาก Directional ถึง Basis Trade</h2>
+          </div>
+          <div class="book-page-index">Perp<br>Strategies</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>กลยุทธ์หลักที่ trader มืออาชีพใช้</h3>
+            <p>Perpetual futures รองรับกลยุทธ์หลากหลาย ตั้งแต่การ bet ทิศทางราคา ไปจนถึง market-neutral strategies ที่สร้าง yield โดยไม่สนใจ direction</p>
+          </div>
+
+          <div class="strategy-list">
+            <div class="strategy-card">
+              <div class="strategy-num">1</div>
+              <div class="strategy-body">
+                <h4>Directional — เดิมพันทิศทาง</h4>
+                <p>Long ถ้าคิดว่าขึ้น Short ถ้าคิดว่าลง ใช้ leverage ขยาย return แต่ขยาย risk ด้วย มืออาชีพใช้ leverage ต่ำกว่า retail เพราะ "อยู่รอดสำคัญกว่า maximize upside" — 5x ทนได้ 15–20% drawdown ก่อน liquidate, 20x ทนได้แค่ 4–5%</p>
+                <div><span class="strategy-tag risk-high">ความเสี่ยงสูง</span><span class="strategy-tag risk-high">Liquidation Risk</span></div>
+              </div>
+            </div>
+            <div class="strategy-card">
+              <div class="strategy-num">2</div>
+              <div class="strategy-body">
+                <h4>Hedging — ป้องกัน Position ที่มีอยู่</h4>
+                <p>Validator ที่กำลัง unstake 1,000 ETH อาจ short ETH perp ขนาดเดียวกันเพื่อล็อคราคาระหว่างรอ queue — ใช้ perp hedge airdrop farming ด้วย ถือ token ป้องกัน eligibility แต่ short perp hedge ราคา</p>
+                <div><span class="strategy-tag risk-low">Market Neutral</span><span class="strategy-tag risk-med">Funding Cost</span></div>
+              </div>
+            </div>
+            <div class="strategy-card">
+              <div class="strategy-num">3</div>
+              <div class="strategy-body">
+                <h4>Pair Trading — เดิมพัน relative performance</h4>
+                <p>Long BTC + Short altcoin basket — เดิมพันว่า BTC จะ outperform ไม่ว่า market จะขึ้นหรือลง Altcoins มัก volatile กว่า BTC: ขึ้นเร็วกว่าช่วง bull แต่ลงหนักกว่าช่วง bear ทำให้ relative value clear</p>
+                <div><span class="strategy-tag risk-med">Basis Risk</span><span class="strategy-tag risk-high">ADL Risk ทั้งสอง leg</span></div>
+              </div>
+            </div>
+            <div class="strategy-card">
+              <div class="strategy-num">4</div>
+              <div class="strategy-body">
+                <h4>Funding Arbitrage — ดอกเบี้ยต่างกันระหว่าง Exchange</h4>
+                <p>ถ้า Exchange A ให้ 0.10%/8h แต่ Exchange B ให้ 0.05%/8h: Short บน A + Long บน B = lock in spread 0.05% บน delta-neutral book ต้องมี capital กระจายอยู่ใน 5–10 exchange พร้อมเสมอ</p>
+                <div><span class="strategy-tag risk-low">Delta Neutral</span><span class="strategy-tag risk-med">Operational Risk</span></div>
+              </div>
+            </div>
+            <div class="strategy-card">
+              <div class="strategy-num">5</div>
+              <div class="strategy-body">
+                <h4>Basis Trade — สร้าง "crypto fixed income"</h4>
+                <p>ซื้อ BTC spot $10M + Short BTC perp $10M ถ้า funding +0.10%/8h (~110% APY) position เป็น delta-neutral เก็บ funding เป็น yield ต่อเนื่อง Hedge funds ชอบเพราะได้ Cashflow มากกว่า Treasury yields โดยไม่มี directional risk</p>
+                <div><span class="strategy-tag risk-low">Market Neutral</span><span class="strategy-tag risk-med">Funding Reversal Risk</span><span class="strategy-tag risk-med">Custody Risk</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Market Structure · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <!-- ============================================================
+           PAGE 05 — Order Execution
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 07 • Order Execution</span>
+            <h2 class="book-page-title">Order Book & Execution — ทุก millisecond มีราคา</h2>
+          </div>
+          <div class="book-page-index">Order<br>Execution</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Order Book — แผนที่ Supply &amp; Demand ของตลาด</h3>
+            <p>Order book แสดง resting limit orders เรียงตามราคา Best Bid/Offer (BBO) และ spread คือตัววัด liquidity หลัก ยิ่ง spread แคบและ depth ลึก ยิ่ง trade ได้ราคาดีและ slippage น้อย</p>
+          </div>
+
+          <div class="order-flow">
+            <div class="order-row">
+              <div class="order-box maker">
+                <div class="order-box-label" style="color: #4ade80;">Maker Order</div>
+                <div class="order-box-sub">Limit order ที่รอในคิว<br>เพิ่ม liquidity ให้ book</div>
+              </div>
+              <div class="order-arrow">+</div>
+              <div class="order-box taker">
+                <div class="order-box-label" style="color: #f87171;">Taker Order</div>
+                <div class="order-box-sub">Market order หรือ aggressive limit<br>ดึง liquidity ออกจาก book</div>
+              </div>
+              <div class="order-arrow">→</div>
+              <div class="order-box match">
+                <div class="order-box-label" style="color: #f5a623;">Matching Engine</div>
+                <div class="order-box-sub">จับคู่ price priority<br>→ Trade execute</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Maker vs Taker Fees:</strong> Takers จ่าย fee สูงกว่าเพื่อแลกกับ immediacy Makers จ่ายน้อยกว่าหรือได้ rebate เพราะเพิ่ม liquidity Market makers ระดับ professional มัก negotiate fee tier พิเศษกับ exchange แลกกับ quoting obligation (minimum size, max spread, uptime SLA)
+            </p>
+            <p>
+              <strong>Latency คือเงิน:</strong> BTC quoted $100,000 / 10 BTC บน best bid ข่าวดีออก trader ที่มี 10ms latency ซื้อได้ก่อน trader ที่มี 100ms latency เห็นแต่ $100,020 — Co-location (วาง server ในห้องเดียวกับ exchange matching engine) ลด round-trip time ให้สั้นที่สุด
+            </p>
+          </div>
+
+          <div class="section-intro" style="margin-top: 1rem;">
+            <h3>เครื่องมือ Execution ที่ต้องรู้</h3>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Slippage:</strong> สั่ง buy $200M Bitcoin ราคา $100,000 แต่จ่ายจริง $100,250 เฉลี่ย = เสียไป $500,000 เกิดจาก large order "walk" ผ่านหลาย price level ใน order book แก้ด้วยการแบ่ง order เป็นชิ้นเล็ก
+            </p>
+            <p>
+              <strong>TWAP (Time-Weighted Average Price):</strong> แบ่ง order ตามเวลา — ซื้อ 1,000 BTC เป็น 100 BTC ทุกชั่วโมง 10 ชั่วโมง ไม่สนใจ volume ของตลาด ง่ายและ predictable
+            </p>
+            <p>
+              <strong>VWAP (Volume-Weighted Average Price):</strong> แบ่ง order ตาม volume pattern — execute มากขึ้นช่วง volume สูง น้อยลงช่วง volume ต่ำ ฉลาดกว่า TWAP แต่ซับซ้อนกว่า
+            </p>
+            <p>
+              <strong>Iceberg Orders:</strong> แสดงแค่ 5 BTC จาก 100 BTC ที่ต้องการขาย refresh ทุกครั้งที่ 5 BTC ขายออกไป ซ่อน "hand" จาก high-frequency traders ที่ front-run large orders
+            </p>
+            <p>
+              <strong>Post-Only Orders:</strong> ยกเลิกอัตโนมัติถ้า order จะ cross spread (กลายเป็น taker) ใช้เมื่อต้องการ maker rebate ทุกกรณี — สำคัญมากสำหรับ systematic strategies ที่ fee structure กระทบ P&amp;L โดยตรง
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Market Structure · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-06-l1-blockchains.html">
+          <span>Previous</span>
+          <strong>บทที่ 6: L1 Blockchains — สนามรบแห่งสถาปัตยกรรม</strong>
+        </a>
+        <a class="nav-card" href="./chapter-08-defi.html">
+          <span>Next</span>
+          <strong>บทที่ 8: DeFi — ระบบการเงินที่ทำงานด้วยโค้ด</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { canvas.style.display = 'none'; return; }
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      const COUNT = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT * 3; i++) posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+      const makeTexture = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16,16,0,16,16,16);
+        g.addColorStop(0, 'rgba(156,201,209,1)'); g.addColorStop(0.2, 'rgba(156,201,209,0.8)'); g.addColorStop(1, 'rgba(156,201,209,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
+        const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+      };
+      const mat = new THREE.PointsMaterial({ size: 0.05, map: makeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 });
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh); camera.position.z = 4;
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', e => { mouseX = e.clientX - window.innerWidth/2; mouseY = e.clientY - window.innerHeight/2; });
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        mesh.rotation.y += 0.0008; mesh.rotation.x += 0.0004;
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) { const i3 = i*3; pos[i3+1] = posOrig[i3+1] + Math.sin(t*0.3 + posOrig[i3]) * 0.18; }
+        geo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    });
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 11: Hyperliquid — DEX ที่ท้าทาย CEX • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="Hyperliquid, HyperBFT, HyperEVM, HIP-3, HIP-4, RWA trading, HYPE token, HLP — ทำความเข้าใจ Hyperliquid ฉบับสมบูรณ์">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed; inset: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none; opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed; top: 20%; right: 5%;
+      width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(0,229,160,0.05) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page-shell { position: relative; z-index: 10; padding-top: 0; }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Accent: mint #00e5a0 ─────────────────────────────────────── */
+    .digest-list .digest-index {
+      background: rgba(0,229,160,0.15); color: #00e5a0;
+      border: 1px solid rgba(0,229,160,0.35);
+    }
+    .info-chip {
+      border-left: 3px solid rgba(0,229,160,0.45);
+      background: rgba(0,229,160,0.05) !important;
+    }
+    .info-chip strong { color: #00e5a0; }
+    .table-shell thead th {
+      background: rgba(0,229,160,0.1); color: #00e5a0;
+      border-bottom: 1px solid rgba(0,229,160,0.3);
+    }
+    .table-shell tbody tr:nth-child(odd) td  { background: rgba(0,229,160,0.02); }
+    .table-shell tbody tr:hover td           { background: rgba(0,229,160,0.06); }
+
+    /* ── Stats row ───────────────────────────────────────────────── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:580px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+    .stat-card {
+      border-radius: 10px; padding: 0.8rem 0.85rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(0,229,160,0.2);
+      text-align: center;
+    }
+    .stat-value { font-size: 1.25rem; font-weight: 800; color: #00e5a0; letter-spacing: -0.02em; line-height: 1.1; }
+    .stat-label { font-size: 0.70rem; color: #64748b; margin-top: 0.2rem; font-weight: 500; }
+
+    /* ── Architecture layers ─────────────────────────────────────── */
+    .arch-diagram { border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,229,160,0.15); margin: 1.25rem 0; }
+    .arch-layer { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.7rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .arch-layer:last-child { border-bottom: none; }
+    .arch-layer-badge {
+      min-width: 82px; font-size: 0.63rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.22rem 0.5rem; border-radius: 5px; text-align: center; flex-shrink: 0; margin-top: 0.15rem;
+    }
+    .arch-layer-body h4 { font-size: 0.83rem; font-weight: 700; color: #e2e8f0; margin: 0 0 0.12rem; }
+    .arch-layer-body p  { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.45; }
+
+    /* ── Incident timeline ───────────────────────────────────────── */
+    .incident-timeline { border-radius: 10px; overflow: hidden; border: 1px solid rgba(248,113,113,0.2); margin: 1.25rem 0; }
+    .incident-row { display: flex; align-items: flex-start; gap: 0.85rem; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .incident-row:last-child { border-bottom: none; }
+    .incident-row:nth-child(odd)  { background: rgba(248,113,113,0.03); }
+    .incident-row:nth-child(even) { background: rgba(255,255,255,0.015); }
+    .incident-date { min-width: 72px; font-size: 0.72rem; font-weight: 700; color: #f87171; font-family: monospace; padding-top: 0.1rem; flex-shrink: 0; }
+    .incident-title { font-size: 0.82rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.12rem; }
+    .incident-desc  { font-size: 0.82rem; color: #8a9aaa; line-height: 1.45; }
+
+    /* ── Token allocation ────────────────────────────────────────── */
+    .token-alloc { margin: 1.25rem 0; }
+    .token-alloc-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .token-alloc-row:last-child { border-bottom: none; }
+    .token-alloc-name { min-width: 140px; font-size: 0.84rem; font-weight: 600; color: #c8d4e0; }
+    .token-alloc-bar-wrap { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+    .token-alloc-bar { height: 100%; border-radius: 3px; }
+    .token-alloc-pct { min-width: 40px; font-size: 0.84rem; font-weight: 700; text-align: right; }
+
+    /* ── HIP-3 deployer cards ────────────────────────────────────── */
+    .deployer-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:560px) { .deployer-grid { grid-template-columns: 1fr; } }
+    .deployer-card {
+      border-radius: 10px; padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    }
+    .deployer-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; }
+    .deployer-name  { font-size: 0.88rem; font-weight: 700; color: #e2e8f0; }
+    .deployer-tag   { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.08em; padding: 0.15rem 0.45rem; border-radius: 4px; }
+    .deployer-card p { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+    .deployer-stat  { font-size: 0.72rem; font-weight: 700; margin-top: 0.3rem; }
+
+    /* ── RWA stats grid ──────────────────────────────────────────── */
+    .rwa-stats {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:560px) { .rwa-stats { grid-template-columns: 1fr 1fr; } }
+    .rwa-stat-card {
+      border-radius: 10px; padding: 0.75rem 0.85rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+    }
+    .rwa-stat-val   { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+    .rwa-stat-label { font-size: 0.64rem; color: #64748b; margin-top: 0.18rem; }
+
+    /* ── Fee split visual ────────────────────────────────────────── */
+    .fee-split {
+      display: flex; border-radius: 8px; overflow: hidden;
+      height: 32px; margin: 0.75rem 0; font-size: 0.72rem; font-weight: 700;
+    }
+    .fee-split-half {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.3rem;
+    }
+
+    /* ── Outcome market card ─────────────────────────────────────── */
+    .outcome-card {
+      border-radius: 10px; padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 0.65rem;
+    }
+    .outcome-card:last-child { margin-bottom: 0; }
+    .outcome-card h4 { font-size: 0.85rem; font-weight: 700; color: #e2e8f0; margin: 0 0 0.3rem; }
+    .outcome-card p  { font-size: 0.83rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+
+    /* ── Competitor cards ────────────────────────────────────────── */
+    .competitor-card { border-radius: 10px; padding: 0.9rem 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 0.75rem; }
+    .competitor-card:last-child { margin-bottom: 0; }
+    .competitor-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+    .competitor-name { font-size: 0.9rem; font-weight: 700; color: #e2e8f0; }
+    .competitor-tag  { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; padding: 0.15rem 0.45rem; border-radius: 4px; }
+    .competitor-card p { font-size: 0.84rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+
+    .nav-card--disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 11</span>
+  <button class="chapter-picker-btn" data-current="11" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background:linear-gradient(90deg,#00e5a0,#9cc9d1);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;letter-spacing:0.16em;">Part 3 • Markets & Infrastructure</div>
+          <h1>บทที่ 11: Hyperliquid</h1>
+          <p class="lede">
+            DEX ที่ท้าทาย CEX โดยตรง — Hyperliquid สร้าง on-chain order book ที่เร็วเทียบเท่า Binance พลิก market share ของ dYdX จาก 75% เหลือ 7% ในปีเดียว แล้วเปิด HIP-3 ให้ทุกคน deploy perp DEX ของตัวเองได้ ทำให้น้ำมัน เงิน และ Nasdaq futures กลายเป็น top assets บน platform
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          We didn't want to build another DEX on someone else's chain. We wanted to build the chain itself — and make it fast enough to run a real order book.
+          <cite>— Jeff Yan, Co-founder of Hyperliquid</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_11_hyperliquid.png" alt="Chapter 11 Hyperliquid Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — Road to Domination
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 11 • Rise</span>
+            <h2 class="book-page-title">Road to Domination — จาก Nobody สู่ Top DEX</h2>
+          </div>
+          <div class="book-page-index">Hyperliquid<br>Overview</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Disruption ที่เร็วที่สุดใน DeFi</h3>
+            <p>ใน 2023 Hyperliquid แทบไม่มีใครรู้จัก แต่ในปี 2025 platform นี้ครอง market share ของ perp DEX สูงถึง 70% แซงหน้า dYdX ที่เคยเป็นเบอร์ 1 มานานหลายปี ภายในเวลาเพียง 12 เดือน</p>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-value">$200B+</div>
+              <div class="stat-label">Monthly volume (2025)</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">~15%</div>
+              <div class="stat-label">Of Binance perp vol</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">$844M</div>
+              <div class="stat-label">2025 protocol revenue</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">70%</div>
+              <div class="stat-label">Perp DEX market share</div>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              จุดเปลี่ยนสำคัญที่สุดคือ <strong>HYPE airdrop ในเดือน พ.ย. 2024</strong> — 31% ของ total supply ถูก airdrop ให้ early users โดยไม่มีการขายให้ VC แม้แต่บาทเดียว token เปิดตัวที่ $2 และพุ่งขึ้นไปเกือบ $60 ในกลางปี 2025 เป็น 30x appreciation ที่ขับเคลื่อนโดย fee-to-buyback mechanism — ประมาณ <strong>99% ของ trading fee</strong> ถูกนำไปซื้อ HYPE คืนจาก market ทำให้ token นี้ไม่ใช่แค่ governance token แต่คือ claim on protocol cash flows
+            </p>
+            <p>
+              ขณะที่ Hyperliquid ก้าวขึ้นมา dYdX — เจ้าของ market share 75% ในต้นปี 2023 — กลับตกลงเหลือ 7% ในปลายปี 2024 ส่วนหนึ่งเพราะ tokenomics ที่อ่อนแอ (fee ทั้งหมดเข้า dYdX LLC ไม่ไหลกลับสู่ token holders) และส่วนหนึ่งเพราะ migration ไปสู่ v4 บน Cosmos ที่เพิ่ม complexity ในเวลาที่ Hyperliquid กำลังโชว์ performance ที่เหนือกว่า
+            </p>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Technical Edge:</strong> Hyperliquid ใช้ custom L1 ชื่อ HyperCore ด้วย proprietary consensus (HyperBFT) ทำให้ได้ finality เฉลี่ย <strong>0.2 วินาที</strong> — เร็วพอที่จะรัน fully on-chain CLOB โดยไม่ต้องมี off-chain matching engine เป็นครั้งแรกในประวัติศาสตร์ DEX <strong>Session keys</strong> ทำให้ผู้ใช้ trade ได้ one-click เหมือน CEX โดยไม่ต้อง confirm ทุก order ใน wallet
+          </div>
+
+          <div class="table-shell" style="margin-top:1.25rem;">
+            <div class="table-topbar"><div>
+              <h3>Market Share Shift: Hyperliquid vs dYdX</h3>
+              <p class="caption">การพลิก market leadership ที่เร็วที่สุดใน DeFi history</p>
+            </div></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Platform</th><th>Jan 2023</th><th>End 2024</th><th>Mid 2025</th><th>Custody</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><strong style="color:#00e5a0;">Hyperliquid</strong></td>
+                    <td style="color:#64748b;">~0%</td><td style="color:#f5a623;">~70%</td>
+                    <td style="color:#4ade80;">~70%</td><td style="color:#4ade80;">Self-custody</td>
+                  </tr>
+                  <tr>
+                    <td><strong>dYdX</strong></td>
+                    <td style="color:#4ade80;">75%</td><td style="color:#f87171;">7%</td>
+                    <td style="color:#f87171;">&lt;5%</td><td style="color:#4ade80;">Self-custody</td>
+                  </tr>
+                  <tr>
+                    <td><strong>GMX / Others</strong></td>
+                    <td style="color:#f5a623;">~25%</td><td style="color:#64748b;">~23%</td>
+                    <td style="color:#64748b;">~25%</td><td style="color:#4ade80;">Self-custody</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Binance Perps</strong></td>
+                    <td colspan="3" style="color:#64748b;text-align:center;">ครอง CEX market &gt;50% ตลอด</td>
+                    <td style="color:#f87171;">Custodial</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Hyperliquid · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — Architecture
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 11 • Architecture</span>
+            <h2 class="book-page-title">HyperCore, HyperBFT & HyperEVM</h2>
+          </div>
+          <div class="book-page-index">Hyperliquid<br>Architecture</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>สร้าง L1 เองทั้งหมด — เพราะไม่มี chain ไหนเร็วพอ</h3>
+            <p>Hyperliquid ไม่ได้ deploy บน Ethereum, Solana หรือ Cosmos แต่สร้าง blockchain ของตัวเองตั้งแต่ consensus ไปจนถึง EVM เพื่อควบคุม latency ให้ต่ำที่สุดสำหรับ trading โดยเฉพาะ</p>
+          </div>
+
+          <div class="arch-diagram">
+            <div class="arch-layer" style="background:rgba(0,229,160,0.05);">
+              <div class="arch-layer-badge" style="background:rgba(0,229,160,0.15);color:#00e5a0;">User</div>
+              <div class="arch-layer-body">
+                <h4>Trading Interface + Session Keys + Builder Codes</h4>
+                <p>Web app, API, third-party front-end ผ่าน Builder Codes — Session keys อนุญาตให้ pre-sign trading session ทำให้ทำ one-click trade ได้โดยไม่ต้อง confirm ทุก order ใน wallet Phantom, Rabby, MetaMask integrate แล้ว รวม Builder Code volume เกิน $100B</p>
+              </div>
+            </div>
+            <div class="arch-layer">
+              <div class="arch-layer-badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;">HyperEVM</div>
+              <div class="arch-layer-body">
+                <h4>EVM-Compatible Smart Contracts (Dual-Block)</h4>
+                <p>Solidity contracts บน EVM ที่ share consensus กับ HyperCore — <strong>fast block</strong> ทุก 1 วินาที (2M gas) สำหรับ lightweight ops, <strong>slow block</strong> ทุก ~1 นาที (30M gas) สำหรับ complex contracts EVM contracts อ่าน perp positions, spot balances, staking data จาก HyperCore ได้โดยตรง</p>
+              </div>
+            </div>
+            <div class="arch-layer">
+              <div class="arch-layer-badge" style="background:rgba(99,202,183,0.15);color:#63cab7;">HyperCore</div>
+              <div class="arch-layer-body">
+                <h4>On-chain CLOB — ~200K orders/sec</h4>
+                <p>Central Limit Order Book fully on-chain ทุก bid/ask/cancel บันทึกบน chain จริง รองรับ native perps, HIP-3 deployer perps, spot markets USDC จาก Arbitrum ~$6B เป็น main collateral Circle ประกาศ native USDC บน HyperEVM ก.ย. 2025</p>
+              </div>
+            </div>
+            <div class="arch-layer">
+              <div class="arch-layer-badge" style="background:rgba(168,85,247,0.15);color:#c084fc;">HyperBFT</div>
+              <div class="arch-layer-body">
+                <h4>Byzantine Fault Tolerant Consensus — finality 0.2s</h4>
+                <p>Optimize สำหรับ trading workload — ทำงานได้ตราบที่ &gt;⅔ ของ validators honest ใช้ deterministic leader schedule ทุก ~90 นาที (100,000 rounds) Validators ต้อง self-delegate ≥10,000 HYPE</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Asset Linking:</strong> HyperCore spot asset แต่ละตัว link กับ ERC-20 บน HyperEVM ผ่าน bridge contract ที่ <code style="font-size:0.78rem;">0x200...</code> address เดียวกัน USDC หรือ HYPE ไหลระหว่าง Core trading กับ EVM DeFi ได้โดยตรง — ไม่ต้อง wrap ไม่ต้อง bridge แยก BTC, ETH, SOL bridge ผ่าน Unit guardian network (2-of-3 quorum: Unit + Hyperliquid + Infinite Field)
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Hyperliquid · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — Products & HLP
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 11 • Products & HLP</span>
+            <h2 class="book-page-title">Products, HLP และบทเรียนจากวิกฤติ</h2>
+          </div>
+          <div class="book-page-index">Hyperliquid<br>Products</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>3 Product หลักบน On-chain CLOB เดียวกัน</h3>
+            <p>Perps, Hyperps (pre-launch), และ Spot trading ทั้งหมดแชร์ order book และ liquidity เดียวกัน ขับเคลื่อนโดย HLP — community-owned vault ที่ทำหน้าที่ market maker และ liquidator พร้อมกัน</p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">3 Product Types</span></div>
+            <h3 class="callout-title">Perps · Hyperps · Spot</h3>
+            <ul style="margin:0.5rem 0 0;padding-left:1.2rem;font-size:0.79rem;color:#8a9aaa;line-height:1.75;">
+              <li><strong style="color:#e2e8f0;">Perps</strong> — perpetual futures มาตรฐาน 150+ สินทรัพย์ leverage สูงสุด 50x funding rate ทุก 8 ชั่วโมง listing แบบ permissionless ผ่าน HIP-3 (ต้อง stake 500K HYPE)</li>
+              <li><strong style="color:#e2e8f0;">Hyperps</strong> — pre-launch perps สำหรับ token ที่ยังไม่มี reliable price feed ใช้ internal pricing แทน external oracle เหมาะกับ speculation หรือ hedge farmed tokens</li>
+              <li><strong style="color:#e2e8f0;">Spot</strong> — ซื้อขาย token จริงบน CLOB listing ผ่าน Dutch auction (HIP-1) BTC, ETH, SOL bridge มาเป็น HIP-1 token ผ่าน Unit guardian network</li>
+            </ul>
+          </div>
+
+          <div class="callout concept-card" style="margin-top:0.75rem;">
+            <div class="callout-meta"><span class="term-chip">HLP — Hyperliquidity Provider</span></div>
+            <h3 class="callout-title">Community-Owned Market Maker & Liquidation Backstop</h3>
+            <p>ผู้ใช้ฝาก USDC เข้า HLP vault รับส่วนแบ่ง PnL — HLP แบ่งเป็น child vaults ที่ isolated risk limit ป้องกัน contagion เมื่อตลาด stress ในช่วง <strong>October 2025 cascade</strong> ($20B+ liquidated) HLP process ครึ่งหนึ่งของ liquidations ทั้งหมด กำไรได้กว่า <strong style="color:#00e5a0;">$40M ใน 1 วัน</strong> (~10% daily return) platform ไม่มี bad debt HLP คิดเป็นเพียง ~1–2% ของ daily volume ปัจจุบัน เนื่องจาก organic market makers เข้ามามากขึ้น</p>
+          </div>
+
+          <h3 style="font-size:0.85rem;margin:1.25rem 0 0.75rem;color:#c8d4e0;">เหตุการณ์สำคัญ</h3>
+          <div class="incident-timeline">
+            <div class="incident-row">
+              <div class="incident-date">มี.ค. 2025</div>
+              <div>
+                <div class="incident-title">JELLY Manipulation — $12M HLP Loss</div>
+                <div class="incident-desc">Attacker เปิด short $4.5M + long $5M บน JELLY แล้วปั้มราคา spot บน Solana ขึ้น 250% ทำให้ HLP มี unrealized loss $12M validators vote emergency override oracle price — ทุก trader ได้รับการ compensate แต่ incident เปิดเผย manipulation vulnerability ของ vault-based liquidation</div>
+              </div>
+            </div>
+            <div class="incident-row">
+              <div class="incident-date">ส.ค. 2025</div>
+              <div>
+                <div class="incident-title">XPL Hyperp — 4 Whales, $15M Profit, $20M User Loss</div>
+                <div class="incident-desc">4 whale ใช้เพียง $184K ปั้ม XPL spot ขึ้น 8x ใน minutes hyperp พุ่ง $0.60 → $1.80 trigger cascade liquidation short positions ขาดทุน $20M+ Hyperliquid implement 10x price cap emergency</div>
+              </div>
+            </div>
+            <div class="incident-row">
+              <div class="incident-date">ต.ค. 2025</div>
+              <div>
+                <div class="incident-title">October Cascade — Stress Test ที่ผ่าน</div>
+                <div class="incident-desc">$20B+ liquidated ทั่วตลาด Hyperliquid process ครึ่งหนึ่ง outstanding OI ลดจาก $14B → $6B HLP กำไร $40M ใน 1 วัน 100% uptime ไม่มี bad debt ครั้งแรกที่ auto-deleveraging mechanism ถูกใช้ในรอบ 2 ปี</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Hyperliquid · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — HIP-3 & RWA Trading Boom
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 11 • HIP-3 & RWA</span>
+            <h2 class="book-page-title">HIP-3 — Permissionless Perps & การปฏิวัติ RWA</h2>
+          </div>
+          <div class="book-page-index">Hyperliquid<br>HIP-3 / RWA</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>เปิดให้ทุกคน Deploy DEX บน Hyperliquid</h3>
+            <p>HIP-3 เปิดตัว 13 ต.ค. 2025 — ใครก็ build perpetual DEX บน HyperCore ได้ โดย stake 500K HYPE (~$16–25M) แลกกับ access ถึง order book, liquidity และ fee sharing 50/50 กับ protocol</p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">HIP-3 Mechanics</span><span>เปิดตัว 13 ต.ค. 2025</span></div>
+            <h3 class="callout-title">กฎของ HIP-3</h3>
+            <ul style="margin:0.4rem 0 0;padding-left:1.2rem;font-size:0.78rem;color:#8a9aaa;line-height:1.7;">
+              <li><strong style="color:#e2e8f0;">Stake:</strong> 500,000 HYPE ล็อค 30 วันแม้หลัง halt — slash ได้สูงสุด 100% หาก downtime นาน</li>
+              <li><strong style="color:#e2e8f0;">Free listings:</strong> 3 markets แรกฟรี ถัดไปใช้ Dutch auction ทุก 31 ชั่วโมง ราคา floor 500 HYPE</li>
+              <li><strong style="color:#e2e8f0;">Fee split:</strong> Taker fee ~0.045% แบ่ง 50% ให้ deployer / 50% ให้ protocol (2x เพื่อ maintain protocol revenue)</li>
+              <li><strong style="color:#e2e8f0;">Growth Mode (19 พ.ย. 2025):</strong> Fee ลดลง 90%+ สำหรับ market ใหม่ — ต่ำสุดถึง 0.00144% เพื่อ bootstrap volume</li>
+            </ul>
+          </div>
+
+          <div class="fee-split">
+            <div class="fee-split-half" style="background:rgba(0,229,160,0.15);color:#00e5a0;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+              50% → Builder (Deployer)
+            </div>
+            <div class="fee-split-half" style="background:rgba(56,189,248,0.12);color:#38bdf8;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2zm1 14.5h-2v-2h2v2zm0-4h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"/></svg>
+              50% → Protocol (HYPE buyback)
+            </div>
+          </div>
+
+          <div class="deployer-grid">
+            <div class="deployer-card">
+              <div class="deployer-header">
+                <div class="deployer-name">trade.xyz</div>
+                <span class="deployer-tag" style="background:rgba(0,229,160,0.15);color:#00e5a0;">Equities & RWA</span>
+              </div>
+              <p>Nasdaq 100 index (XYZ100), Nvidia, Tesla, Apple, Google, Amazon, Microsoft, Meta, Palantir — 24/7 equity perps</p>
+              <div class="deployer-stat" style="color:#00e5a0;">$1.73B NVDA volume (2025) · $285M XYZ100 in 1 day</div>
+            </div>
+            <div class="deployer-card">
+              <div class="deployer-header">
+                <div class="deployer-name">Ventuals</div>
+                <span class="deployer-tag" style="background:rgba(168,85,247,0.15);color:#c084fc;">Pre-IPO</span>
+              </div>
+              <p>SpaceX, OpenAI, Cursor pre-IPO valuation perps — ใช้ hybrid oracle (50/50 secondary market + 8h EMA) vHYPE holders รับ 25% revenue</p>
+              <div class="deployer-stat" style="color:#c084fc;">Pre-IPO market ที่ไม่มีที่ไหนทำได้</div>
+            </div>
+            <div class="deployer-card">
+              <div class="deployer-header">
+                <div class="deployer-name">TROVE</div>
+                <span class="deployer-tag" style="background:rgba(245,166,35,0.15);color:#f5a623;">Collectibles</span>
+              </div>
+              <p>Pokémon cards, CS2 skins perps ร่วมกับ Kalshi สำหรับ F1 championship outcomes ระดมทุน $20M เพื่อซื้อ HYPE stake</p>
+              <div class="deployer-stat" style="color:#f5a623;">Collectibles + prediction markets</div>
+            </div>
+            <div class="deployer-card">
+              <div class="deployer-header">
+                <div class="deployer-name">Hyena (Ethena)</div>
+                <span class="deployer-tag" style="background:rgba(56,189,248,0.15);color:#38bdf8;">Yield Trading</span>
+              </div>
+              <p>Combined trading + prediction market platform ใช้ USDe เป็น collateral ผู้ใช้ได้รับ sUSDe yield ขณะ trade อยู่ระหว่าง build</p>
+              <div class="deployer-stat" style="color:#38bdf8;">Trade ได้ yield ด้วยในเวลาเดียวกัน</div>
+            </div>
+          </div>
+
+          <h3 style="font-size:0.85rem;margin:1.25rem 0 0.6rem;color:#c8d4e0;">RWA Trading Explosion — น้ำมันและหุ้นครอง Hyperliquid</h3>
+          <div class="rwa-stats">
+            <div class="rwa-stat-card">
+              <div class="rwa-stat-val" style="color:#00e5a0;">$1.43B</div>
+              <div class="rwa-stat-label">RWA open interest ATH (มี.ค. 2026)</div>
+            </div>
+            <div class="rwa-stat-card">
+              <div class="rwa-stat-val" style="color:#f5a623;">$5B+</div>
+              <div class="rwa-stat-label">WTI crude oil 72h peak volume</div>
+            </div>
+            <div class="rwa-stat-card">
+              <div class="rwa-stat-val" style="color:#38bdf8;">$685M</div>
+              <div class="rwa-stat-label">Silver single-day volume (vs SOL $181M)</div>
+            </div>
+          </div>
+
+          <div class="callout info-chip" style="margin-top:0;">
+            <strong>RWA ครอง Top 30:</strong> ณ มีนาคม 2026 มีเพียง 7 จาก 30 markets ที่มี open interest สูงสุดเป็น crypto pairs — ที่เหลือเป็น equity, commodity และ index contracts น้ำมัน WTI ($1.62B/วัน) และ Silver ($685M/วัน) แซง Solana และ XRP ทุกวัน
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Hyperliquid · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — HYPE Tokenomics & HIP-4
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 11 • Tokenomics & HIP-4</span>
+            <h2 class="book-page-title">HYPE Token และ HIP-4 Outcome Markets</h2>
+          </div>
+          <div class="book-page-index">Hyperliquid<br>HYPE / HIP-4</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>No VC · No Presale · 31% Community · $644M Buyback</h3>
+            <p>HYPE เปิดตัว พ.ย. 2024 ด้วย airdrop ที่ใหญ่ที่สุดในประวัติศาสตร์ crypto — 31% ของ 1B supply ให้ early users โดยตรง ส่วน fee revenue เกือบทั้งหมดใช้ซื้อ HYPE คืน protocol ทำรายได้ $844M ในปี 2025</p>
+          </div>
+
+          <div class="token-alloc">
+            <div class="token-alloc-row">
+              <div class="token-alloc-name">Community Airdrop</div>
+              <div class="token-alloc-bar-wrap"><div class="token-alloc-bar" style="width:31%;background:#00e5a0;"></div></div>
+              <div class="token-alloc-pct" style="color:#00e5a0;">31%</div>
+            </div>
+            <div class="token-alloc-row">
+              <div class="token-alloc-name">Future Emissions</div>
+              <div class="token-alloc-bar-wrap"><div class="token-alloc-bar" style="width:38.9%;background:#38bdf8;"></div></div>
+              <div class="token-alloc-pct" style="color:#38bdf8;">38.9%</div>
+            </div>
+            <div class="token-alloc-row">
+              <div class="token-alloc-name">Team (4-yr vesting)</div>
+              <div class="token-alloc-bar-wrap"><div class="token-alloc-bar" style="width:23.8%;background:#c084fc;"></div></div>
+              <div class="token-alloc-pct" style="color:#c084fc;">23.8%</div>
+            </div>
+            <div class="token-alloc-row">
+              <div class="token-alloc-name">Hyper Foundation</div>
+              <div class="token-alloc-bar-wrap"><div class="token-alloc-bar" style="width:6%;background:#f5a623;"></div></div>
+              <div class="token-alloc-pct" style="color:#f5a623;">6%</div>
+            </div>
+            <div class="token-alloc-row">
+              <div class="token-alloc-name">VC / Investors</div>
+              <div class="token-alloc-bar-wrap"><div class="token-alloc-bar" style="width:0%;background:#f87171;"></div></div>
+              <div class="token-alloc-pct" style="color:#f87171;">0%</div>
+            </div>
+          </div>
+
+          <div class="callout info-chip" style="margin-top:0;">
+            <strong>$644M HYPE Buyback ใน 2025:</strong> ~99% ของ trading fee ถูก route เข้า Assistance Fund ซื้อ HYPE คืนจาก market — ยิ่ง volume สูงยิ่ง buy pressure มาก ใน 2025 platform ซื้อ HYPE กลับคืนรวม $644M จาก $844M revenue ทั้งหมด
+          </div>
+
+          <div class="callout concept-card" style="margin-top:0.85rem;">
+            <div class="callout-meta">
+              <span class="term-chip" style="background:rgba(245,166,35,0.15);color:#f5a623;">HIP-4 Outcome Markets</span>
+              <span>ประกาศ 2 ก.พ. 2026 · Testnet มี.ค. 2026</span>
+            </div>
+            <h3 class="callout-title">Prediction Markets & Bounded Options บน HyperCore</h3>
+            <p style="font-size:0.78rem;color:#8a9aaa;margin:0.4rem 0 0.7rem;">HIP-4 นำ outcome markets มาสู่ HyperCore โดยตรง — ต่างจาก Polymarket ที่เป็น isolated platform ทุก outcome contract share margin system กับ perp positions ได้ทันที HYPE ขึ้น 10% ใน 24 ชั่วโมงหลังประกาศ</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+              <div class="outcome-card">
+                <h4>Binary Prediction Markets</h4>
+                <p>คำถาม Yes/No แต่ละคำตอบ settle เป็น 1 USDH (ถูก) หรือ 0 USDH (ผิด) ราคา token สะท้อน implied probability โดยตรง เริ่มด้วย BTC และ HYPE 1-day expiry บน testnet</p>
+              </div>
+              <div class="outcome-card">
+                <h4>Bounded Options-like Contracts</h4>
+                <p>Fully collateralized — ไม่มี margin call ไม่มี liquidation ผู้ซื้อเสียได้แค่ capital ตั้งต้น เปิดด้วย 15-minute call auction ก่อน order book trading ป้องกัน price manipulation ช่วงเปิดตลาด</p>
+              </div>
+            </div>
+            <p style="font-size:0.74rem;color:#64748b;margin:0.6rem 0 0;">Collateral: USDH (native stablecoin ของ Hyperliquid) · Mainnet: ยังไม่ประกาศวันแน่นอน คาดภายใน 2026</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Hyperliquid · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 06 — Risks, Competitors & Takeaways
+           ============================================================ -->
+      <article class="book-page" id="page-06">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 11 • Risks & Outlook</span>
+            <h2 class="book-page-title">Centralization Risks, Competitors และสิ่งที่ต้องจำ</h2>
+          </div>
+          <div class="book-page-index">Hyperliquid<br>Risks</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="callout callout--warning">
+            <div class="callout-meta">
+              <span class="status-pill warning">Risk</span>
+              <span>Decentralization Trade-off</span>
+            </div>
+            <h3 class="callout-title">ความเร็วมาพร้อมกับ Centralization</h3>
+            <p>Hyper Foundation ควบคุม <strong>~80% ของ staked HYPE</strong> ผ่าน validators ของตัวเอง — ทำให้ทางทฤษฎีสามารถ halt chain ได้ node software ยังปิด source ทำให้ validator "blind sign" binary โดยไม่รู้ว่า code ทำอะไร ใน ก.ค. 2025 API traffic spike ทำให้ trading หยุด 37 นาที แม้ blockchain ยังผลิต block ต่อเนื่อง Hyperliquid ยืนยันมีแผน open-source และ decentralize infrastructure ตามเวลา</p>
+          </div>
+
+          <h3 style="font-size:0.85rem;margin:1.25rem 0 0.75rem;color:#c8d4e0;">คู่แข่งที่น่าจับตา</h3>
+
+          <div class="competitor-card">
+            <div class="competitor-header">
+              <div class="competitor-name">Lighter</div>
+              <span class="competitor-tag" style="background:rgba(56,189,248,0.15);color:#38bdf8;">Security-First · Ethereum L2</span>
+            </div>
+            <p>Mainnet ต.ค. 2025 — ใช้ cryptographic proofs verify ทุก order match และ liquidation zero fee สำหรับ retail, fee เฉพาะ API/HFT ผ่าน audit จาก zkSecurity + Nethermind ช่วง October cascade LLP vault รับ drawdown ~5.3% ($21.5M) เพราะ infrastructure outage หลายชั่วโมง ต่างจาก HLP ที่กำไร $40M ในเหตุการณ์เดียวกัน</p>
+          </div>
+
+          <div class="competitor-card">
+            <div class="competitor-header">
+              <div class="competitor-name">Aster</div>
+              <span class="competitor-tag" style="background:rgba(245,166,35,0.15);color:#f5a623;">Binance-Connected · Hybrid</span>
+            </div>
+            <p>เกิดจากการรวม Astherus + APX Finance — backed by YZi Labs (CZ's VC), CZ เป็น advisor off-chain matching + on-chain settlement รองรับ leveraged stock perps นอกจาก crypto reported volume $500B+ แต่ DefiLlama เคย delist ชั่วคราวด้วยข้อสงสัย wash trading รัน Dawn points incentive program (Season 3)</p>
+          </div>
+
+          <div class="callout concept-card" style="margin-top:0.75rem;">
+            <div class="callout-meta"><span class="term-chip">Key Takeaways</span></div>
+            <h3 class="callout-title">สรุปสิ่งที่ต้องจำจากบทนี้</h3>
+            <ol class="digest-list">
+              <li>
+                <span class="digest-index">01</span>
+                <div><strong>Hyperliquid พลิก dYdX จาก 75% → 7% ใน 1 ปี</strong>
+                <p>0.2s finality + on-chain CLOB + session keys + ~99% fee buyback = flywheel ที่หยุดไม่ได้</p></div>
+              </li>
+              <li>
+                <span class="digest-index">02</span>
+                <div><strong>HIP-3 เปิดประตูสู่ RWA Revolution</strong>
+                <p>น้ำมัน เงิน หุ้น และ Nasdaq futures ครอง top 23 จาก 30 OI สูงสุด — RWA OI ATH $1.43B มี.ค. 2026</p></div>
+              </li>
+              <li>
+                <span class="digest-index">03</span>
+                <div><strong>HIP-4 = Prediction Markets + Bounded Options</strong>
+                <p>ประกาศ ก.พ. 2026 testnet มี.ค. 2026 — fully collateralized, share margin กับ perp positions ได้ทันที</p></div>
+              </li>
+              <li>
+                <span class="digest-index">04</span>
+                <div><strong>HLP ผ่าน October cascade กำไร $40M ใน 1 วัน</strong>
+                <p>แต่ JELLY และ XPL เปิดเผย manipulation risk ของ thin market + vault-based liquidation</p></div>
+              </li>
+              <li>
+                <span class="digest-index">05</span>
+                <div><strong>Speed มาพร้อม Centralization trade-off</strong>
+                <p>80% Foundation stake, closed-source node, API dependency — แผน decentralize อยู่ระหว่างดำเนินการ</p></div>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Hyperliquid · Page 06</span>
+          <span class="page-number">06</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-10-stablecoins-rwa.html">
+          <span>Previous</span>
+          <strong>บทที่ 10: Stablecoins & RWA — เงินที่ไม่ผันผวน</strong>
+        </a>
+        <a class="nav-card" href="./chapter-12-nfts.html">
+          <span>Next</span>
+          <strong>บทที่ 12: NFTs — สินทรัพย์ดิจิทัลที่มีเอกลักษณ์</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { canvas.style.display = 'none'; return; }
+      const scene    = new THREE.Scene();
+      const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const COUNT = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT * 3; i++) posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+
+      const makeTexture = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16,16,0,16,16,16);
+        g.addColorStop(0,   'rgba(0,229,160,1)');
+        g.addColorStop(0.2, 'rgba(0,229,160,0.8)');
+        g.addColorStop(1,   'rgba(0,229,160,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
+        const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+      };
+
+      const mat  = new THREE.PointsMaterial({ size: 0.05, map: makeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 });
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh);
+      camera.position.z = 4;
+
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', e => { mouseX = e.clientX - window.innerWidth/2; mouseY = e.clientY - window.innerHeight/2; });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        mesh.rotation.y += 0.0008; mesh.rotation.x += 0.0004;
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) { const i3 = i*3; pos[i3+1] = posOrig[i3+1] + Math.sin(t*0.3 + posOrig[i3]) * 0.18; }
+        geo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    });
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

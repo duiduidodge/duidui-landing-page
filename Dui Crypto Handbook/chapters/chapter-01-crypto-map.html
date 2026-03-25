@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 1: แผนที่โลกคริปโต</title>
+  <meta name="description" content="บทนำเชิงระบบสำหรับผู้อ่านที่ต้องการเข้าใจ Bitcoin, smart contract chains, stablecoins, DeFi, NFTs, DePIN, prediction markets และความเสี่ยงหลักก่อนเริ่มใช้งานจริง">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    /* ---- FRAMEWORK OVERRIDES ---- */
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Particle canvas */
+    #nano-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.28;
+    }
+
+    /* Ambient glow */
+    .ambient-glow {
+      position: fixed;
+      top: 20%;
+      right: 5%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle, rgba(156, 201, 209, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Ensure page content stays above canvas */
+    .page-shell {
+      position: relative;
+      z-index: 10;
+      padding-top: 0;
+    }
+
+    /* Chapter top bar — full-width, outside page-shell */
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Colorful: Digest List badges ─────────────────────────────── */
+    .digest-list .digest-index {
+      background: rgba(156,201,209,0.15);
+      color: #9cc9d1;
+      border: 1px solid rgba(156,201,209,0.35);
+    }
+
+    /* ── Colorful: Info chips ──────────────────────────────────────── */
+    .info-chip {
+      border-left: 3px solid rgba(156,201,209,0.45);
+      background: rgba(156,201,209,0.06) !important;
+    }
+    .info-chip strong { color: #9cc9d1; }
+
+    /* ── Colorful: Table headers ───────────────────────────────────── */
+    .table-shell thead th {
+      background: rgba(156,201,209,0.1);
+      color: #9cc9d1;
+      border-bottom: 1px solid rgba(156,201,209,0.3);
+    }
+    .table-shell tbody tr:nth-child(odd) td {
+      background: rgba(156,201,209,0.03);
+    }
+    .table-shell tbody tr:hover td {
+      background: rgba(156,201,209,0.07);
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: "loose",
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#252a32",
+        primaryTextColor: "#ede7dc",
+        primaryBorderColor: "#9cc9d1",
+        lineColor: "#9cc9d1",
+        secondaryColor: "#1d2a30",
+        tertiaryColor: "#21252c",
+        clusterBkg: "#1d2a30",
+        clusterBorder: "rgba(156,201,209,0.3)",
+        fontFamily: "Prompt, Noto Serif Thai, Kanit, sans-serif"
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 01</span>
+  <button class="chapter-picker-btn" data-current="01" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background: linear-gradient(90deg, #FF7B00, #9cc9d1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; letter-spacing: 0.16em;">Part 1 • Orientation And Survival</div>
+          <h1>บทที่ 1: แผนที่โลกคริปโต</h1>
+          <p class="lede">
+            ก่อนจะถามว่าเหรียญไหนน่าซื้อ คำถามที่สำคัญกว่าคือคุณกำลังเดินเข้าไปในระบบแบบไหน คริปโตไม่ใช่แค่ตลาดเก็งกำไร แต่เป็นโครงสร้างการเงินที่เปิดให้ใครก็ได้เข้ามาใช้ สร้าง แลกเปลี่ยน และเคลื่อนย้ายมูลค่าโดยไม่ต้องขออนุญาตผู้คุมระบบเดิม
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          ในระบบที่ไม่มีผู้คุมเกม ความเข้าใจไม่ใช่ข้อได้เปรียบ แต่มันคือเงื่อนไขการอยู่รอด
+          <cite>Opening Thesis</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_01_crypto_map.png" alt="Chapter 1 Ecosystem Map Explorer">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 01 • Opening Frame</span>
+            <h2 class="book-page-title">นี่คือ frontier ที่ไม่มี safety net</h2>
+          </div>
+          <div class="book-page-index">Crypto Map<br>Opening</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>สิ่งที่ผู้อ่านต้องเห็นก่อน</h3>
+            <p>คริปโตไม่ใช่แค่สินทรัพย์ให้เก็งกำไร แต่เป็นสภาพแวดล้อมทางการเงินที่เปิดกว้างและไม่ให้อภัยความผิดพลาดง่าย ๆ ก่อนลงรายละเอียดเรื่อง chain หรือ token ต้องเข้าใจธรรมชาติของสนามนี้ก่อน</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              โลกการเงินดั้งเดิมถูกห่อด้วยความสะดวก ถ้าบัตรหายก็โทรหาธนาคาร ถ้าโดนโกงก็ยื่น dispute ถ้าลืมรหัสก็กด reset แต่ในคริปโตไม่มีผู้จัดการ ไม่มี call center และไม่มี lifeguard ที่จะกระโดดลงมาช่วยเมื่อคุณทำพลาด
+            </p>
+            <p>
+              ถ้าคุณส่งเงินผิด address, ทำ <strong>private key</strong> หาย, หรือเซ็นธุรกรรมให้ <strong>smart contract</strong> ที่เป็นอันตราย สินทรัพย์อาจหายถาวรได้ นี่คือระบบที่โค้ดตรวจสอบลายเซ็น ไม่ได้ตรวจสอบเจตนา ความไร้ตาข่ายรองรับนี้ทำให้คริปโตเป็นสนามแบบ meritocratic อย่างรุนแรง คนที่รอดไม่ใช่คนมีชื่อหรือมีสถาบันหนุนหลัง แต่เป็นคนที่เข้าใจกลไกและป้องกันตัวเองได้
+            </p>
+            <p>
+              พร้อมกันนั้น ความเปิดกว้างนี้เองคือสิ่งที่ทำให้คริปโตสำคัญ การเข้าร่วมต้องการเพียงอินเทอร์เน็ตและภูมิศาสตร์แทบไม่สำคัญ ทีมพัฒนานิรนามจากที่ใดก็ได้ในโลกสามารถ deploy โปรโตคอลที่คนทั้งโลกใช้งานได้ เด็กอายุ 15 ปีใน Lagos ไม่มีทางเดินเข้า Goldman Sachs ไปเทรดอนุพันธ์ แต่สามารถเชื่อม wallet เข้ากับ decentralized exchange และเจอระบบเดียวกับผู้เล่นรายใหญ่ได้
+            </p>
+            <p>
+              อย่างไรก็ดี คนส่วนใหญ่ไม่ได้ต้องการอธิปไตยทางการเงินแบบสมบูรณ์ ผู้ใช้ส่วนมากยังต้องการ convenience, reversibility และ customer service มากกว่า นี่จึงทำให้โลกคริปโตมี “spectrum of sovereignty” ตั้งแต่การฝากสินทรัพย์ไว้กับ centralized exchange ไปจนถึง self-custody, multi-signature wallet และ social recovery ซึ่งแต่ละแบบคือการแลกความสะดวกกับการควบคุมในสัดส่วนต่างกัน
+            </p>
+          </div>
+
+          <ol class="digest-list">
+            <li>
+              <span class="digest-index">1</span>
+              <div>
+                <strong>ไม่มีผู้คุมเกมกลาง</strong>
+                <p>เมื่อกดผิดหรือเซ็นผิด ความเสียหายอาจย้อนกลับไม่ได้ ต่างจากระบบการเงินเดิมที่ยังมี dispute หรือ reset ให้พึ่งพา</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">2</span>
+              <div>
+                <strong>เปิดให้ทุกคนเข้าเล่น</strong>
+                <p>การเข้าร่วมต้องการเพียงอินเทอร์เน็ต จึงสร้างสนามที่คนทั่วไปเข้าถึงระบบเดียวกับผู้เล่นรายใหญ่ได้มากกว่าการเงินดั้งเดิม</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">3</span>
+              <div>
+                <strong>เสรีภาพแลกกับความรับผิดชอบ</strong>
+                <p>ผู้ใช้จำนวนมากไม่ได้ต้องการ self-custody เต็มรูปแบบ จึงเกิดทางเลือกหลายระดับระหว่าง convenience กับ sovereignty</p>
+              </div>
+            </li>
+          </ol>
+
+          <div class="callout warning-box">
+            <div class="callout-meta">
+              <span class="status-pill warning">Warning</span>
+              <span>Adversarial environment</span>
+            </div>
+            <h3 class="callout-title">Permissionless does not mean safe</h3>
+            <p>
+              คุณไม่สามารถมีระบบที่ให้ใครก็ได้สร้าง financial protocol โดยไม่ขออนุญาต และในเวลาเดียวกันป้องกันไม่ให้ scammer, hacker หรือ fraudster เข้ามาใช้ระบบเดียวกันได้ ความเป็นกลางของโปรโตคอลเปิดประตูให้ทุกคน ทั้งผู้ใช้ที่มีเหตุผล ผู้ลี้ภัยทางการเงิน และผู้ไม่หวังดี
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Understand the system before risking capital</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 01 • Ecosystem Map</span>
+            <h2 class="book-page-title">ผู้ใช้เดินผ่านระบบอย่างไร</h2>
+          </div>
+          <div class="book-page-index">Fiat To Protocol<br>User Journey</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>คำถามของหน้านี้</h3>
+            <p>ผู้ใช้จริงเริ่มต้นจากตรงไหน และต้องผ่านองค์ประกอบใดบ้างก่อนจะไปถึงการใช้งาน on-chain อย่างแท้จริง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ในชีวิตจริง ผู้ใช้รายย่อยไม่ได้เริ่มจากอ่าน paper เรื่อง consensus แต่เริ่มจากฝากเงินบาทเข้า <strong>CEX</strong>, ซื้อสินทรัพย์, ถอนเข้า <strong>wallet</strong>, ส่งข้าม <strong>bridge</strong> และเข้าใช้งาน protocol บน chain ที่ต่างกัน จุดสัมผัสของผู้ใช้จึงมักไม่ใช่ “บล็อกเชน” แบบตรง ๆ ตลอดเวลา แต่เป็นชั้นบริการที่ประกอบอยู่เหนือ chain
+            </p>
+            <p>
+              หากไม่เห็นภาพความสัมพันธ์นี้ ผู้ใช้จะเข้าใจผิดง่าย เช่น คิดว่า USDT เท่ากับ Bitcoin, คิดว่า exchange คือ blockchain, หรือคิดว่าใช้ DeFi แล้วไม่มีตัวกลางเหลืออยู่เลย ทั้งที่ในทางปฏิบัติยังอาจมี issuer, bridge operator, oracle, validator set หรือ sequencer อยู่ในห่วงโซ่ความเสี่ยง
+            </p>
+          </div>
+
+          <div class="info-strip">
+            <div class="info-chip">
+              <strong>CEX</strong>
+              <span>จุดเริ่มต้นของ fiat on-ramp และการซื้อขายเบื้องต้น</span>
+            </div>
+            <div class="info-chip">
+              <strong>Wallet</strong>
+              <span>จุดที่ผู้ใช้เริ่มรับผิดชอบการ sign และการควบคุมสินทรัพย์</span>
+            </div>
+            <div class="info-chip">
+              <strong>Protocol</strong>
+              <span>ชั้นใช้งานจริงของ DeFi, NFTs, DePIN และแอป on-chain</span>
+            </div>
+          </div>
+
+          <div class="mermaid-shell">
+            <div class="mermaid-toolbar">
+              <div class="mermaid-title">Figure 1 • จุดที่ผู้ใช้สัมผัสระบบจริง</div>
+              <span class="status-pill info">Diagram</span>
+            </div>
+            <div class="mermaid-frame">
+              <pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#252a32','primaryTextColor':'#ede7dc','primaryBorderColor':'#9cc9d1','lineColor':'#9cc9d1','secondaryColor':'#1d2a30','tertiaryColor':'#21252c','fontFamily':'Prompt, sans-serif'}}}%%
+flowchart LR
+    A["เงินบาท / Fiat"]:::fiat --> B[CEX]:::cex
+    B --> C[Wallet]:::wallet
+    B --> D[Stablecoins]:::stable
+    C --> E[Bitcoin]:::btc
+    C --> F[Smart Contract Chains]:::chain
+    D --> F
+    F --> G[DeFi]:::app
+    F --> H[NFTs]:::app
+    F --> I[DePIN]:::app
+    F --> J[Prediction Markets]:::app
+    F --> K[Bridge]:::bridge
+    K --> L[Another Chain]:::chain
+
+    classDef fiat fill:#2a2218,stroke:#f5a623,color:#f5a623
+    classDef cex fill:#211e2a,stroke:#9b7fe8,color:#c4b0f5
+    classDef wallet fill:#1d2a2a,stroke:#9cc9d1,color:#9cc9d1
+    classDef stable fill:#1d2a24,stroke:#4ade80,color:#6ee79b
+    classDef btc fill:#2a2010,stroke:#FF7B00,color:#FF7B00
+    classDef chain fill:#1a2138,stroke:#627eea,color:#8da4f5
+    classDef app fill:#192433,stroke:#38bdf8,color:#7dd3fc
+    classDef bridge fill:#262230,stroke:#e879f9,color:#e879f9
+              </pre>
+            </div>
+          </div>
+
+          <div class="figure-caption">
+            <span class="figure-caption-title">Figure Caption</span>
+            ผู้ใช้หนึ่งคนอาจแตะหลาย trust model ใน session เดียว ตั้งแต่ exchange สำหรับ on-ramp, wallet สำหรับการ sign, bridge สำหรับการเคลื่อนย้าย และ protocol สำหรับ execution จริง
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Map the user journey before evaluating tokens</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 01 • Category Map</span>
+            <h2 class="book-page-title">องค์ประกอบหลักในโลกคริปโต แยกให้ออกก่อนค่อยลงสนาม</h2>
+          </div>
+          <div class="book-page-index">Categories<br>And Roles</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ทำไมต้องแยกหมวดให้ชัด</h3>
+            <p>ผู้อ่านใหม่มักสับสนเพราะทุกอย่างถูกเรียกรวมว่า “คริปโต” ทั้งที่แต่ละส่วนทำหน้าที่คนละแบบ การแยกประเภทให้ถูกจะช่วยลดการไล่ตาม narrative ที่ไม่มีโครงสร้าง</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Bitcoin</strong> เน้นบทบาทเงินดิจิทัลที่ให้ความสำคัญกับความขาดแคลน ความปลอดภัย และการต้านการเซ็นเซอร์มากกว่าการเป็นแพลตฟอร์มแอปอเนกประสงค์ มันจึงทำหน้าที่เป็น <strong>sound money</strong> มากกว่าการเป็น operating system สำหรับแอปการเงินทุกชนิด
+            </p>
+            <p>
+              <strong>Smart contract chains</strong> อย่าง Ethereum, Solana และ L1 อื่น ๆ คือระบบที่รันแอป programmable ได้ ความต่างไม่ได้อยู่แค่ความเร็วหรือค่าธรรมเนียม แต่รวมถึง trade-off ระหว่าง decentralization, security, scalability, hardware requirements, fee markets และแนวทางขยายระบบแบบ monolithic หรือ modular
+            </p>
+            <p>
+              <strong>Stablecoins</strong> คือ “ดอลลาร์บนบล็อกเชน” ที่พยายามรักษา peg ใกล้หนึ่งดอลลาร์ผ่านกลไกหลายแบบ เช่น fiat-backed, crypto-backed, synthetic และ yield-bearing ในทางปฏิบัติ stablecoin คือ settlement layer, collateral layer และ base currency ของตลาดคริปโตส่วนใหญ่
+            </p>
+            <p>
+              <strong>DeFi, NFTs, DePIN และ prediction markets</strong> ชี้ให้เห็นว่า chain เป็นมากกว่าที่เก็บเหรียญ แต่มันคือ coordination layer สำหรับการแลกเปลี่ยน การถือครอง สิทธิ ความเป็นเจ้าของ และแรงจูงใจทางเศรษฐกิจรูปแบบใหม่
+            </p>
+          </div>
+
+          <ol class="digest-list">
+            <li>
+              <span class="digest-index">1</span>
+              <div>
+                <strong>Bitcoin คือเงิน</strong>
+                <p>เน้น scarcity, security และ censorship resistance มากกว่าความยืดหยุ่นด้านแอปพลิเคชัน</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">2</span>
+              <div>
+                <strong>Smart contract chains คือฐานแอป</strong>
+                <p>เป็นโครงสร้างพื้นฐานให้โปรโตคอลการเงินและทรัพย์สินแบบ programmable ทำงานได้</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">3</span>
+              <div>
+                <strong>Stablecoins คือชั้นเงินดอลลาร์ของระบบ</strong>
+                <p>ทำหน้าที่เป็น settlement layer, collateral และสกุลเงินอ้างอิงของตลาดคริปโตจำนวนมาก</p>
+              </div>
+            </li>
+          </ol>
+
+          <div class="table-shell">
+            <div class="table-topbar">
+              <div>
+                <h3>What each category is really for</h3>
+                <p class="caption">A compact reference table for the rest of the book</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>หมวด</th>
+                    <th>หน้าที่หลัก</th>
+                    <th>ผู้ใช้เจอผ่านอะไร</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Bitcoin</td>
+                    <td>เก็บและโอนมูลค่าแบบต้านการยึดควบคุม</td>
+                    <td>wallet, exchange, payment rail</td>
+                  </tr>
+                  <tr>
+                    <td>Smart contract chain</td>
+                    <td>รันแอปการเงินและทรัพย์สินแบบ programmable</td>
+                    <td>wallet, dApp, rollup, bridge</td>
+                  </tr>
+                  <tr>
+                    <td>Stablecoin</td>
+                    <td>ดอลลาร์ดิจิทัลสำหรับโอน ชำระ และวางคอลแลตเทอรัล</td>
+                    <td>CEX, wallet, DeFi, payment app</td>
+                  </tr>
+                  <tr>
+                    <td>DeFi / NFTs / DePIN / Markets</td>
+                    <td>execution, ownership, incentive coordination</td>
+                    <td>protocol frontend, marketplace, app layer</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Categories first, token narratives later</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 01 • Infrastructure Lens</span>
+            <h2 class="book-page-title">ทำไม chain ถึงไม่เหมือนกัน แม้ดูเหมือนเป็นบล็อกเชนเหมือนกัน</h2>
+          </div>
+          <div class="book-page-index">Architecture<br>And Adoption</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ภาพใหญ่ของหน้านี้</h3>
+            <p>เวลาพูดถึง L1 คนมักยึดติดกับตัวเลข throughput แต่การชนะในโลกจริงต้องอ่านทั้งสถาปัตยกรรมและ ecosystem พร้อมกัน</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              เวลาประเมิน L1 อย่าดูแค่ตัวเลข TPS หรือค่าธรรมเนียมต่ำสุด เพราะการแข่งขันจริงเกิดทั้งในมิติเทคนิคและมิติตลาด เครือข่ายที่ throughput สูงมากแต่ไม่มี liquidity, ไม่มี native USDC/USDT, ไม่มี exchange รองรับ และไม่มีนักพัฒนา ก็อาจไม่ชนะ adoption อยู่ดี
+            </p>
+            <p>
+              ทุก blockchain ต้องรับมือกับสี่หน้าที่หลัก ได้แก่ <strong>execution</strong>, <strong>settlement</strong>, <strong>consensus</strong> และ <strong>data availability</strong> บางระบบรวมทุกอย่างไว้ชั้นเดียวเพื่อรักษา composability แบบ local และธุรกรรม all-or-nothing ที่ลื่นกว่า บางระบบแยก execution ไปไว้ที่ rollups หรือ layers อื่น แล้วใช้ L1 เป็น settlement และ DA layer มากขึ้น
+            </p>
+          </div>
+
+          <div class="info-strip">
+            <div class="info-chip">
+              <strong>Execution</strong>
+              <span>ชั้นที่ประมวลผลธุรกรรมและเปลี่ยน state</span>
+            </div>
+            <div class="info-chip">
+              <strong>Settlement</strong>
+              <span>ชั้นที่ทำให้ผลลัพธ์สุดท้ายถูกยอมรับ</span>
+            </div>
+            <div class="info-chip">
+              <strong>Consensus + DA</strong>
+              <span>ชั้นที่ทำให้ทั้งเครือข่ายเห็นตรงกันและตรวจสอบข้อมูลได้</span>
+            </div>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Adoption Reality</span>
+              <span>Architecture is not enough</span>
+            </div>
+            <h3 class="callout-title">Technical superiority alone rarely decides the winner</h3>
+            <p>
+              Liquidity, stablecoin support, exchange listings, developer attention และ cultural momentum มักสำคัญพอ ๆ กับตัวสถาปัตยกรรม เครือข่ายที่สวยงามเชิงวิศวกรรมแต่ไม่มีผู้ใช้จริงอาจแพ้เครือข่ายที่มี ecosystem หนากว่าแม้ trade-off ทางเทคนิคจะด้อยกว่า
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Technical and market structure must be read together</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 01 • Market Rails And Risk</span>
+            <h2 class="book-page-title">ตลาดจริงอยู่ตรงไหน และความเสี่ยงซ้อนกันอย่างไร</h2>
+          </div>
+          <div class="book-page-index">CEX, Stablecoins,<br>DeFi And Risk</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>สิ่งที่ต้องเก็บกลับจากบทนี้</h3>
+            <p>ตลาดจริงไม่ได้มีแค่ราคาและเหรียญ แต่ประกอบด้วย exchange rails, stablecoin infrastructure, on-chain protocols และความเสี่ยงหลายชั้นที่ซ้อนกันอยู่</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              แม้ narrative ของคริปโตจะพูดถึง decentralization เสมอ แต่ในเชิงใช้งาน ตลาดส่วนใหญ่ยังพึ่งพา <strong>centralized exchanges</strong> อย่างหนัก โดยเฉพาะเวลาต้องการ fiat on-ramp, leverage, order book ที่ลึก และการส่งคำสั่งระดับสถาบัน CEX ทำหน้าที่เป็น custodial venue ที่ถือ collateral ของลูกค้าไว้เอง จึงให้ผลิตภัณฑ์ซับซ้อนได้ แต่ก็เพิ่ม <strong>counterparty risk</strong>
+            </p>
+            <p>
+              ในเวลาเดียวกัน <strong>stablecoins</strong> กลายเป็นโครงเหล็กของระบบ เพราะไม่ได้เป็นแค่สินทรัพย์พักเงิน แต่เป็น settlement layer ของการเทรด, collateral ของตลาดอนุพันธ์ และสกุลเงินอ้างอิงของ DeFi จำนวนมาก รูปแบบที่พิสูจน์ตัวเองได้ดีที่สุดจนถึงตอนนี้คือ fiat-backed model ที่พึ่ง reserve จริงและกลไก arbitrage กับ issuer ขณะที่ algorithmic stablecoins ล้มเหลวเพราะ confidence shock สามารถทำให้ stabilization mechanism กลายเป็น death spiral ได้
+            </p>
+            <p>
+              ด้าน <strong>DeFi</strong> ช่วยลดตัวกลางแบบดั้งเดิมด้วย smart contract ผู้ใช้สามารถ swap, lend, borrow และประกอบหลายขั้นตอนในธุรกรรมเดียวได้ผ่าน atomic composability แต่สิ่งที่หายไปคือ customer support ไม่ใช่ความเสี่ยง คุณยังต้องเจอ gas, slippage, MEV, oracle failure, impermanent loss และ approval abuse ด้วยตัวเอง
+            </p>
+          </div>
+
+          <ol class="digest-list">
+            <li>
+              <span class="digest-index">1</span>
+              <div>
+                <strong>CEX ยังเป็นประตูใหญ่ของผู้ใช้ทั่วไป</strong>
+                <p>โดยเฉพาะเรื่อง fiat on-ramp, liquidity และผลิตภัณฑ์ที่ซับซ้อน</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">2</span>
+              <div>
+                <strong>Stablecoins คือโครงเหล็กของระบบ</strong>
+                <p>ไม่ใช่แค่ที่พักเงิน แต่เป็นชั้นเงินดอลลาร์และคอลแลตเทอรัลของตลาดคริปโต</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">3</span>
+              <div>
+                <strong>DeFi ลดตัวกลาง แต่ไม่ได้ลดความเสี่ยง</strong>
+                <p>ผู้ใช้แค่ย้ายชนิดของความเสี่ยงจากตัวกลางแบบเดิมไปสู่ protocol, oracle และ execution risk</p>
+              </div>
+            </li>
+          </ol>
+
+          <div class="callout pro-tip">
+            <div class="callout-meta">
+              <span class="status-pill success">Reader Framework</span>
+              <span>Four questions</span>
+            </div>
+            <h3 class="callout-title">อย่าถามก่อนว่า “ราคาจะขึ้นไหม”</h3>
+            <ul class="terminal-list">
+              <li>
+                <span class="terminal-dot"></span>
+                <div><strong>มันแก้ปัญหาอะไร</strong> เงิน โครงสร้างพื้นฐาน การถือครอง หรือแค่การเก็งกำไร</div>
+              </li>
+              <li>
+                <span class="terminal-dot"></span>
+                <div><strong>ตัวกลางที่ยังเหลืออยู่คือใคร</strong> issuer, bridge, sequencer, validator หรือ custodian</div>
+              </li>
+              <li>
+                <span class="terminal-dot"></span>
+                <div><strong>ผลตอบแทนมาจากไหน</strong> fees, funding, T-bills, emissions หรือ leverage loops</div>
+              </li>
+              <li>
+                <span class="terminal-dot"></span>
+                <div><strong>ใครรับภาระเมื่อระบบพัง</strong> ผู้ใช้ LP token holders หรือไม่มีใครรับผิดชอบเลย</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Risk-aware reading is the foundation for every later chapter</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./preface.html">
+          <span>Previous</span>
+          <strong>คำนำ: ทำไมคริปโตจึงสำคัญ</strong>
+        </a>
+        <a class="nav-card" href="./chapter-02-wallets-custody-security.html">
+          <span>Next</span>
+          <strong>บทที่ 2: กระเป๋าเงิน การเก็บรักษา และความปลอดภัย</strong>
+        </a>
+      </nav>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        canvas.style.display = 'none';
+        return;
+      }
+      const scene    = new THREE.Scene();
+      const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const COUNT   = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT * 3; i++) posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+
+      const makeTexture = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16,16,0,16,16,16);
+        g.addColorStop(0,   'rgba(156,201,209,1)');
+        g.addColorStop(0.2, 'rgba(156,201,209,0.8)');
+        g.addColorStop(1,   'rgba(156,201,209,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
+        const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+      };
+
+      const mat = new THREE.PointsMaterial({ size: 0.05, map: makeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 });
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh);
+      camera.position.z = 4;
+
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', e => { mouseX = e.clientX - window.innerWidth/2; mouseY = e.clientY - window.innerHeight/2; });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        mesh.rotation.y += 0.0008; mesh.rotation.x += 0.0004;
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) { const i3 = i*3; pos[i3+1] = posOrig[i3+1] + Math.sin(t*0.3 + posOrig[i3]) * 0.18; }
+        geo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    });
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

@@ -419,6 +419,12 @@
       gap: 20px;
     }
 
+    .artifact-section {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
     /* ── Artifact card ── */
     .artifact-card {
       background: rgba(255, 255, 255, 0.07);
@@ -428,6 +434,7 @@
       display: flex;
       flex-direction: column;
       cursor: pointer;
+      text-decoration: none;
       transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
                   border-color 200ms ease,
                   box-shadow 300ms ease;
@@ -460,6 +467,17 @@
     [data-type="guide"] .artifact-thumb {
       background: linear-gradient(155deg, rgba(47,184,106,0.22) 0%, rgba(47,184,106,0.04) 100%);
       border-bottom: 1px solid rgba(47,184,106,0.18);
+    }
+
+    .artifact-thumb img {
+      position: absolute;
+      inset: 18px;
+      width: calc(100% - 36px);
+      height: calc(100% - 36px);
+      object-fit: contain;
+      object-position: center;
+      filter: drop-shadow(0 20px 30px rgba(0,0,0,0.3));
+      z-index: 1;
     }
 
     .thumb-icon {
@@ -597,6 +615,14 @@
       color: rgba(122,158,138,0.6);
     }
 
+    .artifact-status {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+    }
+
     .artifact-cta {
       font-family: var(--font-mono);
       font-size: 10px;
@@ -613,6 +639,117 @@
     .artifact-card:hover .artifact-cta {
       opacity: 1;
       transform: translateX(3px);
+    }
+
+    .release-banner {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top right, rgba(212,168,50,0.14) 0%, transparent 36%),
+        linear-gradient(135deg, rgba(47,184,106,0.1) 0%, rgba(255,255,255,0.03) 48%, rgba(63,191,168,0.08) 100%);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      padding: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .release-banner::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(circle at center, black 30%, transparent 90%);
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    .release-banner-copy,
+    .release-banner-actions {
+      position: relative;
+      z-index: 1;
+    }
+
+    .release-banner-copy {
+      max-width: 620px;
+    }
+
+    .release-banner-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    .release-banner-title {
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #edf8f1;
+      margin-bottom: 12px;
+    }
+
+    .release-banner-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 48ch;
+    }
+
+    .release-banner-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .release-banner-link {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 13px 22px;
+      transition: transform 200ms ease, border-color 200ms ease, background 200ms ease, color 200ms ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .release-banner-link.primary {
+      color: #0d1a11;
+      background: var(--accent);
+      border: 1px solid transparent;
+    }
+
+    .release-banner-link.secondary {
+      color: var(--ink);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+    }
+
+    .release-banner-link:hover {
+      transform: translateY(-2px);
+    }
+
+    .release-banner-link.primary:hover {
+      background: #45ca7b;
+      box-shadow: 0 8px 24px rgba(47,184,106,0.24);
+    }
+
+    .release-banner-link.secondary:hover {
+      border-color: rgba(255,255,255,0.18);
+      color: #edf8f1;
     }
 
     /* ── CTA Banner ── */
@@ -763,6 +900,13 @@
       .artifact-grid { grid-template-columns: repeat(2, 1fr); }
       .hero-count-row { display: none; }
       .hero-inner { padding: 116px 28px 44px; }
+      .release-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .release-banner-actions {
+        justify-content: flex-start;
+      }
     }
 
     @media (max-width: 1023px) {
@@ -779,6 +923,9 @@
       .hero-title { font-size: 32px; }
       .section-header { flex-direction: column; align-items: flex-start; }
       .cta-banner { flex-direction: column; padding: 28px 24px; }
+      .release-banner { padding: 24px; }
+      .release-banner-actions { width: 100%; }
+      .release-banner-link { width: 100%; }
       .site-footer { padding: 20px; }
       .site-header { padding: 16px 20px; }
     }
@@ -853,7 +1000,7 @@
       </div>
 
       <div class="hero-count-row" aria-hidden="true">
-        <span class="hero-count-num">00</span>
+        <span class="hero-count-num">01</span>
         <span class="hero-count-label">ARTIFACTS</span>
       </div>
     </div>
@@ -862,27 +1009,48 @@
   <!-- ── Page Content ── -->
   <main class="page-wrap">
 
-    <!-- Empty state — nothing released yet -->
-    <div class="reveal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 60px;gap:20px;">
-      <div style="width:56px;height:56px;border-radius:16px;background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;margin-bottom:4px;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-        </svg>
+    <section class="artifact-section">
+      <div class="release-banner reveal">
+        <div class="release-banner-copy">
+          <p class="release-banner-label" data-i18n="release_label">NEW RELEASE</p>
+          <h2 class="release-banner-title" data-i18n="release_title">Dui Crypto Handbook is live</h2>
+          <p class="release-banner-desc" data-i18n="release_desc">หนังสือคริปโตฉบับเต็มจาก DuiDui เปิดให้อ่านแล้ว พร้อมสารบัญครบ 17 บทและหน้าอ่านแยกตามบทสำหรับผู้ใช้ที่ต้องการเข้าเนื้อหาได้ทันที</p>
+        </div>
+        <div class="release-banner-actions">
+          <a href="Dui%20Crypto%20Handbook/index.html" class="release-banner-link primary" data-i18n="release_primary">OPEN HANDBOOK</a>
+          <a href="Dui%20Crypto%20Handbook/chapters/preface.html" class="release-banner-link secondary" data-i18n="release_secondary">START WITH PREFACE</a>
+        </div>
       </div>
-      <p class="mono" style="font-size:11px;font-weight:700;letter-spacing:0.14em;color:var(--accent);">COMING SOON</p>
-      <p style="font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-0.02em;line-height:1.2;">Artifacts are on the way</p>
-      <p class="mono" style="font-size:13px;color:var(--muted);max-width:360px;line-height:1.65;">กำลังเตรียมสิ่งดี ๆ อยู่<br>ติดตามได้ทาง X หรือ Telegram เพื่อรับข่าวก่อนใคร</p>
-      <div style="display:flex;gap:12px;margin-top:8px;">
-        <a href="https://x.com/dodgeduidui" target="_blank" rel="noreferrer" class="mono" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;background:var(--panel);border:1px solid var(--line);color:var(--ink);font-size:12px;font-weight:600;text-decoration:none;letter-spacing:0.06em;transition:border-color 200ms;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z"/></svg>
-          @dodgeduidui
-        </a>
-        <a href="https://t.me/duisnote" target="_blank" rel="noreferrer" class="mono" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;background:var(--panel);border:1px solid var(--line);color:var(--ink);font-size:12px;font-weight:600;text-decoration:none;letter-spacing:0.06em;transition:border-color 200ms;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z"/></svg>
-          Dui's Note
+
+      <div class="section-header reveal">
+        <div>
+          <p class="section-label">Released Artifact</p>
+          <h2 class="section-title" data-i18n="section_title">1 Artifact Available</h2>
+        </div>
+      </div>
+
+      <div id="artifact-grid" class="artifact-grid">
+        <a href="Dui%20Crypto%20Handbook/index.html" class="artifact-card reveal" data-type="guide">
+          <div class="artifact-thumb">
+            <span class="price-badge" data-i18n="free_tag">FREE</span>
+            <img src="Dui%20Crypto%20Handbook/assets/images/cover/duidui_handbook_cover.png" alt="Dui Crypto Handbook cover">
+            <div class="thumb-ghost-letter">01</div>
+          </div>
+          <div class="artifact-body">
+            <div class="artifact-type-pill">GUIDE / BOOK</div>
+            <h3 class="artifact-title" data-i18n="card_one_title">Dui Crypto Handbook</h3>
+            <p class="artifact-desc" data-i18n="card_one_desc">คู่มือคริปโตฉบับเต็มสำหรับผู้เริ่มต้นและคนที่ต้องการเข้าใจโครงสร้างตลาดอย่างเป็นระบบ พร้อมอ่านได้ทันทีทั้งเล่มผ่านหน้าเว็บ</p>
+            <div class="artifact-footer">
+              <div class="artifact-meta">
+                <span class="artifact-format">17 CHAPTERS</span>
+                <span class="artifact-status" data-i18n="card_one_status">LIVE NOW</span>
+              </div>
+              <span class="artifact-cta" data-i18n="card_one_cta">OPEN BOOK →</span>
+            </div>
+          </div>
         </a>
       </div>
-    </div>
+    </section>
 
     <!-- ── CTA Banner ── -->
     <div class="cta-banner reveal">
@@ -916,13 +1084,16 @@
       th: {
         title: "DUIDUI | Artifacts — เครื่องมือและทรัพยากร Web3",
         hero_subtitle: "เครื่องมือเล่าเรื่อง เทมเพลตงานวิจัย และระบบจัดการความรู้<br>สำหรับนักสำรวจ Web3 ยุคใหม่",
-        section_title: "ทั้งหมด 3 รายการ",
-        card_one_title: "Research OS Template",
-        card_one_desc: "ระบบครบชุดสำหรับติดตาม narrative, token unlock และอารมณ์ของตลาดบนโซเชียล ออกแบบมาสำหรับสายคริปโตโดยเฉพาะ",
-        card_two_title: "Q1 Narrative Report",
-        card_two_desc: "เจาะลึกเมต้า AI × Crypto พร้อมแนวทางนำไปใช้ต่อได้จริง วิเคราะห์ rotation ของ narrative สำคัญในไตรมาสแรกปี 2026",
-        card_three_title: "Content Playbook",
-        card_three_desc: "วิธีการแบบ DuiDui ในการเล่าเรื่องเทคนิคซับซ้อนให้คนทั่วไปเข้าใจได้ เหมาะสำหรับครีเอเตอร์ Web3 ทุกระดับ",
+        release_label: "NEW RELEASE",
+        release_title: "Dui Crypto Handbook พร้อมอ่านแล้ว",
+        release_desc: "หนังสือคริปโตฉบับเต็มจาก DuiDui เปิดให้อ่านแล้ว พร้อมสารบัญครบ 17 บทและหน้าอ่านแยกตามบทสำหรับผู้ใช้ที่ต้องการเข้าเนื้อหาได้ทันที",
+        release_primary: "เปิดคู่มือ →",
+        release_secondary: "เริ่มที่คำนำ",
+        section_title: "1 Artifact Available",
+        card_one_title: "Dui Crypto Handbook",
+        card_one_desc: "คู่มือคริปโตฉบับเต็มสำหรับผู้เริ่มต้นและคนที่ต้องการเข้าใจโครงสร้างตลาดอย่างเป็นระบบ พร้อมอ่านได้ทันทีทั้งเล่มผ่านหน้าเว็บ",
+        card_one_status: "พร้อมอ่าน",
+        card_one_cta: "เปิดหนังสือ →",
         free_tag: "ฟรี",
         cta_title: "อยากได้ Alpha มากกว่านี้?",
         cta_desc: "สมัครสมาชิก Ko-fi รับมุมมองตลาด วิเคราะห์เทคนิค และอินไซต์แบบส่วนตัวจาก DuiDui ทุกเดือน",
@@ -932,13 +1103,16 @@
       en: {
         title: "DUIDUI | Artifacts — Web3 Tools & Resources",
         hero_subtitle: "Narrative tools, research templates, and knowledge systems<br>for the modern Web3 explorer.",
-        section_title: "3 Artifacts Available",
-        card_one_title: "Research OS Template",
-        card_one_desc: "A complete Notion system for tracking narrative arcs, token unlocks, and social sentiment. Built specifically for crypto investors.",
-        card_two_title: "Q1 Narrative Report",
-        card_two_desc: "Deep dive into the emerging AI × Crypto meta with actionable execution strategies and narrative rotation analysis for Q1 2026.",
-        card_three_title: "Content Playbook",
-        card_three_desc: "The DuiDui method for simplifying complex technical topics for mass adoption. Suitable for Web3 creators at every level.",
+        release_label: "NEW RELEASE",
+        release_title: "Dui Crypto Handbook is live",
+        release_desc: "The full DuiDui crypto book is now published with all 17 chapters available and chapter-level entry points for users who want immediate access.",
+        release_primary: "OPEN HANDBOOK",
+        release_secondary: "START WITH PREFACE",
+        section_title: "1 Artifact Available",
+        card_one_title: "Dui Crypto Handbook",
+        card_one_desc: "A full crypto handbook for beginners and serious learners who want a structured map of the market, published as a web-native reading experience.",
+        card_one_status: "LIVE NOW",
+        card_one_cta: "OPEN BOOK →",
         free_tag: "FREE",
         cta_title: "Want more Alpha?",
         cta_desc: "Join Ko-fi membership for monthly market perspective, technical analysis, and personal insights from DuiDui.",

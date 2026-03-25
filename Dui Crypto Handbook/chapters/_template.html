@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ XX: [Chapter Title] • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="[Chapter description in Thai]">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    /* ---- FRAMEWORK OVERRIDES ---- */
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Particle canvas */
+    #nano-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.28;
+    }
+
+    /* Ambient glow */
+    .ambient-glow {
+      position: fixed;
+      top: 20%;
+      right: 5%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle, rgba(156, 201, 209, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Ensure page content stays above canvas */
+    .page-shell {
+      position: relative;
+      z-index: 10;
+      padding-top: 0;
+    }
+
+    /* Chapter top bar — full-width, outside page-shell */
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* Disabled next-chapter nav card */
+    .nav-card--disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  </style>
+  <!-- Mermaid diagrams (remove if chapter has no diagrams) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: "loose",
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#252a32",
+        primaryTextColor: "#ede7dc",
+        primaryBorderColor: "#9cc9d1",
+        lineColor: "#9cc9d1",
+        tertiaryColor: "#21252c",
+        fontFamily: "Prompt, Noto Serif Thai, Kanit, sans-serif"
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <!-- Topbar: outside page-shell so it stretches full width -->
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter XX</span>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background: linear-gradient(90deg, #FF7B00, #9cc9d1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; letter-spacing: 0.16em;">Part X • [Part Name]</div>
+          <h1>บทที่ XX: [Chapter Title]</h1>
+          <p class="lede">
+            [Opening lede — 2–3 sentences that frame why this chapter matters. Write for a Thai reader who wants practical grounding, not just theory.]
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          [Opening quote or thesis statement]
+          <cite>[Attribution or "Opening Thesis"]</cite>
+        </blockquote>
+
+        <!-- Replace src with the correct chapter illustration -->
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_XX_placeholder.png" alt="[Alt text describing the chapter illustration]">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — Opening Frame
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter XX • Opening Frame</span>
+            <h2 class="book-page-title">[Page 01 Title]</h2>
+          </div>
+          <div class="book-page-index">[Chapter Short Name]<br>Opening</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>[Section intro heading]</h3>
+            <p>[1–2 sentence orientation for this page's content]</p>
+          </div>
+
+          <div class="book-prose">
+            <p>[Body paragraph 1]</p>
+            <p>[Body paragraph 2]</p>
+            <p>[Body paragraph 3]</p>
+          </div>
+
+          <!-- Optional: concept callout -->
+          <div class="callout concept-card">
+            <div class="callout-meta">
+              <span class="term-chip">Concept</span>
+              <span>[Category label]</span>
+            </div>
+            <h3 class="callout-title">[Term]</h3>
+            <p>[Short definition in Thai with English term in parentheses]</p>
+          </div>
+
+          <!-- Optional: warning callout -->
+          <div class="callout warning-box">
+            <div class="callout-meta">
+              <span class="status-pill warning">Warning</span>
+              <span>[Failure mode label]</span>
+            </div>
+            <h3 class="callout-title">[Warning title]</h3>
+            <p>[What can go wrong and why readers should care]</p>
+          </div>
+
+          <!-- Optional: pro-tip callout -->
+          <div class="callout pro-tip">
+            <div class="callout-meta">
+              <span class="status-pill success">Pro Tip</span>
+              <span>[Reader framework label]</span>
+            </div>
+            <h3 class="callout-title">[Tip title]</h3>
+            <p>[Actionable insight or mental model]</p>
+          </div>
+
+          <!-- Optional: digest list (key takeaways as numbered items) -->
+          <ol class="digest-list">
+            <li>
+              <span class="digest-index">1</span>
+              <div>
+                <strong>[Key point]</strong>
+                <p>[Explanation]</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">2</span>
+              <div>
+                <strong>[Key point]</strong>
+                <p>[Explanation]</p>
+              </div>
+            </li>
+            <li>
+              <span class="digest-index">3</span>
+              <div>
+                <strong>[Key point]</strong>
+                <p>[Explanation]</p>
+              </div>
+            </li>
+          </ol>
+
+          <!-- Optional: Mermaid diagram -->
+          <div class="mermaid-shell">
+            <div class="mermaid-toolbar">
+              <div class="mermaid-title">Figure 1 • [Diagram title]</div>
+              <span class="status-pill info">Diagram</span>
+            </div>
+            <div class="mermaid-frame">
+              <pre class="mermaid">
+flowchart LR
+    A[Start] --> B[Middle] --> C[End]
+              </pre>
+            </div>
+          </div>
+          <div class="figure-caption">
+            <span class="figure-caption-title">Figure Caption</span>
+            [Caption text describing what the diagram shows]
+          </div>
+
+          <!-- Optional: comparison table -->
+          <div class="table-shell">
+            <div class="table-topbar">
+              <div>
+                <h3>[Table Title]</h3>
+                <p class="caption">[Brief description of what the table compares]</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>[Col 1]</th>
+                    <th>[Col 2]</th>
+                    <th>[Col 3]</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>[Value]</td>
+                    <td>[Value]</td>
+                    <td>[Value]</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">[Chapter Short Name] · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — [Page 02 Topic]
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter XX • [Page Topic]</span>
+            <h2 class="book-page-title">[Page 02 Title]</h2>
+          </div>
+          <div class="book-page-index">[Chapter Short Name]<br>[Page Topic Short]</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="book-prose">
+            <p>[Body paragraph]</p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">[Chapter Short Name] · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- Add more <article class="book-page"> blocks as needed -->
+
+      <!-- ============================================================
+           Chapter navigation
+           Update hrefs to point to previous and next chapter files.
+           Add class="nav-card--disabled" + aria-disabled="true" and
+           remove href if the next chapter doesn't exist yet.
+           ============================================================ -->
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-XX-prev.html">
+          <span>Previous</span>
+          <strong>บทที่ XX-1: [Previous Chapter Title]</strong>
+        </a>
+        <!-- Next chapter not yet published: use disabled state -->
+        <a class="nav-card nav-card--disabled" aria-disabled="true" tabindex="-1">
+          <span>Next</span>
+          <strong>บทที่ XX+1: [Next Chapter Title]</strong>
+        </a>
+      </nav>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/dodgeduidui" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <div class="footer-copy">© 2026 DuiDui · The Crypto Survival Guide</div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Particle background (Three.js) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        canvas.style.display = 'none';
+        return;
+      }
+      const scene    = new THREE.Scene();
+      const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const COUNT   = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT * 3; i++) posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+
+      const makeTexture = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16,16,0,16,16,16);
+        g.addColorStop(0,   'rgba(156,201,209,1)');
+        g.addColorStop(0.2, 'rgba(156,201,209,0.8)');
+        g.addColorStop(1,   'rgba(156,201,209,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
+        const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+      };
+
+      const mat = new THREE.PointsMaterial({ size: 0.05, map: makeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 });
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh);
+      camera.position.z = 4;
+
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', e => { mouseX = e.clientX - window.innerWidth/2; mouseY = e.clientY - window.innerHeight/2; });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        mesh.rotation.y += 0.0008; mesh.rotation.x += 0.0004;
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) { const i3 = i*3; pos[i3+1] = posOrig[i3+1] + Math.sin(t*0.3 + posOrig[i3]) * 0.18; }
+        geo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    });
+  </script>
+</body>
+</html>

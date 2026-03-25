@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 6: L1 Blockchains — สนามรบแห่งสถาปัตยกรรม • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="Trilemma, Consensus, Virtual Machines, Scaling, Bridges — เข้าใจ Layer 1 Blockchains ทั้งหมดในภาพเดียว">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    #nano-canvas {
+      position: fixed; inset: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none; opacity: 0.28;
+    }
+    .ambient-glow {
+      position: fixed; top: 20%; right: 5%;
+      width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(0, 200, 176, 0.04) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+    .page-shell { position: relative; z-index: 10; padding-top: 0; }
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+    .chapter-topbar::before { display: none; }
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Trilemma Triangle Diagram ── */
+    .trilemma-wrap {
+      display: flex; flex-direction: column; gap: 1.25rem; margin: 1.5rem 0;
+    }
+    .trilemma-svg-box {
+      width: 100%; max-width: 480px; margin: 0 auto;
+    }
+    .trilemma-svg-box svg { width: 100%; height: auto; }
+    .trilemma-notes {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;
+    }
+    @media (max-width: 600px) { .trilemma-notes { grid-template-columns: 1fr; } }
+    .tri-note {
+      border-radius: 8px; padding: 0.7rem 0.9rem;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    }
+    .tri-note-label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+    .tri-note-label.decen { color: #00c8b0; }
+    .tri-note-label.sec   { color: #9cc9d1; }
+    .tri-note-label.scale { color: #f5a623; }
+    .tri-note p { font-size: 0.82rem; color: #a1b0be; margin: 0; line-height: 1.5; }
+
+    /* ── 4-Planes diagram ── */
+    .four-planes {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.75rem; margin: 1.5rem 0;
+    }
+    .plane-card {
+      border-radius: 10px; padding: 0.9rem 1rem;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    }
+    .plane-card-num {
+      font-size: 0.70rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: #475569; margin-bottom: 0.3rem;
+    }
+    .plane-card-title { font-size: 1rem; font-weight: 700; color: #ede7dc; margin-bottom: 0.3rem; }
+    .plane-card-sub   { font-size: 0.8rem; color: #9cc9d1; margin-bottom: 0.4rem; }
+    .plane-card-desc  { font-size: 0.82rem; color: #8a9aaa; line-height: 1.55; margin: 0; }
+
+    /* ── Consensus comparison grid ── */
+    .consensus-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem; margin: 1.5rem 0;
+    }
+    @media (max-width: 600px) {
+      .consensus-grid { grid-template-columns: 1fr; }
+      .four-planes    { grid-template-columns: 1fr; }
+      .trilemma-wrap  { flex-direction: column; }
+    }
+    .consensus-card {
+      border-radius: 10px; padding: 0.9rem 1rem;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    }
+    .consensus-card-label {
+      font-size: 0.73rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #475569; margin-bottom: 0.35rem;
+    }
+    .consensus-card-title { font-size: 0.95rem; font-weight: 700; color: #ede7dc; margin-bottom: 0.5rem; }
+    .consensus-card ul { margin: 0; padding-left: 1.1rem; }
+    .consensus-card li { font-size: 0.8rem; color: #8a9aaa; line-height: 1.55; margin-bottom: 0.2rem; }
+
+    /* ── Finality timeline ── */
+    .finality-row {
+      display: flex; flex-direction: column; gap: 0.65rem; margin: 1.5rem 0;
+    }
+    .fin-item {
+      display: flex; align-items: flex-start; gap: 1rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 0.85rem 1rem;
+    }
+    .fin-dot {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.05em;
+    }
+    .fin-dot.prob  { background: rgba(245,166,35,0.15); color: #f5a623; border: 1px solid rgba(245,166,35,0.3); }
+    .fin-dot.econ  { background: rgba(98,126,234,0.15); color: #627eea; border: 1px solid rgba(98,126,234,0.3); }
+    .fin-dot.det   { background: rgba(0,200,176,0.15);  color: #00c8b0; border: 1px solid rgba(0,200,176,0.3); }
+    .fin-text h4   { font-size: 0.9rem; font-weight: 700; color: #ede7dc; margin: 0 0 0.25rem; }
+    .fin-text p    { font-size: 0.81rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+
+    /* ── VM comparison cards ── */
+    .vm-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.75rem; margin: 1.5rem 0;
+    }
+    @media (max-width: 600px) { .vm-grid { grid-template-columns: 1fr; } }
+    .vm-card {
+      border-radius: 10px; padding: 0.9rem 1rem;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    }
+    .vm-card-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .vm-card-chains { font-size: 0.72rem; color: #64748b; margin-bottom: 0.5rem; letter-spacing: 0.04em; }
+    .vm-card ul { margin: 0; padding-left: 0; list-style: none; }
+    .vm-card li  { font-size: 0.8rem; color: #8a9aaa; line-height: 1.55; margin-bottom: 0.2rem;
+                   display: flex; align-items: flex-start; gap: 0.45rem; }
+    .vm-card .pro { color: #4ade80; }
+    .vm-card .con { color: #f87171; }
+    .vm-card li.pro::before {
+      content: '';
+      display: inline-flex; flex-shrink: 0;
+      width: 13px; height: 13px; margin-top: 3px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%234ade80'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+    .vm-card li.con::before {
+      content: '';
+      display: inline-flex; flex-shrink: 0;
+      width: 13px; height: 13px; margin-top: 3px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23f87171'%3E%3Cpath fill-rule='evenodd' d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+
+    /* ── Hardware spectrum bar ── */
+    .hw-spectrum {
+      margin: 1.5rem 0; display: flex; flex-direction: column; gap: 0.6rem;
+    }
+    .hw-row {
+      display: grid; grid-template-columns: 80px 1fr auto;
+      gap: 0.75rem; align-items: center;
+    }
+    .hw-name { font-size: 0.82rem; font-weight: 700; color: #ede7dc; }
+    .hw-bar-wrap { height: 10px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
+    .hw-bar { height: 100%; border-radius: 999px; }
+    .hw-tps { font-size: 0.78rem; color: #8a9aaa; white-space: nowrap; }
+
+    /* ── Bridge security cards ── */
+    .bridge-grid {
+      display: flex; flex-direction: column; gap: 0.75rem; margin: 1.5rem 0;
+    }
+    .bridge-card {
+      border-radius: 10px; padding: 0.9rem 1rem;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .bridge-icon {
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    }
+    .bridge-icon.ext { background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.25); }
+    .bridge-icon.nat { background: rgba(0,200,176,0.12);   border: 1px solid rgba(0,200,176,0.25); }
+    .bridge-icon.opt { background: rgba(245,166,35,0.12);  border: 1px solid rgba(245,166,35,0.25); }
+    .bridge-body h4  { font-size: 0.9rem; font-weight: 700; color: #ede7dc; margin: 0 0 0.25rem; }
+    .bridge-body p   { font-size: 0.81rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+    .bridge-tag {
+      display: inline-block; font-size: 0.70rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 0.15rem 0.5rem;
+      border-radius: 999px; margin-right: 0.35rem; margin-top: 0.4rem;
+    }
+    .bridge-tag.fast   { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+    .bridge-tag.slow   { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+    .bridge-tag.strong { background: rgba(0,200,176,0.1); color: #00c8b0; border: 1px solid rgba(0,200,176,0.2); }
+    .bridge-tag.medium { background: rgba(245,166,35,0.1); color: #f5a623; border: 1px solid rgba(245,166,35,0.2); }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true, securityLevel: "loose", theme: "base",
+      themeVariables: {
+        primaryColor: "#252a32", primaryTextColor: "#ede7dc",
+        primaryBorderColor: "#00c8b0", lineColor: "#00c8b0",
+        tertiaryColor: "#21252c", fontFamily: "Prompt, Noto Serif Thai, Kanit, sans-serif"
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 06</span>
+  <button class="chapter-picker-btn" data-current="06" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background: linear-gradient(90deg, #00c8b0, #9cc9d1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; letter-spacing: 0.16em;">Part 2 • The Assets</div>
+          <h1>บทที่ 6: L1 Blockchains — สนามรบแห่งสถาปัตยกรรม</h1>
+          <p class="lede">
+            ทุก blockchain ล้วนต้องเลือก — ระหว่างความเร็ว ความปลอดภัย และการกระจายอำนาจ ไม่มี chain ใดที่ทำได้ครบทั้งสาม บทนี้จะพา explore สนามรบของ L1s: จาก Consensus Mechanisms, Virtual Machines, การ Scale ทั้งแนวตั้งและแนวนอน จนถึง Bridge ที่เชื่อมทุก chain เข้าหากัน
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          The blockchain trilemma states that a blockchain can only achieve two of three properties: decentralization, security, and scalability.
+          <span style="display:block; font-size: 0.85em; color: #9cc9d1; margin-top: 0.5rem; font-style: normal; font-family: 'Prompt', sans-serif;">"ทุก blockchain สามารถทำได้ดีเพียงสองในสาม: กระจายอำนาจ, ปลอดภัย, และเร็ว — ไม่มี chain ใดที่สมบูรณ์แบบ"</span>
+          <cite>Vitalik Buterin — Blockchain Trilemma (2017)</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_06_l1_blockchains.png" alt="Chapter 6 L1 Blockchains Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — Trilemma, Adoption Reality & Architecture
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 06 • พื้นฐาน</span>
+            <h2 class="book-page-title">Trilemma & Architecture — ข้อจำกัดที่ทุก Chain ต้องเลือก</h2>
+          </div>
+          <div class="book-page-index">L1<br>Basics</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Blockchain Trilemma คืออะไร?</h3>
+            <p>ทุก L1 blockchain ต้องเลือกระหว่างสามเป้าหมาย — และในทางปฏิบัติทำได้ดีเพียงสองข้อ Bitcoin เลือกความปลอดภัยและการกระจายอำนาจ Solana เลือกความเร็วและความปลอดภัย Ethereum พยายามทำทั้งสามผ่าน Layer 2</p>
+          </div>
+
+          <div class="trilemma-wrap">
+            <div class="trilemma-svg-box">
+              <svg viewBox="-50 -45 500 430" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Triangle -->
+                <polygon points="200,55 390,340 10,340" stroke="rgba(255,255,255,0.15)" stroke-width="2" fill="rgba(255,255,255,0.02)"/>
+                <!-- Vertex circles -->
+                <circle cx="200" cy="55"  r="26" fill="rgba(0,200,176,0.15)"  stroke="#00c8b0" stroke-width="2"/>
+                <circle cx="390" cy="340" r="26" fill="rgba(245,166,35,0.15)" stroke="#f5a623" stroke-width="2"/>
+                <circle cx="10"  cy="340" r="26" fill="rgba(156,201,209,0.15)" stroke="#9cc9d1" stroke-width="2"/>
+                <!-- Top label ABOVE circle -->
+                <text x="200" y="10" text-anchor="middle" fill="#00c8b0" font-size="13" font-weight="700" font-family="Prompt, sans-serif">Decentralization</text>
+                <text x="200" y="26" text-anchor="middle" fill="#00c8b0" font-size="13" font-weight="700" font-family="Prompt, sans-serif">กระจายอำนาจ</text>
+                <!-- Bottom-right label BELOW circle -->
+                <text x="390" y="382" text-anchor="middle" fill="#f5a623" font-size="13" font-weight="700" font-family="Prompt, sans-serif">Scalability</text>
+                <text x="390" y="398" text-anchor="middle" fill="#f5a623" font-size="13" font-weight="700" font-family="Prompt, sans-serif">ความเร็ว</text>
+                <!-- Bottom-left label BELOW circle -->
+                <text x="10"  y="382" text-anchor="middle" fill="#9cc9d1" font-size="13" font-weight="700" font-family="Prompt, sans-serif">Security</text>
+                <text x="10"  y="398" text-anchor="middle" fill="#9cc9d1" font-size="13" font-weight="700" font-family="Prompt, sans-serif">ความปลอดภัย</text>
+                <!-- Chain dots with labels -->
+                <circle cx="200" cy="192" r="7" fill="#FF7B00" opacity="0.9"/>
+                <text x="212" y="197" fill="#FF7B00" font-size="12" font-family="Prompt, sans-serif">BTC</text>
+                <circle cx="148" cy="252" r="7" fill="#627eea" opacity="0.9"/>
+                <text x="160" y="257" fill="#627eea" font-size="12" font-family="Prompt, sans-serif">ETH</text>
+                <circle cx="255" cy="265" r="7" fill="#9945ff" opacity="0.9"/>
+                <text x="267" y="270" fill="#9945ff" font-size="12" font-family="Prompt, sans-serif">SOL</text>
+                <!-- "Pick 2" label -->
+                <text x="200" y="168" text-anchor="middle" fill="rgba(255,255,255,0.22)" font-size="12" font-family="Prompt, sans-serif">เลือกได้แค่ 2 จาก 3</text>
+              </svg>
+            </div>
+            <div class="trilemma-notes">
+              <div class="tri-note">
+                <div class="tri-note-label decen">Decentralization · กระจายอำนาจ</div>
+                <p>ไม่มีใครควบคุม network เดี่ยว ยิ่งมี nodes มาก ยิ่ง resistant ต่อการเซ็นเซอร์และการปิดกั้น</p>
+              </div>
+              <div class="tri-note">
+                <div class="tri-note-label sec">Security · ความปลอดภัย</div>
+                <p>ต้องใช้ทรัพยากรมหาศาลในการโจมตี — ไม่ว่าจะเป็น hashrate (PoW) หรือ stake (PoS)</p>
+              </div>
+              <div class="tri-note">
+                <div class="tri-note-label scale">Scalability · ความเร็ว</div>
+                <p>TPS สูง, ค่าธรรมเนียมต่ำ, finality เร็ว — ต้องการ hardware ดีกว่าหรือ node จำนวนน้อยลง</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-intro" style="margin-top: 1.5rem;">
+            <h3>Adoption Reality — เทคนิคไม่ใช่ทุกอย่าง</h3>
+            <p>ก่อนดู architecture ต้องเข้าใจก่อนว่า: ชัยชนะของ L1 ขึ้นอยู่กับ liquidity, developer mindshare และ cultural momentum มากกว่า TPS</p>
+          </div>
+
+          <div class="four-planes">
+            <div class="plane-card">
+              <div class="plane-card-num">Plane 01</div>
+              <div class="plane-card-title">Execution</div>
+              <div class="plane-card-sub">ครัวแห่งการประมวลผล</div>
+              <p class="plane-card-desc">ประมวลผล transaction และเปลี่ยน state ของ blockchain — EVM, SVM, MoveVM ล้วนอยู่ที่ชั้นนี้</p>
+            </div>
+            <div class="plane-card">
+              <div class="plane-card-num">Plane 02</div>
+              <div class="plane-card-title">Settlement</div>
+              <div class="plane-card-sub">ห้องอาหารแห่ง Finality</div>
+              <p class="plane-card-desc">ยืนยัน transaction สุดท้ายและแก้ไขข้อพิพาท — Ethereum L1 ทำหน้าที่ settle L2s</p>
+            </div>
+            <div class="plane-card">
+              <div class="plane-card-num">Plane 03</div>
+              <div class="plane-card-title">Consensus</div>
+              <div class="plane-card-sub">ระบบจัดการ</div>
+              <p class="plane-card-desc">Validators ตกลงกันว่า block ไหนถูกต้อง — PoW, PoS, Tower BFT, Tendermint ล้วนแก้ปัญหานี้</p>
+            </div>
+            <div class="plane-card">
+              <div class="plane-card-num">Plane 04</div>
+              <div class="plane-card-title">Data Availability</div>
+              <div class="plane-card-sub">ระบบบันทึก</div>
+              <p class="plane-card-desc">ข้อมูล transaction ต้องพร้อมให้ใครก็ตามตรวจสอบได้ — Celestia, EigenDA เชี่ยวชาญเฉพาะชั้นนี้</p>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Monolithic vs Modular:</strong> Chains แบบ Monolithic (Bitcoin, Solana) รวมทั้ง 4 planes ไว้ใน layer เดียว ให้ atomic composability สูงสุด — DeFi protocol สามารถรวม Flash Loan + Trade + Repay ในธุรกรรมเดียว Chains แบบ Modular (Ethereum + L2) แยก execution ออกมา ให้ throughput สูงกว่าแต่ composability ข้าม-chain ซับซ้อนขึ้น
+            </p>
+            <p>
+              <strong>Liquidity เป็น Kingmaker:</strong> Chains ที่มี USDC/USDT native, exchange listing ใหญ่ และ DeFi liquidity ลึก จะดึงดูด users ได้มากกว่า chains ที่มีแค่ TPS สูง ความสำเร็จของ L1 วัดที่ TVL และ active users ไม่ใช่ benchmark
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">L1 Blockchains · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <!-- ============================================================
+           PAGE 02 — Consensus & Finality
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 06 • Consensus</span>
+            <h2 class="book-page-title">Consensus & Finality — ทุก Validator ตกลงกันได้ยังไง?</h2>
+          </div>
+          <div class="book-page-index">Consensus<br>Finality</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>PoW vs PoS — สองแนวคิดหลักของ Consensus</h3>
+            <p>Proof-of-Work ใช้พลังงานคำนวณเป็นหลักประกัน Proof-of-Stake ใช้เงินเดิมพัน ทั้งสองแก้ปัญหาเดียวกัน แต่ด้วยวิธีที่ต่างกันโดยสิ้นเชิง</p>
+          </div>
+
+          <div class="consensus-grid">
+            <div class="consensus-card">
+              <div class="consensus-card-label">Proof of Work</div>
+              <div class="consensus-card-title">PoW</div>
+              <ul>
+                <li>Miners แข่งกันแก้ puzzle คณิตศาสตร์</li>
+                <li>ความปลอดภัยมาจาก hashrate รวม</li>
+                <li>โจมตีต้องใช้ hardware มหาศาล</li>
+                <li>Finality เป็นแบบ probabilistic</li>
+                <li>Bitcoin ใช้ตั้งแต่วันแรก</li>
+              </ul>
+            </div>
+            <div class="consensus-card">
+              <div class="consensus-card-label">Proof of Stake</div>
+              <div class="consensus-card-title">PoS</div>
+              <ul>
+                <li>Validators วาง stake เป็นหลักประกัน</li>
+                <li>ทำผิดถูก slash เสีย ETH/token</li>
+                <li>โจมตีต้องทำลายทุนของตัวเอง</li>
+                <li>Finality เป็น economic finality</li>
+                <li>Ethereum ใช้หลัง The Merge (2022)</li>
+              </ul>
+            </div>
+            <div class="consensus-card">
+              <div class="consensus-card-label">BFT Variants</div>
+              <div class="consensus-card-title">BFT Consensus</div>
+              <ul>
+                <li>Validators vote หลายรอบก่อน finalize</li>
+                <li>ทนทานต่อ validators ผิดพลาดได้ 1/3</li>
+                <li>Deterministic finality ใน seconds</li>
+                <li>หยุดทำงานถ้า &gt;1/3 offline</li>
+                <li>Cosmos, Aptos, Sui ใช้</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="section-intro">
+            <h3>Liveness vs Safety — เลือกระหว่างหยุดกับผิดพลาด</h3>
+            <p>เมื่อ network แตกแยก chain ต้องเลือก: ยังคงทำงานต่อไป (Liveness) หรือหยุดเพื่อไม่สร้างข้อมูลขัดแย้ง (Safety)</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Bitcoin เลือก Liveness</strong> — แม้ network แตกออก ยังคงสร้าง blocks ต่อ อาจเกิด fork ชั่วคราว แต่ chain ที่ยาวกว่าชนะในที่สุด ผู้ใช้ต้องรอ confirmations เพิ่มเพื่อลดความเสี่ยง reorg
+            </p>
+            <p>
+              <strong>BFT chains เลือก Safety</strong> — ถ้า validators ออกไปมากกว่า 1/3 chain หยุดทันที ไม่สร้าง block ที่อาจขัดแย้งกัน DeFi settlement layers มักต้องการ Safety มากกว่า Liveness
+            </p>
+            <p>
+              <strong>Ethereum ทำทั้งสอง</strong> — ปกติ prioritize safety แต่มี "inactivity leak" ค่อย ๆ ลด stake ของ validators ที่หายไป จนกว่า validators ที่เหลือจะมีพอ finalize ต่อได้
+            </p>
+          </div>
+
+          <div class="section-intro" style="margin-top: 1rem;">
+            <h3>3 ประเภทของ Finality</h3>
+            <p>Finality หมายถึง transaction ถูก confirm และไม่สามารถย้อนกลับได้ แต่แต่ละ chain นิยาม "ไม่สามารถย้อนกลับ" ต่างกัน</p>
+          </div>
+
+          <div class="finality-row">
+            <div class="fin-item">
+              <div class="fin-dot prob">PoW</div>
+              <div class="fin-text">
+                <h4>Probabilistic Finality — โอกาสน้อยลงเรื่อย ๆ</h4>
+                <p>ทุก block ที่เพิ่มขึ้นทำให้การย้อนกลับยากขึ้นแบบ exponential แต่ไม่เคยเป็น 0% Bitcoin 6 confirmations ≈ 99.9% ปลอดภัย — ใช้เวลา ~60 นาที</p>
+              </div>
+            </div>
+            <div class="fin-item">
+              <div class="fin-dot econ">ETH</div>
+              <div class="fin-text">
+                <h4>Economic Finality — ทำลายทุนตัวเองถึงจะย้อนกลับได้</h4>
+                <p>Ethereum finality ต้องทำลาย ETH staked มูลค่าหลาย trillion บาท จึงจะ reorg ได้ ในทางปฏิบัติ irrational โดยสิ้นเชิง ใช้เวลา ~12.8 นาที (2 epochs)</p>
+              </div>
+            </div>
+            <div class="fin-item">
+              <div class="fin-dot det">BFT</div>
+              <div class="fin-text">
+                <h4>Deterministic Finality — finalize ใน seconds, ย้อนกลับไม่ได้</h4>
+                <p>Tendermint, Aptos BFT, Tower BFT ของ Solana — เมื่อ validators vote ครบตาม threshold block เป็น final ทันที ไม่มีความน่าจะเป็น เป็นการการันตีทางคณิตศาสตร์</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">L1 Blockchains · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <!-- ============================================================
+           PAGE 03 — Virtual Machines
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 06 • Virtual Machines</span>
+            <h2 class="book-page-title">Virtual Machines — โรงงานที่ Smart Contract ทำงาน</h2>
+          </div>
+          <div class="book-page-index">VM<br>Ecosystem</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>VM คือ "OS" ของ Blockchain</h3>
+            <p>Virtual Machine กำหนดว่า developer เขียน code ด้วยภาษาอะไร มี tooling อะไร และ security model เป็นอย่างไร การเลือก VM ส่งผลต่อ ecosystem มากกว่า TPS</p>
+          </div>
+
+          <div class="vm-grid">
+            <div class="vm-card">
+              <div class="vm-card-title" style="color: #627eea;">EVM — Ethereum Virtual Machine</div>
+              <div class="vm-card-chains">Ethereum · Polygon · Avalanche C-Chain · BNB Chain · Monad</div>
+              <ul>
+                <li class="pro">Ecosystem ใหญ่ที่สุด — Uniswap, Aave, Chainlink พร้อมใช้</li>
+                <li class="pro">Developer tools ครบ: Foundry, Hardhat, Remix</li>
+                <li class="pro">Security auditors เยอะ, battle-tested libraries</li>
+                <li class="con">Sequential execution — ทีละ tx เท่านั้น</li>
+                <li class="con">Gas price volatile ช่วง congestion</li>
+                <li class="con">Throughput จำกัดที่ L1 (~20 TPS)</li>
+              </ul>
+            </div>
+            <div class="vm-card">
+              <div class="vm-card-title" style="color: #9945ff;">SVM — Solana Virtual Machine</div>
+              <div class="vm-card-chains">Solana · Solayer · Fogo (SVM L1s)</div>
+              <ul>
+                <li class="pro">Parallel execution — non-conflicting tx ทำพร้อมกัน</li>
+                <li class="pro">Account ownership model ป้องกัน reentrancy</li>
+                <li class="pro">Throughput สูงมาก (50,000+ TPS theoretical)</li>
+                <li class="con">Rust learning curve สูงกว่า Solidity</li>
+                <li class="con">ต้อง declare accounts ล่วงหน้า ซับซ้อนกว่า EVM</li>
+                <li class="con">Ecosystem เล็กกว่า EVM มาก</li>
+              </ul>
+            </div>
+            <div class="vm-card">
+              <div class="vm-card-title" style="color: #4ade80;">MoveVM — Safety by Design</div>
+              <div class="vm-card-chains">Aptos · Sui</div>
+              <ul>
+                <li class="pro">Linear types: asset ไม่สามารถ copy หรือทำลายโดยไม่ตั้งใจ</li>
+                <li class="pro">Sui: parallel execution บน disjoint objects</li>
+                <li class="pro">ป้องกัน double-spend ผ่าน language design</li>
+                <li class="con">ภาษา Move ยังใหม่ — developer น้อย</li>
+                <li class="con">Auditing firms ที่เชี่ยวชาญ Move มีน้อย</li>
+                <li class="con">DeFi ecosystem ยังไม่ลึกเท่า EVM</li>
+              </ul>
+            </div>
+            <div class="vm-card">
+              <div class="vm-card-title" style="color: #f5a623;">WASM & EVM++ Approaches</div>
+              <div class="vm-card-chains">CosmWasm (Cosmos) · NEAR · Monad (EVM + Parallel)</div>
+              <ul>
+                <li class="pro">WASM: รองรับหลายภาษา (Rust, C, AssemblyScript)</li>
+                <li class="pro">Monad: EVM-compatible แต่ parallel execution ภายใน</li>
+                <li class="pro">Polkadot: forkless runtime upgrades ผ่าน on-chain governance</li>
+                <li class="con">WASM ยังไม่มี network effects ของ EVM</li>
+                <li class="con">Monad ยังใหม่ — ยังต้องพิสูจน์ใน production</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>EVM Gravity Well:</strong> เหตุที่ EVM ครองตลาดไม่ใช่เพราะเทคนิคดีที่สุด แต่เพราะ <em>network effects</em> — protocol ที่ deploy บน EVM chain หนึ่งสามารถ port ไป chain อื่นได้ง่าย developer มีทุกอย่างพร้อม auditor เยอะ ecosystem ลึก chains ใหม่ต้องแข่งกับทั้งระบบนิเวศนี้
+            </p>
+            <p>
+              <strong>Monad Strategy:</strong> แทนที่จะสร้าง VM ใหม่ทั้งหมด Monad เลือก maintain EVM bytecode compatibility ทั้งหมด แต่เปลี่ยน execution engine ภายใน (optimistic parallel execution + async I/O + custom state DB) นี่คือ "กินทั้งสองโลก" — Solidity contract deploy บน Monad ได้โดยไม่แก้โค้ด แต่เร็วกว่า Ethereum L1 หลาย 100 เท่า
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">L1 Blockchains · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <!-- ============================================================
+           PAGE 04 — Vertical Scaling
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 06 • Scaling</span>
+            <h2 class="book-page-title">Vertical Scaling — ดัน Chain เดียวให้เร็วขึ้น</h2>
+          </div>
+          <div class="book-page-index">Scaling<br>Hardware</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Hardware Requirements — จุดเริ่มต้นของ Trilemma</h3>
+            <p>ยิ่ง hardware specs สูง throughput ยิ่งมากขึ้น แต่ validator ก็ยิ่งน้อยลง ทุก chain อยู่บน spectrum นี้</p>
+          </div>
+
+          <div class="hw-spectrum">
+            <div class="hw-row">
+              <div class="hw-name">Bitcoin</div>
+              <div class="hw-bar-wrap">
+                <div class="hw-bar" style="width: 5%; background: #FF7B00;"></div>
+              </div>
+              <div class="hw-tps">~7 TPS · Raspberry Pi</div>
+            </div>
+            <div class="hw-row">
+              <div class="hw-name">Ethereum</div>
+              <div class="hw-bar-wrap">
+                <div class="hw-bar" style="width: 15%; background: #627eea;"></div>
+              </div>
+              <div class="hw-tps">~20 TPS · 32GB RAM + 4TB SSD</div>
+            </div>
+            <div class="hw-row">
+              <div class="hw-name">BNB Chain</div>
+              <div class="hw-bar-wrap">
+                <div class="hw-bar" style="width: 35%; background: #f0b90b;"></div>
+              </div>
+              <div class="hw-tps">~100 TPS · server grade</div>
+            </div>
+            <div class="hw-row">
+              <div class="hw-name">Aptos / Sui</div>
+              <div class="hw-bar-wrap">
+                <div class="hw-bar" style="width: 55%; background: #4ade80;"></div>
+              </div>
+              <div class="hw-tps">~10k TPS · data center</div>
+            </div>
+            <div class="hw-row">
+              <div class="hw-name">Solana</div>
+              <div class="hw-bar-wrap">
+                <div class="hw-bar" style="width: 80%; background: #9945ff;"></div>
+              </div>
+              <div class="hw-tps">~65k TPS · 256GB RAM + 1Gbps NIC</div>
+            </div>
+          </div>
+
+          <div class="section-intro" style="margin-top: 1.5rem;">
+            <h3>Fee Markets — วิธีจัดสรร block space ที่ขาดแคลน</h3>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Bitcoin Auction:</strong> Miners เลือก tx ที่ให้ fee สูงสุด — simple แต่ fee volatile มากช่วง congestion บางครั้ง $50-100 ต่อ tx
+            </p>
+            <p>
+              <strong>EIP-1559 (Ethereum):</strong> Protocol กำหนด base fee อัตโนมัติตาม congestion และ burn ทิ้ง บวก priority tip ให้ validator ทำให้ fee predictable ขึ้นมากและ ETH deflationary ในช่วง high usage
+            </p>
+            <p>
+              <strong>Local Fee Markets (Solana):</strong> Fee แบ่งตาม "hotspot" แต่ละ account — program ที่ busy มาก (เช่น popular DEX) มี fee สูงกว่า ส่วน tx ที่ไม่ conflict กับ hotspot นั้นยังราคาถูก ป้องกันไม่ให้ activity ที่ account เดียวกระทบ tx อื่น ๆ ทั้ง network
+            </p>
+          </div>
+
+          <div class="section-intro" style="margin-top: 1rem;">
+            <h3>State Growth — ปัญหาระยะยาวที่ทุก Chain ต้องแก้</h3>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              State คือ "snapshot" ของ blockchain ทั้งหมด: ยอดเงินทุก account, ตัวแปรทุก contract — ต้องพร้อม access ตลอดเวลา ปัญหา: <strong>state เพิ่มขึ้นอย่างเดียว ไม่มีทางลด</strong> ถ้าไม่จัดการ ในที่สุด only data centers จะสามารถ run full node ได้
+            </p>
+            <p>
+              แนวทางแก้ไขมี 3 รูปแบบ: <strong>State Rent</strong> เก็บค่าธรรมเนียมการ "เช่าพื้นที่" บน chain กดดันให้ลบข้อมูลที่ไม่ใช้ <strong>State Expiry</strong> ลบ data ที่ไม่ถูก access นานเกินกำหนด (user สามารถคืนได้ด้วย proof) <strong>Verkle Trees</strong> (Ethereum กำลังพัฒนา) โครงสร้างข้อมูลใหม่ที่ทำให้ proof เล็กลงมากจนไม่ต้องเก็บ full state เพื่อ validate
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">L1 Blockchains · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <!-- ============================================================
+           PAGE 05 — Interoperability & Bridges
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 06 • Bridges</span>
+            <h2 class="book-page-title">Interoperability & Bridges — เชื่อม Island ที่แตกต่างกัน</h2>
+          </div>
+          <div class="book-page-index">Cross-Chain<br>Bridges</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>ทำไม Bridges ถึงอันตราย?</h3>
+            <p>ทุก blockchain คือ "เกาะ" ที่แยกกัน Ethereum validators ไม่รู้เรื่อง Solana Bridges ต้องสร้างความน่าเชื่อถือข้ามระบบที่ไม่ได้ trust กัน — นี่คือสาเหตุที่ Bridges เป็นเป้าหมาย hack ใหญ่ที่สุดใน crypto (~$2.5B lost จาก major exploits)</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong>Bridge ทำงานยังไง?</strong> ถ้าต้องการย้าย 100 USDC จาก Ethereum ไป Solana: Bridge จะ lock 100 USDC ใน smart contract บน Ethereum → mint "bridged USDC" 100 บน Solana ให้คุณ เมื่อต้องการย้ายกลับ: burn tokens บน Solana → unlock USDC บน Ethereum ปัญหาคือ "ใครการันตีว่า lock ที่ Ethereum เกิดขึ้นจริง?" ทั้ง 2 chain ไม่สามารถตรวจสอบกันเองได้โดยตรง
+            </p>
+          </div>
+
+          <div class="section-intro" style="margin-top: 1rem;">
+            <h3>3 Security Models ของ Bridges</h3>
+          </div>
+
+          <div class="bridge-grid">
+            <div class="bridge-card">
+              <div class="bridge-icon ext">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="7.5" cy="15.5" r="5.5"/>
+                  <path d="M21 2l-9.5 9.5M15 3l3.5 3.5M11 7l2 2"/>
+                </svg>
+              </div>
+              <div class="bridge-body">
+                <h4>External Verification — Trust Intermediaries</h4>
+                <p>กลุ่ม guardians หรือ validators เฉพาะสำหรับ bridge คอยรับรองว่า event บน chain A เกิดขึ้นจริง Wormhole ใช้ 19 guardians (13/19 threshold) Axelar สร้าง PoS network เฉพาะสำหรับ bridge</p>
+                <div>
+                  <span class="bridge-tag fast">เร็ว</span>
+                  <span class="bridge-tag medium">support หลาย chain</span>
+                  <span class="bridge-tag slow">human operators = attack target</span>
+                </div>
+                <p style="margin-top: 0.5rem; font-size: 0.78rem; color: #6b7a8d;"><svg style="display:inline;vertical-align:middle;margin-right:3px;" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Wormhole hack 2022: ~$325M จาก signature verification bug — Ronin Bridge: $625M จาก validator key compromise</p>
+              </div>
+            </div>
+            <div class="bridge-card">
+              <div class="bridge-icon nat">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00c8b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+              </div>
+              <div class="bridge-body">
+                <h4>Native Verification — Cryptographic Proofs</h4>
+                <p>Chain ปลายทางรัน light client ของ chain ต้นทางและตรวจสอบ cryptographic proof โดยตรง Cosmos IBC (Inter-Blockchain Communication) เป็นตัวอย่างที่ดีที่สุด — ต้องโจมตี source chain consensus เท่านั้นถึงจะหลอกได้</p>
+                <div>
+                  <span class="bridge-tag strong">ปลอดภัยสูงสุด</span>
+                  <span class="bridge-tag slow">ซับซ้อนมาก</span>
+                  <span class="bridge-tag slow">ใช้ได้เฉพาะ Tendermint chains (IBC)</span>
+                </div>
+              </div>
+            </div>
+            <div class="bridge-card">
+              <div class="bridge-icon opt">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div class="bridge-body">
+                <h4>Optimistic Verification — Assume Valid, Allow Challenge</h4>
+                <p>ยอมรับว่า message valid โดยค่าเริ่มต้น แต่เปิดให้ "watchers" challenge ได้ภายในช่วงเวลา dispute window ถ้าไม่มีใง challenge ภายใน window → final Across Protocol ใช้ model นี้ โดยมี liquidity providers จ่ายเงินล่วงหน้าให้ users ก่อน settlement</p>
+                <div>
+                  <span class="bridge-tag medium">ปลอดภัยกว่า External</span>
+                  <span class="bridge-tag fast">fast-fill สำหรับ UX</span>
+                  <span class="bridge-tag slow">delayed final settlement</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-intro" style="margin-top: 1rem;">
+            <h3>Asset Fragmentation — USDC ไม่ใช่ USDC เสมอไป</h3>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              Native USDC ที่ Circle issue บน Ethereum คนละอย่างกับ "Wormhole USDC" บน Solana แม้หน้าตาเหมือนกัน ในทางปฏิบัติ developer ต้องระบุว่า "USDC chain ไหน ผ่าน bridge ไหน" เพราะแต่ละ version มี liquidity ต่างกัน, depeg risk ต่างกัน, withdrawal mechanism ต่างกัน
+            </p>
+            <p>
+              <strong>อนาคตของ Bridges:</strong> Zero-Knowledge light clients จะทำให้ native verification ถูกลงมาก Intent-based architectures จะซ่อน complexity ของ bridging ให้ users — บอกแค่ "ต้องการ 100 USDC บน Solana" แล้ว solver จัดการเอง อย่างไรก็ตาม cross-chain infrastructure ยังคงเป็นพื้นที่ที่ evolve เร็วและ research intensive ต่อไปอีกนาน
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">L1 Blockchains · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-05-solana.html">
+          <span>Previous</span>
+          <strong>บทที่ 5: Solana — เครื่องจักรความเร็วสูงของ Crypto</strong>
+        </a>
+        <a href="./chapter-07-market-structure.html" class="nav-card">
+          <span>Next</span>
+          <strong>Chapter 07: Market Structure — สนามซื้อขายคริปโต</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { canvas.style.display = 'none'; return; }
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      const COUNT = 1200;
+      const posOrig = new Float32Array(COUNT * 3);
+      const posCurr = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT * 3; i++) posOrig[i] = posCurr[i] = (Math.random() - 0.5) * 14;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posCurr, 3));
+      const makeTexture = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 32;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(16,16,0,16,16,16);
+        g.addColorStop(0, 'rgba(156,201,209,1)'); g.addColorStop(0.2, 'rgba(156,201,209,0.8)'); g.addColorStop(1, 'rgba(156,201,209,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
+        const t = new THREE.Texture(c); t.needsUpdate = true; return t;
+      };
+      const mat = new THREE.PointsMaterial({ size: 0.05, map: makeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 });
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh); camera.position.z = 4;
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', e => { mouseX = e.clientX - window.innerWidth/2; mouseY = e.clientY - window.innerHeight/2; });
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        mesh.rotation.y += 0.0008; mesh.rotation.x += 0.0004;
+        mesh.rotation.y += 0.05 * (mouseX * 0.001 - mesh.rotation.y);
+        mesh.rotation.x += 0.05 * (mouseY * 0.001 - mesh.rotation.x);
+        const pos = geo.attributes.position.array;
+        for (let i = 0; i < COUNT; i++) { const i3 = i*3; pos[i3+1] = posOrig[i3+1] + Math.sin(t*0.3 + posOrig[i3]) * 0.18; }
+        geo.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+    });
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>

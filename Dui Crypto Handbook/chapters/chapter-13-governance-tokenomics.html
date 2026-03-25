@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทที่ 13: DAO & Governance — การปกครองแบบกระจายศูนย์ • DuiDui's Crypto Handbook</title>
+  <meta name="description" content="DAO, governance tokens, tokenomics, proposal lifecycle, flash loan attacks, legal wrappers — ทำความเข้าใจการปกครองแบบกระจายศูนย์ฉบับสมบูรณ์สำหรับนักลงทุนไทย">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    #nano-canvas {
+      position: fixed; inset: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none; opacity: 0.28;
+    }
+
+    .ambient-glow {
+      position: fixed; top: 20%; right: 5%;
+      width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page-shell { position: relative; z-index: 10; padding-top: 0; }
+
+    .chapter-topbar {
+      position: sticky; top: 0; z-index: 100; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0 clamp(1.25rem,4vw,2.5rem); height: 52px;
+      background: #0f1115;
+      border-top: 3px solid #FF7B00;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-sizing: border-box;
+    }
+    .chapter-topbar::before { display: none; }
+
+    .topbar-back {
+      font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #e2e8f0; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; flex-shrink: 0;
+    }
+    .topbar-back:hover { color: #FF7B00; }
+    .topbar-back svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .topbar-label {
+      font-family: 'Prompt', sans-serif; font-size: 0.63rem; font-weight: 800;
+      color: #FF7B00; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    /* ── Accent: amber #f59e0b ───────────────────────────────────── */
+    .digest-list .digest-index {
+      background: rgba(245,158,11,0.15); color: #f59e0b;
+      border: 1px solid rgba(245,158,11,0.35);
+    }
+    .info-chip {
+      border-left: 3px solid rgba(245,158,11,0.45);
+      background: rgba(245,158,11,0.05) !important;
+    }
+    .info-chip strong { color: #f59e0b; }
+    .table-shell thead th {
+      background: rgba(245,158,11,0.1); color: #f59e0b;
+      border-bottom: 1px solid rgba(245,158,11,0.3);
+    }
+    .table-shell tbody tr:nth-child(odd) td  { background: rgba(245,158,11,0.02); }
+    .table-shell tbody tr:hover td           { background: rgba(245,158,11,0.06); }
+
+    /* ── Stats row ────────────────────────────────────────────────── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:580px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+    .stat-card {
+      border-radius: 10px; padding: 0.8rem 0.85rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(245,158,11,0.2);
+      text-align: center;
+    }
+    .stat-value { font-size: 1.25rem; font-weight: 800; color: #f59e0b; letter-spacing: -0.02em; line-height: 1.1; }
+    .stat-label { font-size: 0.70rem; color: #64748b; margin-top: 0.2rem; font-weight: 500; }
+
+    /* ── Voting model grid ────────────────────────────────────────── */
+    .voting-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.65rem; margin: 1.25rem 0;
+    }
+    @media (max-width:560px) { .voting-grid { grid-template-columns: 1fr; } }
+    .voting-card {
+      border-radius: 10px; padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(245,158,11,0.18);
+    }
+    .voting-card-header {
+      display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;
+    }
+    .voting-card-name { font-size: 0.88rem; font-weight: 700; color: #e2e8f0; }
+    .voting-card-tag {
+      font-size: 0.63rem; font-weight: 700; letter-spacing: 0.08em;
+      padding: 0.15rem 0.45rem; border-radius: 4px;
+      background: rgba(245,158,11,0.15); color: #f59e0b;
+      flex-shrink: 0;
+    }
+    .voting-card p { font-size: 0.82rem; color: #8a9aaa; margin: 0; line-height: 1.5; }
+    .voting-card-example { font-size: 0.7rem; font-weight: 700; color: #f59e0b; margin-top: 0.3rem; }
+
+    /* ── Stage flow (proposal lifecycle) ─────────────────────────── */
+    .stage-flow {
+      display: flex; align-items: stretch; gap: 0; margin: 1.25rem 0;
+      border-radius: 12px; overflow: hidden; border: 1px solid rgba(245,158,11,0.15);
+    }
+    @media (max-width:640px) {
+      .stage-flow { flex-direction: column; }
+      .stage-arrow { display: none; }
+    }
+    .stage-item {
+      flex: 1; padding: 0.85rem 0.75rem; background: rgba(255,255,255,0.02);
+      border-right: 1px solid rgba(245,158,11,0.1); position: relative;
+    }
+    .stage-item:last-child { border-right: none; }
+    .stage-item:nth-child(odd) { background: rgba(245,158,11,0.02); }
+    .stage-badge {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.4);
+      color: #f59e0b; font-size: 0.73rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 0.4rem;
+    }
+    .stage-title { font-size: 0.78rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.2rem; }
+    .stage-sub   { font-size: 0.70rem; color: #64748b; line-height: 1.45; }
+    .stage-tag   { font-size: 0.63rem; font-weight: 700; color: #f59e0b; margin-top: 0.25rem; display: block; }
+
+    .nav-card--disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <canvas id="nano-canvas"></canvas>
+
+  <div class="chapter-topbar">
+    <a href="../index.html" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Handbook
+    </a>
+    <span class="topbar-label">Chapter 13</span>
+  <button class="chapter-picker-btn" data-current="13" data-accent="#FF7B00" aria-label="เลือกบท" aria-expanded="false">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8M4 18h16"/></svg>
+      <span style="font-size:0.7rem;">บท</span>
+      <svg class="cp-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="10" height="10" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+  </div>
+
+  <div class="page-shell">
+    <header class="terminal-hero">
+      <div class="chapter-opener">
+        <div class="chapter-opener-inner">
+          <div class="eyebrow" style="background:linear-gradient(90deg,#f59e0b,#fbbf24);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;letter-spacing:0.16em;">Part 4 • Ownership, Community & Real-World Networks</div>
+          <h1>บทที่ 13: DAO & Governance</h1>
+          <p class="lede">
+            DAO (Decentralized Autonomous Organization — องค์กรอิสระแบบกระจายศูนย์) คือการทดลองครั้งใหญ่ที่สุดของ crypto ในการสร้างองค์กรที่ปกครองด้วยโค้ดแทนกฎหมาย — ที่ซึ่ง governance token คือบัตรลงคะแนนเสียงในรัฐดิจิทัลที่ไม่มีพรมแดน Tokenomics (เศรษฐศาสตร์ของโทเคน) กำหนดว่าใครได้อำนาจ ใครได้รายได้ และใครแบกรับความเสี่ยง — การออกแบบ supply, vesting schedule, และ distribution ล้วนส่งผลต่อ alignment ระยะยาวระหว่างผู้ถือโทเคนกับ protocol บทนี้จะพาคุณเข้าใจกลไกการลงคะแนน proposal lifecycle ความเสี่ยงจาก flash loan attack ไปจนถึงคำถามทางกฎหมายที่ยังไม่มีคำตอบชัดเจน
+          </p>
+        </div>
+
+        <blockquote class="chapter-quote">
+          A DAO is not just a smart contract — it is a new kind of political entity, one where the rules of governance are public, the treasury is auditable, and membership is permissionless. Whether that experiment succeeds depends less on the code and more on whether token holders show up.
+          <cite>— Vitalik Buterin, Moving beyond coin voting governance</cite>
+        </blockquote>
+
+        <figure class="hero-art">
+          <img src="../assets/images/chapters/chapter_13_governance.png" alt="Chapter 13 DAO & Governance Illustration">
+        </figure>
+      </div>
+    </header>
+
+    <main class="book-shell">
+
+      <!-- ============================================================
+           PAGE 01 — The DAO Experiment
+           ============================================================ -->
+      <article class="book-page" id="page-01">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 13 • Foundations</span>
+            <h2 class="book-page-title">การทดลอง DAO — ทฤษฎีกับความเป็นจริง</h2>
+          </div>
+          <div class="book-page-index">DAO<br>Overview</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>DAOs คืออะไร</h3>
+            <p>DAO คือองค์กรที่กฎเกณฑ์การดำเนินงานเขียนไว้ใน smart contract บน blockchain แทนที่จะอยู่ในเอกสารกฎหมาย ผู้ถือ governance token มีสิทธิ์โหวตเปลี่ยนแปลงโปรโตคอล จัดสรร treasury และกำหนดทิศทางของ protocol — โดยไม่ต้องผ่านบอร์ดบริหารหรือ CEO</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ในเดือนกันยายน 2020 Uniswap สร้างประวัติศาสตร์ด้วยการ airdrop <strong style="color:#f59e0b;">400 UNI</strong> ให้กับทุก wallet ที่เคย interact กับ protocol ก่อนหน้า ณ ตอนนั้น UNI ราคาประมาณ $3 รวมมูลค่าประมาณ <strong>$1,200</strong> ต่อ wallet ผู้รับที่ไม่ยอม sell เห็น portfolio พุ่งขึ้นเกิน <strong>$6,000</strong> เมื่อ UNI ขึ้นไปแตะ $15 ในปี 2021 — นี่คือ "governance airdrop" ที่โด่งดังที่สุดในประวัติศาสตร์ crypto และเป็นต้นแบบที่ทุก protocol ยังอ้างถึงจนทุกวันนี้
+            </p>
+            <p>
+              แต่ก่อนจะถึง Uniswap DAO มี chapter ที่เจ็บปวดกว่ามาก ในปี 2016 โปรเจกต์ชื่อ <strong>"The DAO"</strong> ระดมทุนได้ <strong style="color:#f59e0b;">$150 ล้าน</strong> ผ่าน crowdfunding ใน Ethereum — ใหญ่ที่สุดในประวัติศาสตร์ขณะนั้น แนวคิดคือให้ token holder ลงคะแนนเลือก project ที่จะได้รับเงินทุน เป็น venture fund ที่ไม่มี general partner แต่ในเดือนมิถุนายนปีเดียวกัน hacker พบช่องโหว่ reentrancy bug ใน smart contract และ drain เงินออกไป <strong style="color:#f87171;">$60 ล้าน</strong> เหตุการณ์นี้นำไปสู่การ hard fork Ethereum ที่ก่อให้เกิด Ethereum Classic จนถึงทุกวันนี้ — บทเรียนว่า "code is law" มีราคาที่แท้จริง
+            </p>
+            <p>
+              ทฤษฎีของ DAO งดงามมาก: องค์กรที่ไม่มีเพดานอำนาจ ไม่มีใครจ้างหรือไล่ออกได้ treasury ที่ทุกคนตรวจสอบได้ real-time กฎที่บังคับใช้อัตโนมัติโดยไม่ต้องพึ่ง institution แต่ความเป็นจริงซับซ้อนกว่า voter turnout เฉลี่ยอยู่ที่ 3–5% ของ token supply คนส่วนใหญ่ซื้อ governance token เพื่อ speculation ไม่ใช่ governance whale ที่ถือ token มากสามารถผ่าน proposal ที่ผู้ถือ token รายย่อยไม่ต้องการได้
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Core Concept</span></div>
+            <h3 class="callout-title">DAO คือ "Digital Nation with Programmable Laws"</h3>
+            <p style="font-size:0.79rem;color:#c8d4e0;line-height:1.65;margin:0.5rem 0 0;">
+              ถ้าคิดภาพ DAO เหมือนรัฐชาติดิจิทัล — smart contract คือรัฐธรรมนูญ, treasury คือกองคลัง, governance token คือบัตรลงคะแนน — จะเข้าใจ tradeoffs ได้ชัดขึ้น <strong style="color:#f59e0b;">Governance token ไม่ใช่ equity ownership</strong> (ความเป็นเจ้าของในแง่กฎหมาย) — มันให้เพียง <em>สิทธิ์ลงคะแนน</em> ใน parameter บาง parameter ของ protocol เจ้าของ UNI ไม่ได้ "เป็นเจ้าของ" Uniswap Labs หรือ fee revenue โดยอัตโนมัติ — พวกเขาเป็นเจ้าของสิทธิ์โหวตเท่านั้น
+            </p>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>คำศัพท์สำคัญ:</strong>
+            <strong>Timelock</strong> — ช่วงเวลาบังคับ (มักคือ 48–72 ชั่วโมง) ระหว่างที่ proposal ผ่านและ execution จริง ให้เวลาผู้ใช้ exit หากไม่เห็นด้วย |
+            <strong>Quorum</strong> — จำนวน token ขั้นต่ำที่ต้องร่วมโหวตเพื่อให้ผลมีผลผูกพัน |
+            <strong>Multisig</strong> — wallet ที่ต้องการลายเซ็นจากหลายคน (เช่น 5-of-9) เพื่อ execute transaction มักใช้สำหรับ DAO emergency functions
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-value">$150M</div>
+              <div class="stat-label">เงินที่ The DAO ระดมได้ (2016)</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">$60M</div>
+              <div class="stat-label">เงินที่ถูก hack ออกจาก The DAO</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">3–5%</div>
+              <div class="stat-label">อัตรา voter turnout โดยทั่วไป</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">$10B+</div>
+              <div class="stat-label">มูลค่า DAO treasuries ทั้งหมด</div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Governance · Page 01</span>
+          <span class="page-number">01</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 02 — Voting Models
+           ============================================================ -->
+      <article class="book-page" id="page-02">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 13 • Mechanisms</span>
+            <h2 class="book-page-title">Voting Models — 4 แนวทางสู่ประชาธิปไตยดิจิทัล</h2>
+          </div>
+          <div class="book-page-index">DAO<br>Voting</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>4 approaches to digital democracy</h3>
+            <p>ไม่มี voting model ใดที่สมบูรณ์แบบ — แต่ละแนวทางมี tradeoffs ระหว่าง plutocracy risk, gas cost, manipulation resistance, และ complexity แตกต่างกัน ชุมชน crypto ทดลองหลายแนวทางพร้อมกันในช่วง 10 ปีที่ผ่านมา</p>
+          </div>
+
+          <div class="voting-grid">
+            <div class="voting-card">
+              <div class="voting-card-header">
+                <div class="voting-card-name">Token-Weighted Voting</div>
+                <div class="voting-card-tag">Dominant</div>
+              </div>
+              <p>1 token = 1 vote — วิธีที่ง่ายที่สุดและใช้กันมากที่สุด ใช้งานได้ทันทีโดยไม่ต้องออกแบบซับซ้อน แต่ whale ที่ถือ token มากสามารถ dominate governance ได้โดยตรง</p>
+              <div class="voting-card-example">ตัวอย่าง: Uniswap, Compound, Aave</div>
+            </div>
+            <div class="voting-card">
+              <div class="voting-card-header">
+                <div class="voting-card-name">veTokenomics (Vote-Escrow)</div>
+                <div class="voting-card-tag">Alignment</div>
+              </div>
+              <p>Lock token เพื่อรับ veCRV (vote-escrowed CRV) — ยิ่ง lock นานยิ่งได้ voting power มาก บังคับให้ governance participant มี long-term commitment แทนที่จะ vote แล้ว dump ทันที</p>
+              <div class="voting-card-example">ตัวอย่าง: Curve Finance (veCRV), Balancer (veBAL)</div>
+            </div>
+            <div class="voting-card">
+              <div class="voting-card-header">
+                <div class="voting-card-name">Quadratic Voting</div>
+                <div class="voting-card-tag">Anti-Whale</div>
+              </div>
+              <p>ต้นทุนของ n votes คือ n² tokens — คนที่ต้องการ vote มากต้องจ่ายมากแบบ exponential ช่วยกระจายอำนาจ แต่ต้องการ Sybil resistance ที่แข็งแกร่ง (เช่น Gitcoin Passport) มิฉะนั้น whale แตก wallet ได้</p>
+              <div class="voting-card-example">ตัวอย่าง: Gitcoin Grants, Optimism RPGF</div>
+            </div>
+            <div class="voting-card">
+              <div class="voting-card-header">
+                <div class="voting-card-name">Futarchy (Prediction Markets)</div>
+                <div class="voting-card-tag">Experimental</div>
+              </div>
+              <p>ใช้ prediction market เป็น governance — "โหวตสำหรับ values, bet สำหรับ beliefs" ผู้เข้าร่วมตลาดคาดการณ์ว่า proposal ไหนจะส่งผลดีต่อ metric ที่กำหนดไว้ incentivizes การ research จริงก่อนโหวต</p>
+              <div class="voting-card-example">ตัวอย่าง: MetaDAO บน Solana</div>
+            </div>
+          </div>
+
+          <div class="callout callout--warning">
+            <div class="callout-meta">
+              <span class="status-pill warning">Case Study</span>
+              <span>Governance Attack</span>
+            </div>
+            <h3 class="callout-title">Beanstalk DAO — เมื่อ Flash Loan กลายเป็นอาวุธ Governance</h3>
+            <p style="font-size:0.79rem;color:#c8d4e0;line-height:1.65;margin:0.5rem 0 0.75rem;">
+              เดือนเมษายน 2022 Beanstalk DAO — algorithmic stablecoin protocol สูญเสียเงิน <strong style="color:#f87171;">$182 ล้าน</strong> ผ่าน governance attack ที่ไม่เคยมีใครคิดถึงมาก่อน: attacker กู้ token ผ่าน flash loan (กู้และคืนใน transaction เดียว) เพื่อให้ตัวเองมี supermajority ชั่วคราว — เพียงพอที่จะ pass proposal ที่โอนเงินทั้งหมดออกจาก treasury ไปยัง wallet ของตัวเอง ทั้งหมดนี้เกิดขึ้นใน block เดียว
+            </p>
+            <p style="font-size:0.79rem;color:#c8d4e0;line-height:1.65;margin:0;">
+              <strong>จุดอ่อนที่ exploit:</strong> Beanstalk ใช้ on-chain voting ที่ snapshot ณ เวลา vote — ไม่ใช่ตอน proposal ถูกสร้าง และไม่มี timelock หลัง vote pass
+            </p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              การโจมตี Beanstalk เผยให้เห็น attack surface ใหม่: ระบบ governance ต้องได้รับการออกแบบให้ assume ว่า attacker สามารถ acquire ทุน massive ชั่วคราวได้ defense layers ที่ทันสมัยประกอบด้วยสามชั้น: <strong style="color:#f59e0b;">Snapshot voting</strong> ที่วัด voting power ณ block ก่อน proposal ถูกสร้าง (ไม่ใช่ตอน vote), <strong style="color:#f59e0b;">Voting delay</strong> ระยะเวลา 2–7 วันที่ community สามารถตรวจสอบ proposal ก่อน vote จริง, และ <strong style="color:#f59e0b;">Timelock</strong> 48–72 ชั่วโมงหลัง vote ผ่าน ก่อน execute จริง ให้ผู้ใช้ exit หากไม่เห็นด้วย
+            </p>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Governance Minimization Trend:</strong> Uniswap v3 และ v4 ออกแบบ core smart contracts ให้ immutable — ไม่สามารถ upgrade ได้แม้ด้วย governance ลดความเสี่ยงจาก malicious governance ที่ root level governance จึงมีอำนาจเฉพาะเรื่อง parameter บางส่วนเช่น fee tiers และ protocol fee ไม่ใช่ core logic
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Governance · Page 02</span>
+          <span class="page-number">02</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 03 — Proposal Lifecycle
+           ============================================================ -->
+      <article class="book-page" id="page-03">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 13 • Process</span>
+            <h2 class="book-page-title">Proposal Lifecycle — จาก RFC สู่ On-Chain Execution</h2>
+          </div>
+          <div class="book-page-index">DAO<br>Process</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>เส้นทางของ proposal ตั้งแต่ไอเดียจนถึง execution</h3>
+            <p>ไม่ใช่ทุก idea ที่กลายเป็น on-chain vote — กว่า 90% ของ proposals กรองออกระหว่างทาง ขั้นตอน off-chain social process มักสำคัญกว่าตัว smart contract มากในการกำหนดผลลัพธ์จริง</p>
+          </div>
+
+          <div class="stage-flow">
+            <div class="stage-item">
+              <div class="stage-badge">1</div>
+              <div class="stage-title">RFC</div>
+              <div class="stage-sub">Request for Comment บน Discourse หรือ Commonwealth — นำเสนอ idea พร้อม rationale เปิดรับ feedback จาก community ก่อนใช้ทรัพยากรเพิ่ม</div>
+              <span class="stage-tag">Forum post</span>
+            </div>
+            <div class="stage-item">
+              <div class="stage-badge">2</div>
+              <div class="stage-title">Temperature Check</div>
+              <div class="stage-sub">Snapshot vote แบบ off-chain (ไม่มี gas) วัดความต้องการของ community โดยกว้าง — ถ้าได้รับการสนับสนุนต่ำกว่าเกณฑ์มักหยุดที่นี่</div>
+              <span class="stage-tag">Snapshot</span>
+            </div>
+            <div class="stage-item">
+              <div class="stage-badge">3</div>
+              <div class="stage-title">Consensus Check</div>
+              <div class="stage-sub">ปรับแก้ proposal ตาม feedback เสนอทางเลือกเพื่อให้ community เลือก finalize รายละเอียดทางเทคนิคและ parameters ก่อน on-chain</div>
+              <span class="stage-tag">Forum / Snapshot</span>
+            </div>
+            <div class="stage-item">
+              <div class="stage-badge">4</div>
+              <div class="stage-title">On-Chain Vote</div>
+              <div class="stage-sub">Submit ใน governance contract จริง — ต้องมี quorum (มักคือ 4–10% ของ total supply) และ majority เพื่อ pass ใช้เวลาประมาณ 3–7 วัน</div>
+              <span class="stage-tag">Governor contract</span>
+            </div>
+            <div class="stage-item">
+              <div class="stage-badge">5</div>
+              <div class="stage-title">Timelock + Execute</div>
+              <div class="stage-sub">หลัง pass บังคับรอ 48–72 ชั่วโมงใน Timelock contract — ผู้ใช้สามารถ exit ได้หากไม่เห็นด้วย จากนั้น execute อัตโนมัติ</div>
+              <span class="stage-tag">Timelock → Execution</span>
+            </div>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              กระบวนการ governance ที่แท้จริงเกิดขึ้นใน social layer มากกว่า on-chain layer — Discord ของ Uniswap มีช่อง #governance ที่ถกเถียงกันหลายสัปดาห์ก่อน proposal ขึ้น Snapshot นักเขียน proposal ที่ดีต้องรู้จัก back-channel coordination: ติดต่อ whale holders รายใหญ่ก่อน สร้าง coalition กับ delegate ที่มีอิทธิพล ก่อนที่ formal vote จะเริ่ม "Governance theater" (การ vote แบบฉากหน้า) เกิดเมื่อผลลัพธ์ถูกตัดสินล่วงหน้าใน private channels แล้ว
+            </p>
+          </div>
+
+          <div class="callout info-chip">
+            <strong>Tools Stack:</strong>
+            <strong>Safe (Gnosis Safe)</strong> — multisig wallet สำหรับ DAO treasury management |
+            <strong>Tally</strong> — dashboard แสดง on-chain governance data, delegate profiles, voting history |
+            <strong>Snapshot</strong> — off-chain signaling vote ที่ไม่ต้องเสีย gas ใช้ signature-based verification |
+            <strong>Discourse / Commonwealth</strong> — forum สำหรับ RFC และ discussion ก่อน formal proposal
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong style="color:#f59e0b;">Delegate culture</strong> คือวิธีที่ DAOs พยายามแก้ปัญหา participation gap — ผู้ถือ token สามารถ delegate voting power ให้บุคคลหรือองค์กรที่ actively follow governance โดยไม่ต้อง sell token เช่น a16z crypto, Gauntlet, และ blockchain.com มักเป็น top delegates ใน Uniswap governance แต่ delegation ทำให้เกิด centralization ชั้นใหม่: ถ้า top-5 delegates ถือ voting power รวมกัน >50% protocol กลับไปสู่ oligarchy ในรูปแบบใหม่ ความเป็นจริงที่น่าเป็นห่วงคือ quorum failures ปรากฏบ่อยใน DAO ใหญ่ — proposals ที่ดีล้มเหลวเพราะไม่มีคนมา vote ให้ครบ quorum แม้ไม่มีใครคัดค้าน
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Governance · Page 03</span>
+          <span class="page-number">03</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 04 — Token Economics
+           ============================================================ -->
+      <article class="book-page" id="page-04">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 13 • Tokenomics</span>
+            <h2 class="book-page-title">Token Economics — ดีไซเนอร์ Dilemma</h2>
+          </div>
+          <div class="book-page-index">DAO<br>Tokenomics</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Token designer's dilemma</h3>
+            <p>ทุกการตัดสินใจด้าน tokenomics มี tradeoff ที่ซ่อนอยู่ — token ที่มี value accrual ดีอาจเป็น unregistered security, inflation ที่มากเกินอาจทำลาย holder แต่ inflation ที่น้อยเกินอาจไม่สามารถ incentivize contributors ได้ การออกแบบ token ที่ดีต้องสมดุลทั้ง legal, economic และ community dimensions</p>
+          </div>
+
+          <div class="table-shell" style="margin:1.25rem 0;">
+            <table>
+              <thead>
+                <tr>
+                  <th>ประเภท Token</th>
+                  <th>ตัวอย่าง</th>
+                  <th>Value Driver</th>
+                  <th>ความเสี่ยง</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Pure Governance</strong></td>
+                  <td>UNI (Uniswap)</td>
+                  <td>Voting rights เท่านั้น — ไม่มี fee share ตรง value มาจาก option value บน future revenue switch</td>
+                  <td>Securities risk ต่ำ แต่ value แทบเป็น zero ถ้า fee switch ไม่เกิด</td>
+                </tr>
+                <tr>
+                  <td><strong>Revenue-Sharing</strong></td>
+                  <td>dYdX</td>
+                  <td>Protocol fee ส่วนหนึ่งแจกจ่ายให้ staker — direct cash flow</td>
+                  <td>Securities risk สูงกว่า — Howey Test อาจ classify เป็น security</td>
+                </tr>
+                <tr>
+                  <td><strong>Buyback &amp; Burn</strong></td>
+                  <td>HYPE (Hyperliquid)</td>
+                  <td>Protocol ใช้ fee revenue ซื้อ token กลับมาและ burn — ลด circulating supply สร้าง deflationary pressure</td>
+                  <td>Depends on execution — buyback ต้องสม่ำเสมอและ transparent</td>
+                </tr>
+                <tr>
+                  <td><strong>Utility Token</strong></td>
+                  <td>LINK (Chainlink)</td>
+                  <td>ต้องใช้ token จ่าย service ที่ protocol ให้ — demand driven โดย usage จริง</td>
+                  <td>Value ผูกกับ adoption ของ service — อาจไม่ accrue value ถ้า competitor เกิด</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong style="color:#f59e0b;">Supply mechanics</strong> เป็นตัวแปรที่สำคัญที่สุดใน tokenomics แต่มักถูกมองข้าม Bitcoin ใช้แนวทาง hard cap — 21 ล้านเหรียญ maximum supply ไม่มีการออกใหม่หลังจาก block reward สุดท้าย สร้าง scarcity ที่คาดเดาได้ ขั้วตรงข้ามคือ inflationary model: Ethereum ก่อน Merge ออก ETH ใหม่ปีละ ~4.5% หลัง Merge + EIP-1559 ทุก transaction burn ETH บางส่วนทำให้เกิด net deflationary ในช่วง high activity กลไก burn นี้ทำหน้าที่เหมือน dividend คืน value ให้ holder โดยตรง
+            </p>
+            <p>
+              <strong style="color:#f59e0b;">Vesting schedule</strong> (กำหนดการ unlock token) มักใช้แบบ "1+3" — cliff 1 ปี (ไม่ unlock อะไรเลย) ตามด้วย linear vesting อีก 3 ปี ป้องกัน founder และ early investor dump ทันที แต่สร้าง <em>supply overhang</em> ที่ market รับรู้ล่วงหน้า: ทุกคนรู้ว่า unlock ครั้งใหญ่จะมาวันไหน กดดัน price ก่อน event เดือนๆ hedge fund ที่รู้ schedule มักเปิด short position ก่อน unlock เพื่อ profit จาก sell pressure นี้
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Governance · Page 04</span>
+          <span class="page-number">04</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 05 — Distribution Strategies & Org Structure
+           ============================================================ -->
+      <article class="book-page" id="page-05">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 13 • Distribution</span>
+            <h2 class="book-page-title">Distribution Strategies — ใครได้ Token ใครได้อำนาจ</h2>
+          </div>
+          <div class="book-page-index">DAO<br>Distribution</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>Who gets the tokens determines who controls the DAO</h3>
+            <p>การกระจาย token ครั้งแรกเป็นการตัดสินใจที่สำคัญที่สุดและกลับไม่ได้ที่สุด — ถ้า VC และ insider ถือ 60% ตั้งแต่แรก protocol จะไม่มีวันกระจายศูนย์ได้จริง ไม่ว่า governance mechanism จะออกแบบดีแค่ไหน</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong style="color:#f59e0b;">Retroactive airdrop</strong> คือ gold standard ของ community distribution — แทนที่จะขาย token ให้ VC ก่อน ให้ token ฟรีกับผู้ที่ใช้ protocol จริงย้อนหลัง Uniswap UNI airdrop ปี 2020 ยังถือเป็น benchmark ที่ทุก protocol อ้างถึง: ให้ผู้ใช้จริงก่อน VC สร้าง community ที่ have skin in the game ทันที อย่างไรก็ตาม success ของ Uniswap สร้างปัญหาใหม่: <em>airdrop farming</em> — ผู้คนเริ่มสร้าง wallet หลายร้อยใบ ทำ transaction จำนวนมากเพื่อ qualify สำหรับ airdrop อนาคต ทำให้ metrics เช่น "number of active wallets" กลายเป็นตัวเลขที่ manipulate ได้
+            </p>
+          </div>
+
+          <div class="callout callout--warning">
+            <div class="callout-meta">
+              <span class="status-pill warning">Problem</span>
+              <span>Airdrop Farming</span>
+            </div>
+            <h3 class="callout-title">เมื่อ Usage Metrics กลายเป็น Unreliable</h3>
+            <p style="font-size:0.79rem;color:#c8d4e0;line-height:1.65;margin:0.5rem 0 0;">
+              Protocol ที่ประกาศว่าจะ airdrop ตาม usage ทันทีที่ market รับรู้ Sybil farmers จะทำ transaction ปลอมนับล้านเพื่อ qualify ทำให้ daily active address ดูสูงมากแต่ไม่ใช่ organic usage Blur NFT marketplace ต้องต่อสู้กับ farming อย่างหนักใน airdrop program ของตัวเอง — volume ส่วนใหญ่ driven by incentive ไม่ใช่ genuine trading ทำให้ post-airdrop volume ตกหนัก
+            </p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              <strong style="color:#f59e0b;">Point programs</strong> (ระบบคะแนน) เป็นวิธีที่หลาย protocol ใช้แทน direct airdrop announcement — users earn points จาก activity โดยไม่รู้ exact conversion rate หรือ token address ทำให้ Sybil attack ยากขึ้น <em>Seasonal design</em> แบ่ง program ออกเป็น "seasons" สั้นๆ 3–6 เดือน โดย season ใหม่อาจเปลี่ยน criteria ได้ — transparent criteria (บอกชัดว่าทำอะไรได้คะแนน) ดึง organic users แต่ invite farming ส่วน opaque criteria (ไม่บอก formula) ป้องกัน gaming แต่ทำให้ genuine users รู้สึกไม่ยุติธรรม
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Org Structure</span></div>
+            <h3 class="callout-title">Uniswap Tripartite Structure — สามขาที่แยกหน้าที่ชัดเจน</h3>
+            <p style="font-size:0.79rem;color:#c8d4e0;line-height:1.65;margin:0.5rem 0 0;">
+              Uniswap เป็นตัวอย่างที่ชัดเจนที่สุดของโครงสร้างสามขาที่ crypto ชั้นนำใช้: <br><br>
+              <strong style="color:#f59e0b;">Uniswap Labs</strong> — บริษัทเอกชน (for-profit) ที่พัฒนา technology หลัก, interface, และ product ได้รับ equity funding จาก VC มีทีม full-time<br><br>
+              <strong style="color:#f59e0b;">Uniswap Foundation</strong> — non-profit ที่ดูแล ecosystem grants, developer relations, governance process — รับงบจาก DAO treasury<br><br>
+              <strong style="color:#f59e0b;">Uniswap DAO</strong> — token holder ทั้งหมดที่ควบคุม protocol parameters, treasury allocation, และ fee switch ผ่าน UNI governance<br><br>
+              โครงสร้างนี้ออกแบบให้ Labs สามารถ move fast โดยไม่ติดกระบวนการ governance ขณะที่ foundation ดูแล public goods และ DAO retain ultimate control
+            </p>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Governance · Page 05</span>
+          <span class="page-number">05</span>
+        </footer>
+      </article>
+
+      <div class="page-break" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           PAGE 06 — Legal Gray Area & Key Takeaways
+           ============================================================ -->
+      <article class="book-page" id="page-06">
+        <header class="book-page-head">
+          <div>
+            <span class="book-page-kicker">Chapter 13 • Legal & Takeaways</span>
+            <h2 class="book-page-title">Legal Gray Area & สิ่งที่ต้องจำ</h2>
+          </div>
+          <div class="book-page-index">DAO<br>Legal</div>
+        </header>
+
+        <div class="book-page-body">
+          <div class="section-intro">
+            <h3>DAOs exist in legal limbo</h3>
+            <p>คำถามว่า DAO คืออะไรในทางกฎหมายยังไม่มีคำตอบที่ชัดเจนในกฎหมายส่วนใหญ่ของโลก — นำมาซึ่งความเสี่ยงที่หลาย DAO และ token holder ยังไม่ตระหนัก</p>
+          </div>
+
+          <div class="book-prose">
+            <p>
+              ในปี 2021 รัฐ Wyoming สหรัฐอเมริกาผ่านกฎหมาย <strong style="color:#f59e0b;">DUNA (Decentralized Unincorporated Nonprofit Association)</strong> เป็นรัฐแรกที่ให้ status ทางกฎหมายแก่ DAO อย่างชัดเจน ต่อมา Uniswap DAO จดทะเบียนภายใต้ <strong style="color:#f59e0b;">DUNI (Decentralized Unincorporated Nonprofit Initiative)</strong> กรอบที่คล้ายกันเพื่อสร้าง legal personality ที่ allows DAO เข้าทำสัญญา ถือสินทรัพย์ และฟ้องร้องในนามของตัวเองได้ legal wrapper นี้สำคัญมากเพราะ DAO ที่ไม่มี legal status อาจถูก classify เป็น general partnership โดยปริยาย — ซึ่งแปลว่า token holder ทุกคนอาจต้องรับผิดเป็นการส่วนตัวในหนี้สินของ protocol
+            </p>
+            <p>
+              กรณี <strong>Ooki DAO vs CFTC</strong> ปี 2022 เป็นบทเรียนสำคัญ: CFTC (Commodity Futures Trading Commission) ยื่นฟ้อง Ooki DAO (เดิมชื่อ bZx) ในข้อหา offering unregistered derivatives และ failing to comply with AML regulations ศาลตัดสินว่า DAO มีฐานะเป็น "unincorporated association" และ token holder ที่ vote ผ่าน governance ถือเป็นสมาชิกที่รับผิดได้ — judgment ที่ทำให้ governance participation มีความเสี่ยงทางกฎหมายใหม่สำหรับ anonymous voter
+            </p>
+            <p>
+              คำถามใหญ่ที่สุดในพื้นที่นี้คือ <strong style="color:#f59e0b;">Howey Test</strong> — กรอบที่ SEC ใช้ตัดสินว่าสิ่งใดเป็น security ใน U.S.: investment of money, in a common enterprise, with expectation of profit, from the efforts of others ถ้า governance token มีทั้งสี่ข้อ อาจถือเป็น security ที่ต้องลงทะเบียน ความแตกต่างระหว่าง "pure governance token" กับ "revenue-sharing token" สำคัญมากในแง่ regulatory risk — นั่นคือเหตุผลที่ Uniswap DAO ยังไม่ได้เปิด fee switch แม้จะ pass มาหลายปีแล้ว
+            </p>
+          </div>
+
+          <div class="callout concept-card">
+            <div class="callout-meta"><span class="term-chip">Key Takeaways</span></div>
+            <h3 class="callout-title">สรุปสิ่งที่ต้องจำจากบทนี้</h3>
+            <ol class="digest-list">
+              <li>
+                <span class="digest-index">01</span>
+                <div><strong>DAO = programmable governance, token = voting rights ไม่ใช่ ownership</strong>
+                <p>Governance token ให้สิทธิ์ลงคะแนนใน protocol parameters — ไม่ใช่ equity หรือ ownership ทางกฎหมาย ค่าสุดท้ายขึ้นอยู่กับว่า governance จะสร้าง value accrual ได้จริงหรือไม่</p></div>
+              </li>
+              <li>
+                <span class="digest-index">02</span>
+                <div><strong>Flash loan attacks พ่ายแพ้ด้วย snapshot + timelock</strong>
+                <p>Beanstalk สูญ $182M เพราะไม่มี defense layers — protocol ที่ดีต้อง snapshot voting power ก่อน proposal ถูกสร้าง + timelock หลัง vote ผ่าน ให้ผู้ใช้ exit ได้</p></div>
+              </li>
+              <li>
+                <span class="digest-index">03</span>
+                <div><strong>Proposal lifecycle: RFC → Snapshot → On-chain → Timelock → Execution</strong>
+                <p>กระบวนการ governance จริงเกิดใน social layer (Discord, Discourse) มากกว่า smart contract — delegate culture และ back-channel coordination กำหนดผลลัพธ์ก่อน formal vote</p></div>
+              </li>
+              <li>
+                <span class="digest-index">04</span>
+                <div><strong>4 token types มี value drivers ต่างกัน</strong>
+                <p>Pure governance (UNI), revenue-sharing (dYdX), buyback-burn (HYPE), utility (LINK) — แต่ละ model มี regulatory risk และ value accrual mechanism ต่างกันสิ้นเชิง</p></div>
+              </li>
+              <li>
+                <span class="digest-index">05</span>
+                <div><strong>Legal clarity กำลังมา แต่ regulatory risk ยังสูง</strong>
+                <p>Wyoming DUNA และ Uniswap DUNI เป็นก้าวแรก แต่ Howey Test ยังเป็น gray area สำหรับ token ที่มี revenue sharing — governance participation ใน DAO ที่ไม่มี legal wrapper มีความเสี่ยงทางกฎหมายที่แท้จริง</p></div>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <footer class="book-page-foot">
+          <span class="book-page-label">Governance · Page 06</span>
+          <span class="page-number">06</span>
+        </footer>
+      </article>
+
+      <nav class="chapter-nav" aria-label="Chapter navigation">
+        <a class="nav-card" href="./chapter-12-nfts.html">
+          <span>Previous</span>
+          <strong>บทที่ 12: NFTs — สินทรัพย์ดิจิทัลที่มีเอกลักษณ์</strong>
+        </a>
+        <a class="nav-card" href="./chapter-14-depin.html">
+          <span>Next</span>
+          <strong>บทที่ 14: DePIN — โครงสร้างพื้นฐานแบบกระจายศูนย์</strong>
+        </a>
+      </nav>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-divider"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">Connect with DuiDui</div>
+        <div class="footer-links">
+          <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" class="sns-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" class="sns-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://t.me/duisnote" target="_blank" class="sns-link" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+          <a href="https://x.com/duiduicrypto" target="_blank" class="sns-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <p class="footer-copy">© 2025 DuiDui's Crypto Handbook • ข้อมูลเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="../assets/js/mermaid-init.js"></script>
+  <script>
+    // Particle background
+    (function () {
+      const canvas = document.getElementById('nano-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W, H, dots;
+      const COLOR = '245,158,11';
+      const COUNT = 55;
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function init() {
+        dots = Array.from({ length: COUNT }, () => ({
+          x: Math.random() * W, y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.5 + 0.5,
+        }));
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        dots.forEach(d => {
+          d.x += d.vx; d.y += d.vy;
+          if (d.x < 0 || d.x > W) d.vx *= -1;
+          if (d.y < 0 || d.y > H) d.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${COLOR},0.55)`;
+          ctx.fill();
+        });
+        dots.forEach((a, i) => {
+          for (let j = i + 1; j < dots.length; j++) {
+            const b = dots[j];
+            const dist = Math.hypot(a.x - b.x, a.y - b.y);
+            if (dist < 110) {
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = `rgba(${COLOR},${0.12 * (1 - dist / 110)})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
+        });
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', () => { resize(); init(); });
+      resize(); init(); draw();
+    })();
+  </script>
+  <script src="../assets/js/chapter-picker.js"></script>
+</body>
+</html>
