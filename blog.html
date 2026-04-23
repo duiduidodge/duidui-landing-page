@@ -1265,7 +1265,7 @@
             </p>
             <div class="hero-stats-row fade-up delay-3">
               <div class="hero-article-badge">
-                <span class="hero-badge-count">8+</span>
+                <span class="hero-badge-count">9+</span>
                 <span class="hero-badge-label">บทความ</span>
               </div>
             </div>
@@ -1397,13 +1397,13 @@
     <!-- ── Filter Tabs ── -->
     <div class="filter-wrap fade-up delay-3">
       <button class="filter-tab active" onclick="filterPosts('all', this)">
-        ALL <span class="filter-count">8</span>
+        ALL <span class="filter-count">9</span>
       </button>
       <button class="filter-tab" onclick="filterPosts('thesis', this)">
         THESIS <span class="filter-count">4</span>
       </button>
       <button class="filter-tab" onclick="filterPosts('insight', this)">
-        MARKET INSIGHT <span class="filter-count">3</span>
+        MARKET INSIGHT <span class="filter-count">4</span>
       </button>
       <button class="filter-tab" onclick="filterPosts('narrative', this)">
         NARRATIVE SPOTLIGHT <span class="filter-count">1</span>
@@ -1415,6 +1415,29 @@
 
       <!-- Posts -->
       <div class="post-list" id="post-list">
+
+        <!-- Post: ETH / BTC Relative Weakness -->
+        <article class="post-card post-card--landscape" data-cat="insight" onclick="openProtectedArticle('eth-bearish-pair.html')">
+          <div class="post-thumb-landscape">
+            <img src="assets/images/blog/ETH%20bearish%20pair.png" alt="ETH อาจ Bullish ในดอลลาร์ แต่ยัง Bearish เมื่อเทียบ BTC" />
+          </div>
+          <div class="post-card-body">
+            <div class="post-meta">
+              <span class="cat-pill insight">MARKET INSIGHT</span>
+              <span class="meta-date">23 เม.ย. 2026</span>
+              <span class="meta-dot">·</span>
+              <span class="meta-read">7 นาที</span>
+              <a class="post-read-inline" href="eth-bearish-pair.html" onclick="event.stopPropagation(); return handleProtectedArticleLink(event, 'eth-bearish-pair.html');">
+                อ่านบทความ
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+            <h3 class="post-title">ETH อาจ Bullish ในดอลลาร์ แต่ยัง Bearish เมื่อเทียบ BTC?</h3>
+            <p class="post-excerpt">
+              แม้ ETH จำนวนมากขึ้นถูกดูดออกจาก liquid float ผ่าน staking และ treasury accumulation แต่ ETH/BTC ยังสะท้อนว่าตลาดยังให้ demand premium กับ BTC มากกว่า และสอง thesis นี้ต้องแยกกัน
+            </p>
+          </div>
+        </article>
 
         <!-- Post: STRC / Bitcoin Flywheel -->
         <article class="post-card post-card--landscape" data-cat="insight" onclick="openProtectedArticle('strc-strategy-bitcoin-switch.html')">
@@ -1649,11 +1672,11 @@
             <div class="archive-list">
               <div class="archive-item is-disabled">
                 <span>เมษายน 2026</span>
-                <span class="archive-count">1</span>
+                <span class="archive-count">2</span>
               </div>
               <div class="archive-item is-disabled">
                 <span>มีนาคม 2026</span>
-                <span class="archive-count">3</span>
+                <span class="archive-count">6</span>
               </div>
               <div class="archive-item is-disabled">
                 <span>กุมภาพันธ์ 2026</span>
