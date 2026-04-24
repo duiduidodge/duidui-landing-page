@@ -1,0 +1,1804 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BitMine อาจทำ “STRC for ETH” ได้จริง แต่ตลาดกำลังมองผิดจุด — DUIDUI Journal</title>
+  <meta name="description" content="วิเคราะห์ว่า BitMine มีวัตถุดิบพอทำ ETH-backed preferred แบบ STRC หรือไม่ และทำไมตัวแปรสำคัญอาจไม่ใช่ mNAV แต่เป็น cash war chest" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="BitMine อาจทำ “STRC for ETH” ได้จริง แต่ตลาดกำลังมองผิดจุด — DUIDUI Journal" />
+  <meta property="og:description" content="สิ่งที่ขวาง BMNR ไม่ใช่ mNAV แต่คือ war chest ที่ยังไม่ใหญ่พอ" />
+  <meta property="og:image" content="assets/images/blog/STRC%20for%20eTH.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BitMine อาจทำ “STRC for ETH” ได้จริง แต่ตลาดกำลังมองผิดจุด — DUIDUI Journal" />
+  <meta name="twitter:description" content="สิ่งที่ขวาง BMNR ไม่ใช่ mNAV แต่คือ war chest ที่ยังไม่ใหญ่พอ" />
+  <meta name="twitter:image" content="assets/images/blog/STRC%20for%20eTH.png" />
+  <meta name="theme-color" content="#101b16" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/brand/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/images/brand/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #101b16;
+      --paper-2: #15231c;
+      --reader: #18251f;
+      --reader-soft: #1d2c25;
+      --ink: #e3efe7;
+      --ink-strong: #f5fbf6;
+      --body-copy: #d8e6dc;
+      --muted: #91a99a;
+      --soft: rgba(227, 239, 231, 0.74);
+      --line: rgba(227, 239, 231, 0.12);
+      --line-strong: rgba(227, 239, 231, 0.18);
+      --panel: rgba(255, 255, 255, 0.055);
+      --panel-2: rgba(255, 255, 255, 0.085);
+      --green: #42cc7a;
+      --green-2: #88e8ad;
+      --teal: #3fc7b1;
+      --gold: #d6ad48;
+      --red: #e0695f;
+      --shadow: 0 28px 72px rgba(0, 0, 0, 0.38);
+      --font-body: "Noto Sans Thai", "Sora", sans-serif;
+      --font-mono: "IBM Plex Sans Thai", "DM Mono", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 18% 4%, rgba(66, 204, 122, 0.12), transparent 32rem),
+        radial-gradient(circle at 94% 14%, rgba(214, 173, 72, 0.08), transparent 28rem),
+        linear-gradient(180deg, #0b1410 0%, var(--paper) 34%, #0e1813 100%);
+      color: var(--ink);
+      font-family: var(--font-body);
+      line-height: 1.78;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.045;
+      z-index: 20;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+    }
+
+    a { color: var(--green-2); text-decoration: none; }
+    a:hover { color: #c8f6d8; }
+    strong { color: #f5fff8; font-weight: 700; }
+    ::selection { background: var(--green); color: #06110b; }
+
+    .mono { font-family: var(--font-mono); }
+
+    .nav-hero {
+      position: relative;
+      min-height: 138px;
+      overflow: hidden;
+      border-radius: 0 0 32px 32px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
+      margin-bottom: clamp(20px, 4vw, 38px);
+    }
+
+    .nav-hero img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 18%;
+      transform: scale(1.04);
+      opacity: 0.92;
+    }
+
+    .nav-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(8, 16, 12, 0.08), rgba(8, 16, 12, 0.86)),
+        linear-gradient(90deg, rgba(8, 16, 12, 0.5), transparent 58%);
+    }
+
+    .site-header {
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 20px;
+    }
+
+    .brand {
+      color: rgba(246, 251, 247, 0.95);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.22);
+    }
+
+    .brand span { color: #7debb0; }
+
+    .nav-links-desktop {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px 4px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .nav-link {
+      padding: 7px 14px;
+      border-radius: 999px;
+      color: rgba(255, 255, 255, 0.84);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      white-space: nowrap;
+      transition: 180ms ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .clock-display {
+      color: rgba(255, 255, 255, 0.72);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-links-mobile {
+      display: none !important;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 4;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px 20px;
+      border-radius: 0 0 20px 20px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .nav-links-mobile.open { display: flex !important; }
+    .nav-links-mobile .nav-link { color: var(--ink); }
+
+    .back-link {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 76px;
+    }
+
+    .article-banner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto clamp(24px, 4vw, 42px);
+      border: 1px solid rgba(227, 239, 231, 0.16);
+      border-radius: 30px;
+      overflow: hidden;
+      background: #0c1511;
+      box-shadow: 0 22px 64px rgba(0, 0, 0, 0.28);
+    }
+
+    .article-banner img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 1;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.42fr);
+      gap: clamp(22px, 4vw, 42px);
+      align-items: stretch;
+      margin-bottom: clamp(24px, 5vw, 56px);
+    }
+
+    .hero-copy {
+      padding: clamp(10px, 2vw, 18px) 0;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 18px;
+      padding: 8px 12px;
+      border: 1px solid rgba(66, 204, 122, 0.25);
+      border-radius: 999px;
+      background: rgba(66, 204, 122, 0.09);
+      color: #9cf0bb;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 18px rgba(66, 204, 122, 0.75);
+    }
+
+    h1 {
+      max-width: 860px;
+      font-size: clamp(2.2rem, 5.2vw, 4.8rem);
+      line-height: 1.06;
+      letter-spacing: -0.045em;
+      color: #f6fff9;
+      text-wrap: balance;
+    }
+
+    .dek {
+      max-width: 720px;
+      margin-top: 24px;
+      color: rgba(227, 239, 231, 0.86);
+      font-size: clamp(1.03rem, 1.7vw, 1.22rem);
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .hero-card {
+      position: relative;
+      min-height: 0;
+      padding: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(227, 239, 231, 0.16);
+      border-radius: 26px;
+      background:
+        linear-gradient(155deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035)),
+        rgba(255, 255, 255, 0.035);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(227, 239, 231, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(227, 239, 231, 0.045) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(180deg, #000, transparent 82%);
+    }
+
+    .orbital {
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      right: -86px;
+      top: 72px;
+      border: 1px solid rgba(136, 232, 173, 0.18);
+      border-radius: 999px;
+      animation: rotateSlow 28s linear infinite;
+    }
+
+    .orbital::before,
+    .orbital::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+    }
+
+    .orbital::before {
+      inset: 58px;
+      border: 1px dashed rgba(214, 173, 72, 0.24);
+    }
+
+    .orbital::after {
+      width: 22px;
+      height: 22px;
+      left: 56px;
+      top: 44px;
+      background: var(--gold);
+      box-shadow: 0 0 28px rgba(214, 173, 72, 0.58);
+    }
+
+    .hero-card-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      height: 100%;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .ticker-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: rgba(227, 239, 231, 0.62);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .signal-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .signal {
+      padding: 14px 15px;
+      border: 1px solid rgba(227, 239, 231, 0.14);
+      border-radius: 16px;
+      background: rgba(10, 20, 15, 0.42);
+    }
+
+    .signal-label {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .signal-value {
+      margin-top: 6px;
+      color: #f7fff9;
+      font-family: var(--font-mono);
+      font-size: clamp(1.45rem, 2.5vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: -0.06em;
+      line-height: 1;
+    }
+
+    .signal-note {
+      margin-top: 6px;
+      color: rgba(227, 239, 231, 0.66);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .article-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 780px) minmax(260px, 1fr);
+      gap: clamp(28px, 5vw, 60px);
+      align-items: start;
+    }
+
+    .content {
+      color: var(--body-copy);
+      font-size: clamp(1.06rem, 1.28vw, 1.14rem);
+      line-height: 1.92;
+      padding: clamp(24px, 4vw, 44px);
+      border: 1px solid var(--line-strong);
+      border-radius: 34px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 34rem),
+        var(--reader);
+      box-shadow: 0 22px 64px rgba(0, 0, 0, 0.24);
+    }
+
+    .content > p {
+      margin-bottom: 24px;
+    }
+
+    .content h2 {
+      margin: 62px 0 20px;
+      color: var(--ink-strong);
+      font-size: clamp(1.45rem, 2.4vw, 2.05rem);
+      line-height: 1.3;
+      letter-spacing: -0.035em;
+      text-wrap: balance;
+    }
+
+    .content h2::before {
+      content: "";
+      display: block;
+      width: 44px;
+      height: 2px;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, var(--green), transparent);
+    }
+
+    .content ul {
+      margin: 0 0 26px 24px;
+      color: var(--body-copy);
+    }
+
+    .content li { margin-bottom: 10px; }
+
+    .lead-block {
+      margin: 0 0 34px;
+      padding: clamp(22px, 4vw, 34px);
+      border: 1px solid rgba(66, 204, 122, 0.28);
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(66, 204, 122, 0.12), rgba(255, 255, 255, 0.035)),
+        rgba(255, 255, 255, 0.025);
+    }
+
+    .lead-block p {
+      margin-bottom: 14px;
+      font-size: clamp(1.12rem, 2vw, 1.45rem);
+      line-height: 1.75;
+      color: #f2fff6;
+    }
+
+    .lead-block p:last-child { margin-bottom: 0; }
+
+    .memo-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0 0 34px;
+    }
+
+    .memo-strip-item {
+      padding: 16px;
+      border: 1px solid rgba(227, 239, 231, 0.14);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .memo-strip-label {
+      margin-bottom: 8px;
+      color: var(--gold);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .memo-strip-item p {
+      margin: 0;
+      color: rgba(227, 239, 231, 0.82);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .pullquote {
+      margin: 38px 0;
+      padding: 22px 0 22px 24px;
+      border-left: 3px solid var(--green);
+      color: #e8f8ee;
+      font-size: clamp(1.1rem, 1.7vw, 1.3rem);
+      line-height: 1.65;
+    }
+
+    .memo-card,
+    .data-exhibit,
+    .diagram-card,
+    .checklist,
+    .disclaimer {
+      margin: 32px 0;
+      border: 1px solid rgba(227, 239, 231, 0.16);
+      border-radius: 24px;
+      background: var(--reader-soft);
+      box-shadow: none;
+      overflow: hidden;
+    }
+
+    .memo-card {
+      padding: clamp(20px, 4vw, 30px);
+      background:
+        linear-gradient(180deg, rgba(214, 173, 72, 0.075), rgba(255, 255, 255, 0.025));
+      border-color: rgba(214, 173, 72, 0.22);
+    }
+
+    .memo-label,
+    .exhibit-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      color: var(--gold);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .memo-card p { margin-bottom: 12px; }
+    .memo-card p:last-child { margin-bottom: 0; }
+
+    .data-exhibit { padding: 0; }
+
+    .exhibit-head {
+      padding: 18px 22px;
+      border-bottom: 1px solid rgba(227, 239, 231, 0.14);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .exhibit-title {
+      color: var(--ink-strong);
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .bars {
+      display: grid;
+      gap: 18px;
+      padding: 22px;
+    }
+
+    .bar-item {
+      display: grid;
+      grid-template-columns: 160px minmax(0, 1fr) 92px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .bar-name {
+      color: var(--soft);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .bar-track {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.09);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: var(--w);
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green), var(--teal));
+    }
+
+    .bar-fill.gold {
+      background: linear-gradient(90deg, var(--gold), #f1cc68);
+    }
+
+    .bar-value {
+      color: #f6fff9;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .bar-group {
+      padding: 20px 22px 0;
+    }
+
+    .bar-group-title {
+      margin-bottom: 12px;
+      color: rgba(227, 239, 231, 0.68);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .bar-group .bars {
+      padding: 0;
+    }
+
+    .exhibit-note {
+      padding: 0 22px 22px;
+      color: rgba(227, 239, 231, 0.62);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .metric-ribbon {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 22px 22px 0;
+    }
+
+    .metric-tile {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .metric-tile-label {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .metric-tile-value {
+      margin-top: 8px;
+      color: #f7fff9;
+      font-family: var(--font-mono);
+      font-size: clamp(1.35rem, 2.8vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      line-height: 1;
+    }
+
+    .metric-tile-note {
+      margin-top: 7px;
+      color: rgba(227, 239, 231, 0.62);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 22px;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 145px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.032);
+    }
+
+    .flow-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: -13px;
+      top: 50%;
+      width: 16px;
+      height: 1px;
+      background: rgba(136, 232, 173, 0.55);
+    }
+
+    .flow-num {
+      color: var(--green);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .flow-title {
+      margin-top: 12px;
+      color: #f7fff9;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .flow-copy {
+      margin-top: 8px;
+      color: rgba(227, 239, 231, 0.66);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      padding: 22px;
+    }
+
+    .matrix-cell {
+      min-height: 140px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.032);
+    }
+
+    .matrix-status {
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .ready {
+      background: rgba(66, 204, 122, 0.14);
+      color: #9cf0bb;
+    }
+
+    .not-yet {
+      background: rgba(214, 173, 72, 0.14);
+      color: #f0cc6b;
+    }
+
+    .matrix-cell strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #f6fff9;
+    }
+
+    .matrix-cell p {
+      color: rgba(227, 239, 231, 0.74);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .validation-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 22px;
+    }
+
+    .validation-hero {
+      display: grid;
+      grid-template-columns: minmax(190px, 0.62fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+      padding: 18px;
+      border: 1px solid rgba(227, 239, 231, 0.14);
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(224, 105, 95, 0.08), rgba(255, 255, 255, 0.025));
+    }
+
+    .ratio-card {
+      display: grid;
+      align-content: start;
+      padding: 2px 4px;
+    }
+
+    .ratio-label {
+      color: var(--gold);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .ratio-value {
+      margin: 14px 0 8px;
+      color: #f7fff9;
+      font-family: var(--font-mono);
+      font-size: clamp(2.7rem, 8vw, 5.4rem);
+      font-weight: 800;
+      letter-spacing: -0.08em;
+      line-height: 0.95;
+    }
+
+    .ratio-copy {
+      color: rgba(227, 239, 231, 0.72);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .ta-rail {
+      position: relative;
+      min-height: 176px;
+      border: 1px solid rgba(227, 239, 231, 0.1);
+      border-radius: 16px;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(227, 239, 231, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(227, 239, 231, 0.045) 1px, transparent 1px);
+      background-size: 100% 33.33%, 25% 100%;
+    }
+
+    .ta-line {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 42%;
+      height: 3px;
+      transform: rotate(-14deg);
+      transform-origin: left center;
+      background: linear-gradient(90deg, rgba(224, 105, 95, 0.95), rgba(214, 173, 72, 0.38));
+    }
+
+    .ta-dot {
+      position: absolute;
+      right: 16%;
+      bottom: 24%;
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--red);
+      box-shadow: 0 0 0 5px rgba(224, 105, 95, 0.1);
+    }
+
+    .ta-zone {
+      position: absolute;
+      right: 16px;
+      top: 14px;
+      color: rgba(227, 239, 231, 0.6);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .ta-axis {
+      position: absolute;
+      left: 16px;
+      bottom: 12px;
+      color: rgba(227, 239, 231, 0.54);
+      font-size: 0.78rem;
+    }
+
+    .validation-lanes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .validation-lane {
+      display: block;
+      padding: 15px;
+      border: 1px solid rgba(227, 239, 231, 0.12);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .validation-lane-label {
+      display: inline-flex;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .validation-lane strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink-strong);
+      line-height: 1.35;
+    }
+
+    .validation-lane p {
+      margin: 0;
+      color: rgba(227, 239, 231, 0.72);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .yield-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 16px;
+      padding: 22px;
+    }
+
+    .yield-primary {
+      display: grid;
+      gap: 12px;
+    }
+
+    .yield-box {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.032);
+    }
+
+    .yield-box span {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .yield-box strong {
+      display: block;
+      margin-top: 8px;
+      color: #f7fff9;
+      font-family: var(--font-mono);
+      font-size: clamp(1.45rem, 3vw, 2.25rem);
+      letter-spacing: -0.06em;
+      line-height: 1;
+    }
+
+    .coupon-stack {
+      display: grid;
+      align-content: center;
+      gap: 13px;
+    }
+
+    .coupon-row {
+      display: grid;
+      grid-template-columns: 86px minmax(0, 1fr) 76px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .coupon-label {
+      color: var(--soft);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .coupon-track {
+      height: 13px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.09);
+      overflow: hidden;
+    }
+
+    .coupon-fill {
+      width: var(--w);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--red), var(--gold));
+    }
+
+    .coupon-value {
+      color: #f6fff9;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .source-box {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: rgba(227, 239, 231, 0.58);
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    .source-box a {
+      color: rgba(136, 232, 173, 0.86);
+    }
+
+    .checklist {
+      padding: 22px;
+      background:
+        linear-gradient(180deg, rgba(66, 204, 122, 0.075), rgba(255, 255, 255, 0.025));
+    }
+
+    .check-row {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .check-row:last-child { border-bottom: 0; }
+
+    .check-dot {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(66, 204, 122, 0.12);
+      color: var(--green-2);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .check-row strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .check-row span {
+      color: rgba(227, 239, 231, 0.74);
+      font-size: 0.94rem;
+      line-height: 1.6;
+    }
+
+    .aside {
+      position: sticky;
+      top: 16px;
+      display: grid;
+      gap: 12px;
+      max-height: calc(100vh - 32px);
+      align-content: start;
+    }
+
+    .side-card {
+      padding: 14px;
+      border: 1px solid rgba(227, 239, 231, 0.14);
+      border-radius: 18px;
+      background: rgba(24, 37, 31, 0.84);
+      box-shadow: none;
+    }
+
+    .side-label {
+      margin-bottom: 10px;
+      color: var(--gold);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .side-list {
+      display: grid;
+      gap: 8px;
+      color: rgba(227, 239, 231, 0.82);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .side-list a {
+      display: block;
+      color: rgba(227, 239, 231, 0.82);
+    }
+
+    .side-list a:hover { color: var(--green-2); }
+
+    .toc-list {
+      display: grid;
+      gap: 2px;
+    }
+
+    .toc-list a {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(227, 239, 231, 0.08);
+      color: rgba(227, 239, 231, 0.8);
+      font-size: 0.84rem;
+      line-height: 1.32;
+    }
+
+    .toc-list a:last-child { border-bottom: 0; }
+
+    .toc-list span {
+      color: var(--gold);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+    }
+
+    .toc-list a:hover {
+      color: var(--green-2);
+    }
+
+    .side-metric {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--line);
+      color: rgba(227, 239, 231, 0.76);
+      font-size: 0.84rem;
+    }
+
+    .side-metric:last-child { border-bottom: 0; }
+    .side-metric strong { font-family: var(--font-mono); white-space: nowrap; }
+
+    .disclaimer {
+      padding: 20px 22px;
+      color: rgba(227, 239, 231, 0.66);
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+
+    .source-panel {
+      margin: 28px 0 0;
+      padding: 20px 22px;
+      border: 1px solid rgba(227, 239, 231, 0.16);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.028);
+    }
+
+    .source-panel .side-list {
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .site-footer {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .footer-socials {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .footer-socials a {
+      width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ink);
+    }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(14px);
+      animation: fadeUp 760ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .delay-1 { animation-delay: 90ms; }
+    .delay-2 { animation-delay: 160ms; }
+    .delay-3 { animation-delay: 230ms; }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes rotateSlow {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    @media (max-width: 920px) {
+      .nav-links-desktop,
+      .clock-display {
+        display: none;
+      }
+
+      .mobile-menu-btn { display: inline-flex; }
+
+      .hero-grid,
+      .article-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card { min-height: 430px; }
+      .aside { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .flow-step:not(:last-child)::after { display: none; }
+      .yield-grid { grid-template-columns: 1fr; }
+      .validation-grid { grid-template-columns: 1fr; }
+      .validation-hero { grid-template-columns: 1fr; }
+      .validation-lanes { grid-template-columns: 1fr; }
+      .memo-strip { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .page,
+      .back-link,
+      .article-banner,
+      .site-footer {
+        width: calc(100% - 24px);
+      }
+
+      .site-header { padding: 14px 16px; }
+      h1 { font-size: clamp(2.2rem, 14vw, 3.55rem); }
+      .hero-card { min-height: 390px; padding: 18px; border-radius: 26px; }
+      .bar-item { grid-template-columns: 1fr; gap: 8px; }
+      .bar-value { text-align: left; }
+      .coupon-row { grid-template-columns: 1fr; gap: 7px; }
+      .coupon-value { text-align: left; }
+      .metric-ribbon { grid-template-columns: 1fr; }
+      .flow,
+      .matrix,
+      .aside {
+        grid-template-columns: 1fr;
+      }
+      .content { font-size: 1rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="nav-hero">
+    <img src="assets/images/backgrounds/anime-bg.jpg" alt="" aria-hidden="true" />
+    <header class="site-header">
+      <a href="index.html" class="brand"><span>*</span> DUIDUI</a>
+
+      <nav class="nav-links-desktop" aria-label="Primary">
+        <div class="nav-container">
+          <a href="index.html" class="nav-link">HOME</a>
+          <a href="index.html#connect" class="nav-link">CONNECT</a>
+          <a href="shop.html" class="nav-link">ARTIFACTS</a>
+          <a href="blog.html" class="nav-link active">BLOG</a>
+        </div>
+      </nav>
+
+      <div class="header-tools">
+        <div class="clock-display" id="clock">--:--:--</div>
+        <button class="mobile-menu-btn" type="button" aria-label="Toggle menu" onclick="document.getElementById('articleMobileNav').classList.toggle('open')">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="nav-links-mobile" id="articleMobileNav">
+      <a href="index.html" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">HOME</a>
+      <a href="index.html#connect" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">CONNECT</a>
+      <a href="shop.html" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">ARTIFACTS</a>
+      <a href="blog.html" class="nav-link active" onclick="document.getElementById('articleMobileNav').classList.remove('open')">BLOG</a>
+    </div>
+  </div>
+
+  <a href="blog.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M12 19l-7-7 7-7" />
+    </svg>
+    Back To Journal
+  </a>
+
+  <div class="article-banner fade-up delay-1">
+    <img src="assets/images/blog/STRC%20for%20eTH.png" alt="STRC for ETH banner" />
+  </div>
+
+  <main class="page" id="top">
+    <section class="hero-grid">
+      <div class="hero-copy fade-up">
+        <div class="eyebrow">Market Structure Memo</div>
+        <h1>BitMine อาจทำ “STRC for ETH” ได้จริง แต่ตลาดกำลังมองผิดจุด</h1>
+        <p class="dek">สิ่งที่ขวาง BMNR ไม่ใช่ mNAV แต่คือ “war chest” ที่ยังไม่ใหญ่พอจะทำให้ preferred stock แบบ par-anchored ดูน่าเชื่อถือสำหรับนักลงทุนสายเครดิต</p>
+        <div class="hero-meta">
+          <span>24 เม.ย. 2026</span>
+          <span>·</span>
+          <span>~11 นาที</span>
+          <span>·</span>
+          <span>BMNR / ETH / CREDIT</span>
+        </div>
+      </div>
+
+      <aside class="hero-card fade-up delay-1" aria-label="Article key metrics">
+        <div class="orbital" aria-hidden="true"></div>
+        <div class="hero-card-content">
+          <div class="ticker-row">
+            <span>BMNR</span>
+            <span>ETH CREDIT COLLATERAL</span>
+          </div>
+          <div class="signal-stack">
+            <div class="signal">
+              <div class="signal-label">ETH Held</div>
+              <div class="signal-value">4.98M</div>
+              <div class="signal-note">ประมาณ 4.12% ของ ETH supply ตามข้อมูลบริษัท ณ 19 เม.ย. 2026</div>
+            </div>
+            <div class="signal">
+              <div class="signal-label">Cash War Chest</div>
+              <div class="signal-value">$1.12B</div>
+              <div class="signal-note">ดีขึ้นจากสัปดาห์ก่อน แต่ยังราวครึ่งหนึ่งของ Strategy USD Reserve ที่ตลาดใช้เป็น reference</div>
+            </div>
+            <div class="signal">
+              <div class="signal-label">Core Question</div>
+              <div class="signal-value">Par?</div>
+              <div class="signal-note">ตลาดเครดิตไม่ได้ถามแค่มี collateral ไหม แต่ถามว่ามี cash cushion พอจ่าย dividend ล่วงหน้าไหม</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="article-shell">
+      <article class="content fade-up delay-2">
+        <div class="lead-block">
+          <p>ในช่วงนี้ thesis ที่เริ่มถูกพูดถึงมากขึ้นคือ BitMine (BMNR) สามารถทำเวอร์ชัน ETH ของ STRC ของ Strategy ได้หรือไม่</p>
+          <p><strong>คำตอบแบบสั้นคือ:</strong> ทำได้ในเชิงโครงสร้าง แต่ยังไม่ใช่ตอนนี้ทันที</p>
+        </div>
+
+        <div class="memo-strip" aria-label="Memo summary">
+          <div class="memo-strip-item">
+            <div class="memo-strip-label">Core Thesis</div>
+            <p>BMNR มี ETH และ staking engine พอ แต่ preferred แบบ par-anchored ต้องชนะใจตลาดเครดิตก่อน</p>
+          </div>
+          <div class="memo-strip-item">
+            <div class="memo-strip-label">Market Misread</div>
+            <p>ตลาดถก mNAV มากเกินไป ทั้งที่ตัวแปรสำคัญคือ cash cushion และ dividend coverage</p>
+          </div>
+          <div class="memo-strip-item">
+            <div class="memo-strip-label">Catalyst</div>
+            <p>ถ้า cash war chest ใหญ่พอ ETH จะเริ่มถูก validate เป็น credit collateral ไม่ใช่แค่ tech asset</p>
+          </div>
+        </div>
+
+        <p>เหตุผลที่น่าสนใจมากคือ ตลาดส่วนใหญ่กำลังถกกันเรื่องผิดจุด</p>
+        <p>หลายคนติดอยู่กับคำถามว่า “BMNR เทรดใกล้ NAV เกินไปไหม ถึงจะทำ dilution แบบ accretive ได้” หรือ “ถ้า Saylor ทำได้ ทำไม BitMine จะทำไม่ได้”</p>
+        <p>แต่ถ้ามองลึกกว่านั้น คำถามจริงไม่ใช่เรื่อง premium อย่างเดียว คำถามจริงคือ:</p>
+
+        <div class="pullquote">BitMine มีเงินสดสำรองมากพอจะทำให้ preferred stock แบบ par-anchored ดูน่าเชื่อถือสำหรับนักลงทุนสายเครดิตแล้วหรือยัง</div>
+
+        <p>นั่นต่างหากคือแกนของเรื่องนี้</p>
+
+        <h2 id="strc-mechanism">ก่อนอื่น STRC ของ Strategy คืออะไร</h2>
+        <p>STRC ไม่ได้เป็นแค่ preferred หุ้นกู้ครึ่งๆ กลางๆ ธรรมดา แต่มันคือเครื่องจักรระดมทุนที่ออกแบบมาให้ “ดูเหมือน fixed income” แต่ทำหน้าที่ “ดูดเงินไปซื้อ BTC”</p>
+        <p>ตอนนี้หน้าเว็บของ Strategy ระบุว่า STRC มีอัตราเงินปันผลแบบแปรผันอยู่ที่ <strong>11.50% annualized</strong> บน stated amount $100 และอัตรานี้ถูกปรับได้เป็นรายเดือนเพื่อพยายามตรึงราคาการซื้อขายให้แถว par</p>
+
+        <div class="diagram-card">
+          <div class="exhibit-head">
+            <div class="exhibit-label"><span>Exhibit 01</span><span>STRC Flywheel</span></div>
+            <div class="exhibit-title">Innovation ของ Saylor คือการแปลง demand จาก fixed income ให้กลายเป็นแรงซื้อ BTC</div>
+          </div>
+          <div class="flow">
+            <div class="flow-step">
+              <div class="flow-num">01</div>
+              <div class="flow-title">รายได้/เครดิต นักลงทุน</div>
+              <div class="flow-copy">ผู้ซื้ออยากได้ yield และความรู้สึกใกล้ fixed income</div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">02</div>
+              <div class="flow-title">ซื้อ preferred ใกล้ par</div>
+              <div class="flow-copy">อัตราปันผลถูกปรับเพื่อพยุงราคาบริเวณ $100</div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">03</div>
+              <div class="flow-title">Strategy ระดมทุน</div>
+              <div class="flow-copy">ออก product เพิ่มเมื่อ demand และราคาเอื้อให้ทำได้</div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">04</div>
+              <div class="flow-title">เงินถูกแปลงเป็น BTC</div>
+              <div class="flow-copy">fixed-income demand กลายเป็น spot BTC demand</div>
+            </div>
+          </div>
+        </div>
+
+        <p>นี่คือ innovation สำคัญของ Saylor ไม่ใช่แค่การออก preferred แต่คือการสร้างสินทรัพย์ที่นักลงทุนสายรายได้ยอมถือ แล้วเปลี่ยน demand จากโลก fixed income ให้กลายเป็นแรงซื้อ BTC</p>
+
+        <h2 id="bitmine-ingredients">แล้ว BitMine มีวัตถุดิบพอไหม</h2>
+        <p>ในเชิง “วัตถุดิบ” คำตอบคือค่อนข้างชัดว่า มี</p>
+        <p>ข้อมูลล่าสุดของบริษัทระบุว่า ณ 19 เมษายน 2026 BitMine ถือ <strong>4,976,485 ETH</strong> คิดเป็นประมาณ <strong>4.12%</strong> ของ supply ETH และมีเงินสดรวม <strong>$1.12 billion</strong></p>
+        <p>ฝั่งตลาด หุ้น BMNR ล่าสุดอยู่แถว <strong>$22.0</strong> และ market cap ราว <strong>$10.0B</strong> ขณะที่ MSTR อยู่แถว <strong>$172.47</strong> และ market cap ราว <strong>$54.4B</strong> ในข้อมูลตลาดล่าสุดที่ดึงมา</p>
+
+        <div class="data-exhibit">
+          <div class="exhibit-head">
+            <div class="exhibit-label"><span>Exhibit 02</span><span>Balance Sheet Contrast</span></div>
+            <div class="exhibit-title">BitMine ไม่ได้เล็กแบบเริ่มจากศูนย์ แต่ cash reserve ยังไม่ใช่ระดับที่ตลาดเครดิตสบายใจ</div>
+          </div>
+          <div class="metric-ribbon">
+            <div class="metric-tile">
+              <div class="metric-tile-label">BMNR Cash / Strategy Reserve</div>
+              <div class="metric-tile-value">49.8%</div>
+              <div class="metric-tile-note">$1.12B เทียบกับ $2.25B</div>
+            </div>
+            <div class="metric-tile">
+              <div class="metric-tile-label">BMNR Size / MSTR Size</div>
+              <div class="metric-tile-value">18.4%</div>
+              <div class="metric-tile-note">market cap เทียบกันโดยประมาณ</div>
+            </div>
+            <div class="metric-tile">
+              <div class="metric-tile-label">ETH Supply Held</div>
+              <div class="metric-tile-value">4.12%</div>
+              <div class="metric-tile-note">82% ของเป้าหมาย 5% Alchemy</div>
+            </div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-group-title">Equity Scale</div>
+            <div class="bars">
+              <div class="bar-item">
+                <div class="bar-name">BMNR Market Cap</div>
+                <div class="bar-track"><div class="bar-fill" style="--w: 18.4%"></div></div>
+                <div class="bar-value">$10.0B</div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-name">MSTR Market Cap</div>
+                <div class="bar-track"><div class="bar-fill" style="--w: 100%"></div></div>
+                <div class="bar-value">$54.4B</div>
+              </div>
+            </div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-group-title">Liquidity Cushion</div>
+            <div class="bars">
+              <div class="bar-item">
+                <div class="bar-name">BMNR Cash</div>
+                <div class="bar-track"><div class="bar-fill gold" style="--w: 49.8%"></div></div>
+                <div class="bar-value">$1.12B</div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-name">Strategy USD Reserve</div>
+                <div class="bar-track"><div class="bar-fill gold" style="--w: 100%"></div></div>
+                <div class="bar-value">$2.25B</div>
+              </div>
+            </div>
+          </div>
+          <p class="exhibit-note">แยกสเกล equity กับ liquidity เพื่อไม่ให้ market cap และ cash reserve ถูกอ่านเป็นแกนเดียวกัน ตัวเลขเป็น snapshot ตามแหล่งข้อมูลที่ระบุท้ายบทความ</p>
+        </div>
+
+        <p>แปลเป็นภาษาง่ายๆ คือ BitMine ไม่ได้เล็กแบบ “เริ่มจากศูนย์” แล้ว มันมี balance sheet ใหญ่พอที่จะทำให้ thesis นี้ฟังดูจริงจัง</p>
+        <p>ยิ่งกว่านั้น ETH ต่างจาก BTC ตรงที่ มี native yield</p>
+        <p>BitMine เปิดตัว MAVAN แพลตฟอร์ม staking ของตัวเองเมื่อ 25 มีนาคม 2026 โดยขณะเปิดตัวมี ETH ที่ stake แล้วกว่า <strong>3.14M ETH</strong> ล่าสุด ณ 20 เมษายน 2026 บริษัทระบุว่า stake แล้ว <strong>3,334,637 ETH</strong> สร้าง annualized staking revenue ราว <strong>$221M</strong> และถ้า stake ได้เต็มสเกล ผลตอบแทนอาจอยู่แถว <strong>$330M</strong> ตาม 7-day BMNR yield 2.88%</p>
+
+        <div class="memo-card">
+          <div class="memo-label"><span>Why Bulls Care</span><span>ETH Native Yield</span></div>
+          <p>ถ้า Strategy ต้องจ่าย preferred dividend จาก cash reserve, capital markets access และการบริหาร balance sheet</p>
+          <p>BitMine อย่างน้อยก็มี staking revenue มาช่วย offset coupon ได้บางส่วน นั่นทำให้ต้นทุนทุนของ “ETH-backed preferred” อาจต่ำกว่าที่คนคิด</p>
+        </div>
+
+        <div class="data-exhibit">
+          <div class="exhibit-head">
+            <div class="exhibit-label"><span>Exhibit 03</span><span>Yield vs Coupon Wall</span></div>
+            <div class="exhibit-title">staking yield ช่วยได้จริง แต่ขนาดดีล preferred จะเป็นตัวกำหนดว่า yield พอ offset coupon แค่ไหน</div>
+          </div>
+          <div class="yield-grid">
+            <div class="yield-primary">
+              <div class="yield-box">
+                <span>Current Annualized Staking Revenue</span>
+                <strong>$221M</strong>
+              </div>
+              <div class="yield-box">
+                <span>Projected Full-Scale Staking Reward</span>
+                <strong>$330M</strong>
+              </div>
+            </div>
+            <div class="coupon-stack">
+              <div class="coupon-row">
+                <div class="coupon-label">$1B Pref</div>
+                <div class="coupon-track"><div class="coupon-fill" style="--w: 33.3%"></div></div>
+                <div class="coupon-value">$115M</div>
+              </div>
+              <div class="coupon-row">
+                <div class="coupon-label">$2B Pref</div>
+                <div class="coupon-track"><div class="coupon-fill" style="--w: 66.7%"></div></div>
+                <div class="coupon-value">$230M</div>
+              </div>
+              <div class="coupon-row">
+                <div class="coupon-label">$3B Pref</div>
+                <div class="coupon-track"><div class="coupon-fill" style="--w: 100%"></div></div>
+                <div class="coupon-value">$345M</div>
+              </div>
+            </div>
+          </div>
+          <p class="exhibit-note">coupon wall ใช้สมมติฐาน 11.5% ต่อปีเพื่อเทียบกับ STRC ปัจจุบัน ไม่ใช่คาดการณ์ coupon จริงของ BMNR</p>
+        </div>
+
+        <h2 id="war-chest-problem">แต่จุดที่หลายคนมองข้ามคือ ทำไมมันยังไม่เกิด</h2>
+        <p>ตรงนี้เองที่ thesis ในเอกสารน่าสนใจที่สุด บทสรุปหลักของโน้ตคือ ข้อจำกัดจริงไม่ใช่ valuation แต่คือ cash reserve</p>
+        <p>แม้ BitMine จะถือ ETH มูลค่ามหาศาล แต่ preferred ที่อยากให้ตลาดเชื่อถือได้ โดยเฉพาะแบบ par-anchored ที่หวังขายให้นักลงทุนเครดิตวงกว้าง มันไม่ได้ขายกันด้วยคำว่า “เรามี collateral เยอะ” อย่างเดียว</p>
+        <p>มันต้องมีอีก 2 อย่าง:</p>
+        <ul>
+          <li>กระแสเงินสดที่มองเห็นได้</li>
+          <li>เงินสดสำรองที่กันไว้จ่าย dividend ได้ล่วงหน้า</li>
+        </ul>
+
+        <p>และตรงนี้เองที่ Strategy เหนือกว่าอย่างมาก</p>
+        <p>สื่อและนักวิเคราะห์หลายแห่งอ้างถึง “USD Reserve” ของ Strategy ที่ตั้งขึ้นเพื่อรองรับภาระ dividend ของ preferred stack โดยมีตัวเลขอ้างอิงที่ <strong>$2.25B</strong> อยู่ในตลาดข้อมูลช่วงเมษายน 2026 และหน้า STRC/บทวิเคราะห์ภายนอกก็สะท้อนว่าตลาดมอง reserve นี้เป็นหัวใจของความน่าเชื่อถือของโครงสร้าง</p>
+        <p>ขณะที่ BitMine มีเงินสดล่าสุด <strong>$1.12B</strong> ซึ่งเพิ่มขึ้นมากจากสัปดาห์ก่อน แต่ยังเป็นเพียงราวครึ่งหนึ่งของ Strategy USD Reserve และบริษัทยังเดินหน้าลงทุนเพิ่มทั้งใน ETH และสินทรัพย์อื่นตามที่เปิดเผยไว้ เช่น Beast Industries และ Eightco/ORBS ด้วย</p>
+
+        <div class="pullquote">BitMine ไม่ได้ขาด collateral แต่มันอาจยังขาด “cash cushion” ที่จะทำให้ preferred ของมันถูกมองเป็นเครดิตโปรดักต์ที่ซื้อได้อย่างสบายใจ</div>
+
+        <h2 id="execution-readiness">ถ้า Saylor ทำได้ ทำไม BitMine จะทำไม่ได้</h2>
+        <p>คำตอบคือ: ทำได้ แต่ Saylor ทำในจังหวะที่เขามีทั้งตลาดทุน, liquidity, และ reserve พร้อมกว่า</p>
+        <p>BitMine เองก็มีสัญญาณว่าบริษัทวางโครงสร้างไว้แล้ว เอกสาร S-3ASR ของบริษัทเปิดทางสำหรับการออก debt, convertible notes และ preferred stock เพื่อใช้ระดมทุนสำหรับการซื้อ BTC/ETH เพิ่มได้ชัดเจน</p>
+        <p>บริษัทยัง uplist สู่ NYSE เมื่อ 9 เมษายน 2026 ซึ่งช่วยเพิ่มความพร้อมในเชิง institutional eligibility ด้วย</p>
+
+        <div class="diagram-card">
+          <div class="exhibit-head">
+            <div class="exhibit-label"><span>Exhibit 04</span><span>Readiness Matrix</span></div>
+            <div class="exhibit-title">พร้อมในเชิง blueprint แต่ยังไม่พร้อมเต็มที่ในเชิง balance sheet</div>
+          </div>
+          <div class="matrix">
+            <div class="matrix-cell">
+              <span class="matrix-status ready">Ready</span>
+              <strong>ETH Collateral</strong>
+              <p>มี ETH จำนวนมากพอทำให้ thesis น่าเชื่อถือ และมี scale ไม่ใช่ treasury vehicle ขนาดเล็ก</p>
+            </div>
+            <div class="matrix-cell">
+              <span class="matrix-status ready">Ready</span>
+              <strong>Staking Engine</strong>
+              <p>MAVAN ช่วยให้ ETH-backed preferred มี revenue offset ที่ BTC ไม่มีโดยธรรมชาติ</p>
+            </div>
+            <div class="matrix-cell">
+              <span class="matrix-status ready">Ready</span>
+              <strong>Capital Markets Rail</strong>
+              <p>S-3ASR และ NYSE uplist เปิดทางให้ execute เครื่องมือ debt, convert และ preferred ได้</p>
+            </div>
+            <div class="matrix-cell">
+              <span class="matrix-status not-yet">Not Yet</span>
+              <strong>Cash War Chest</strong>
+              <p>เงินสดยังอาจไม่พอให้ตลาดเครดิตเชื่อว่า dividend support และ par anchor แข็งแรง</p>
+            </div>
+          </div>
+        </div>
+
+        <p>ดังนั้นประเด็นไม่ใช่ “บริษัทคิดเรื่องนี้หรือยัง” ดูจากโครงสร้างแล้ว มีความเป็นไปได้สูงว่าคิดแล้ว</p>
+        <p>ประเด็นคือ บริษัทพร้อมจะ execute cleanly หรือยัง และจากข้อมูลตอนนี้ คำตอบน่าจะเป็น พร้อมในเชิง blueprint แต่ยังไม่พร้อมเต็มที่ในเชิง balance sheet</p>
+
+        <h2 id="eth-impact">แล้วผลต่อ ETH จะใหญ่แค่ไหน ถ้าแผนนี้เกิดจริง</h2>
+        <p>ถ้า BitMine ออก preferred ได้สำเร็จในระดับใหญ่ ผลโดยตรงคือมีเงินใหม่ไหลเข้ามาซื้อ ETH เพิ่มแน่</p>
+        <p>แต่ประเด็นที่สำคัญกว่าปริมาณซื้อ คือ validation</p>
+
+        <p>อย่างไรก็ตาม จุดที่ต้องพูดให้ชัดคือ <strong>ETH ยังไม่ได้ถูกตลาด validate ว่าเป็น asset class แบบเดียวกับ Bitcoin</strong> แม้ทั้งคู่จะอยู่ใน crypto majors เหมือนกัน แต่ในสายตาทุนสถาบัน BTC ยังเป็นสินทรัพย์ที่เล่าเรื่องง่ายกว่า: digital gold, macro hedge, scarce collateral และ reserve asset ที่มี product-market fit ชัดกว่า</p>
+
+        <p>ETH มี narrative ที่ซับซ้อนกว่า มันเป็นทั้ง settlement layer, gas asset, staking yield asset, DeFi collateral และ tech infrastructure token ในเวลาเดียวกัน ความซับซ้อนนี้ดีในเชิง upside แต่ทำให้ตลาดเครดิตประเมินยากกว่า BTC เพราะคำถามไม่ได้มีแค่ “ถือแล้วจะ scarce ไหม” แต่รวมถึง fee capture, L2 value leakage, staking yield, protocol risk และ demand จาก application layer</p>
+
+        <p>นี่เชื่อมกลับไปที่บทความ <a href="eth-bearish-pair.html">ETH อาจ Bullish ในดอลลาร์ แต่ยัง Bearish เมื่อเทียบ BTC?</a> โดยตรง: supply side ของ ETH อาจตึงขึ้นจริงจาก staking และ treasury accumulation แต่ถ้า ETH/BTC ยังไม่ reclaim โครงสร้างสำคัญ ตลาดก็ยังบอกอยู่ว่าเงินหลักยังให้ demand premium กับ BTC มากกว่า ETH</p>
+
+        <div class="data-exhibit">
+          <div class="exhibit-head">
+            <div class="exhibit-label"><span>Exhibit 05</span><span>ETH Validation Gap</span></div>
+            <div class="exhibit-title">ก่อน ETH จะเป็น credit collateral แบบ BTC ได้ ตลาดต้องเห็นมากกว่า supply tightening</div>
+          </div>
+          <div class="validation-grid">
+            <div class="validation-hero">
+              <div class="ratio-card">
+                <div class="ratio-label">ETH/BTC Relative Signal</div>
+                <div class="ratio-value">~0.03</div>
+                <div class="ratio-copy">ETH/BTC ยังอยู่ใกล้โซน multi-year low และยังไม่ได้ส่งสัญญาณชัดว่าตลาดยอมจ่าย premium ให้ ETH เทียบ BTC</div>
+              </div>
+              <div class="ta-rail" aria-hidden="true">
+                <div class="ta-zone">Relative leadership not reclaimed</div>
+                <div class="ta-line"></div>
+                <div class="ta-dot"></div>
+                <div class="ta-axis">ETH/BTC trend proxy</div>
+              </div>
+            </div>
+            <div class="validation-lanes">
+              <div class="validation-lane">
+                <div class="validation-lane-label">BTC</div>
+                <div>
+                  <strong>Macro collateral ที่ตลาดเข้าใจแล้ว</strong>
+                  <p>narrative เรียบง่ายกว่า, ETF rail ใหญ่กว่า, treasury playbook ผ่าน Strategy ถูกพิสูจน์แล้ว และตลาดเครดิตเริ่มมี reference product อย่าง STRC</p>
+                </div>
+              </div>
+              <div class="validation-lane">
+                <div class="validation-lane-label">ETH</div>
+                <div>
+                  <strong>Infrastructure asset ที่ยังต้องพิสูจน์ credit bid</strong>
+                  <p>มี staking yield และ utility จริง แต่ relative price action ยังบอกว่าตลาดยังไม่ได้จัด ETH เป็นสินทรัพย์ชั้นเดียวกับ BTC ในเชิง capital preference</p>
+                </div>
+              </div>
+              <div class="validation-lane">
+                <div class="validation-lane-label">BMNR</div>
+                <div>
+                  <strong>ถ้าทำ preferred สำเร็จ จะเป็น validation event</strong>
+                  <p>ดีลไม่ได้แค่ซื้อ ETH เพิ่ม แต่จะทดสอบว่าตลาดเครดิตยอมรับ ETH-backed income product ใกล้ par ได้จริงหรือไม่</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="exhibit-note">ETH/BTC เป็นสัญญาณ relative demand ไม่ใช่ตัวตัดสิน fundamental ทั้งหมดของ Ethereum แต่เป็นตัวแปรสำคัญเมื่อถามว่า ETH ถูกตลาดจัดชั้นเทียบ BTC แล้วหรือยัง</p>
+        </div>
+
+        <p>ถ้า BTC ถูก validate ไปแล้วว่าใช้เป็น collateral สำหรับ preferred/fixed-income style product ได้ การที่ ETH ทำสำเร็จจะหมายถึงอีกเรื่องหนึ่งทันที:</p>
+
+        <div class="memo-card">
+          <div class="memo-label"><span>Market Narrative Shift</span><span>ETH as Credit Collateral</span></div>
+          <p>ETH ไม่ได้เป็นแค่ tech asset หรือ gas asset อีกต่อไป แต่มันเริ่มถูกยอมรับเป็น “credit collateral” สำหรับทุนสถาบัน</p>
+          <p>ถ้าโมเดลนี้ work มันจะไม่ใช่แค่ BitMine ตัวเดียว แต่มันจะเปิดประตูให้ treasury vehicles หรือ structured products ฝั่ง ETH ตัวอื่นตามมาในรอบถัดไป</p>
+        </div>
+
+        <h2 id="investment-lens">แล้วมุมลงทุนควรมองยังไง</h2>
+        <p>ถ้าจะสรุปแบบคมที่สุด thesis นี้ไม่ได้บอกว่า “BMNR จะกลายเป็น MSTR ฝั่ง ETH พรุ่งนี้”</p>
+        <p>มันบอกว่า BMNR อาจกำลังเดินไปสู่จุดที่สามารถใช้ playbook แบบเดียวกับ Saylor ได้ แต่ catalyst สำคัญไม่ใช่การมี ETH เยอะ คือการมีเงินสดสำรองมากพอ จนตลาดเครดิตเชื่อว่าดีลนั้นควรเทรดใกล้ par</p>
+        <p>ดังนั้นตลาดที่มัวเถียงเรื่อง mNAV อย่างเดียว อาจกำลังพลาดตัวแปรที่สำคัญที่สุดของทั้งเรื่อง</p>
+
+        <div class="checklist" id="what-has-to-happen">
+          <div class="exhibit-label"><span>What Has To Happen</span><span>3 Conditions</span></div>
+          <div class="check-row">
+            <div class="check-dot">1</div>
+            <div><strong>ETH ต้องทรงตัวได้</strong><span>ลดความเสี่ยง collateral volatility และทำให้เครดิต narrative คุยง่ายขึ้น</span></div>
+          </div>
+          <div class="check-row">
+            <div class="check-dot">2</div>
+            <div><strong>MAVAN ต้อง scale ขึ้น</strong><span>staking revenue ต้องมองเห็นได้พอจะช่วย offset coupon ในสายตานักลงทุน</span></div>
+          </div>
+          <div class="check-row">
+            <div class="check-dot">3</div>
+            <div><strong>Cash war chest ต้องใหญ่พอ</strong><span>นี่คือตัวแปรที่จะเปลี่ยนดีลจาก “ไอเดียที่ดี” เป็น “เครดิตโปรดักต์ที่ตลาดซื้อจริง”</span></div>
+          </div>
+        </div>
+
+        <p>ถ้า ETH ทรงตัวได้ ถ้า MAVAN scale ขึ้น และถ้า BitMine สะสม cash war chest ได้มากพอ วันนั้น preferred ของ BMNR จะไม่ใช่แค่ product ใหม่ แต่มันจะเป็นการ re-rate narrative ของ ETH ทั้ง ecosystem</p>
+
+        <h2 id="summary">สรุปสุดท้าย</h2>
+        <p>BitMine มี “วัตถุดิบ” ครบแล้ว มี ETH, มี staking engine, มีตลาดทุนรองรับระดับหนึ่ง, และมีเอกสารที่เปิดทางสำหรับ preferred/debt issuance แล้ว</p>
+        <p>แต่สิ่งที่ยังขาดคือ war chest ที่ใหญ่พอจะเปลี่ยนโครงสร้างนี้จาก “ไอเดียที่ดี” ให้เป็น “เครดิตโปรดักต์ที่ตลาดซื้อจริง”</p>
+        <p>และนั่นแหละคือเหตุผลที่ thesis นี้น่าสนใจมากในปี 2026 เพราะถ้ามันสำเร็จจริง สิ่งที่ถูก validate อาจไม่ใช่แค่ BitMine แต่อาจเป็น ETH ทั้ง asset class</p>
+
+        <div class="disclaimer">
+          *ไม่ใช่คำแนะนำในการลงทุน ทั้งหมดนี้เป็นเพียงการแชร์มุมมองเพื่อการศึกษาเท่านั้น ตัวเลขในบทความอิงตามข้อมูลที่ผู้เขียนรวบรวม ณ ช่วงเวลาที่ระบุ
+        </div>
+
+        <div class="source-panel">
+          <div class="side-label">Data Sources</div>
+          <div class="side-list">
+            <a href="https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-976-million-tokens-and-total-crypto-and-total-cash-holdings-of-12-9-billion-302746944.html" target="_blank" rel="noopener">BitMine Apr 20, 2026 release</a>
+            <a href="https://www.strategy.com/stretch" target="_blank" rel="noopener">Strategy STRC page</a>
+            <a href="https://www.strategy.com/press/strategy-announces-fourth-quarter-2025-financial-results_02-05-2026" target="_blank" rel="noopener">Strategy USD Reserve</a>
+            <a href="https://www.coinglass.com/learn/why-eth-underperforming-en" target="_blank" rel="noopener">CoinGlass ETH/BTC underperformance overview</a>
+            <a href="https://www.cmegroup.com/articles/files/2025/glassnode-ether-report.pdf" target="_blank" rel="noopener">CME / Glassnode Ether market trends report</a>
+            <a href="eth-bearish-pair.html">DUIDUI ETH/BTC bearish pair thesis</a>
+          </div>
+          <div class="source-box">Market cap / stock price are volatile snapshots and should be refreshed before publishing if you want this to remain “latest”.</div>
+        </div>
+      </article>
+
+      <aside class="aside fade-up delay-3" aria-label="Article sidebar">
+        <div class="side-card">
+          <div class="side-label">Core Thesis</div>
+          <div class="side-list">
+            <p>ตลาดกำลังโฟกัส mNAV มากเกินไป ทั้งที่เงื่อนไขจริงของ preferred แบบ par-anchored คือความน่าเชื่อถือของ cash reserve</p>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <div class="side-label">Numbers To Watch</div>
+          <div class="side-metric"><span>BMNR ETH</span><strong>4.98M</strong></div>
+          <div class="side-metric"><span>BMNR Cash</span><strong>$1.12B</strong></div>
+          <div class="side-metric"><span>MAVAN Staked</span><strong>3.33M ETH</strong></div>
+          <div class="side-metric"><span>Current Staking Rev.</span><strong>$221M</strong></div>
+          <div class="side-metric"><span>Full-Scale Reward</span><strong>$330M</strong></div>
+        </div>
+
+        <div class="side-card">
+          <div class="side-label">In This Memo</div>
+          <div class="toc-list">
+            <a href="#top"><span>00</span>บทนำ</a>
+            <a href="#strc-mechanism"><span>01</span>STRC mechanism</a>
+            <a href="#bitmine-ingredients"><span>02</span>BitMine ingredients</a>
+            <a href="#war-chest-problem"><span>03</span>War chest problem</a>
+            <a href="#execution-readiness"><span>04</span>Execution readiness</a>
+            <a href="#eth-impact"><span>05</span>ETH validation gap</a>
+            <a href="#investment-lens"><span>06</span>Investment lens</a>
+            <a href="#summary"><span>07</span>สรุปสุดท้าย</a>
+          </div>
+        </div>
+
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-socials">
+      <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" rel="noopener" aria-label="YouTube">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23 8.8c-.3-1.2-1.2-2.1-2.4-2.4C18.4 6 12 6 12 6s-6.4 0-8.6.4A3.3 3.3 0 0 0 1 8.8C.6 11 .6 12 .6 12s0 1 .4 3.2c.3 1.2 1.2 2.1 2.4 2.4 2.2.4 8.6.4 8.6.4s6.4 0 8.6-.4a3.3 3.3 0 0 0 2.4-2.4c.4-2.2.4-3.2.4-3.2s0-1-.4-3.2zM10 15.2V8.8l5.5 3.2L10 15.2z"/></svg>
+      </a>
+      <a href="https://x.com/dodgeduidui" target="_blank" rel="noopener" aria-label="X">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z"/></svg>
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.87v2.26h3.32l-.53 3.5h-2.8V24C19.62 23.1 24 18.1 24 12.07z"/></svg>
+      </a>
+      <a href="https://t.me/duisnote" target="_blank" rel="noopener" aria-label="Telegram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z"/></svg>
+      </a>
+    </div>
+    <div class="footer-copy">
+      &copy; 2026 <a href="blog.html">DUIDUI Journal</a> — Crypto KOL Portal
+    </div>
+  </footer>
+
+  <script>
+    const ARTICLE_PASSWORD = "memberonly";
+    const ARTICLE_ACCESS_KEY = "duidui-blog-access";
+
+    function enforceArticleAccess() {
+      const cached = localStorage.getItem(ARTICLE_ACCESS_KEY);
+      if (cached === ARTICLE_PASSWORD) return;
+
+      const entered = window.prompt("Enter password to view this article:");
+      if (entered === ARTICLE_PASSWORD) {
+        localStorage.setItem(ARTICLE_ACCESS_KEY, ARTICLE_PASSWORD);
+        return;
+      }
+
+      if (entered !== null) window.alert("Incorrect password.");
+      window.location.href = "blog.html";
+    }
+
+    enforceArticleAccess();
+
+    const clockEl = document.getElementById("clock");
+
+    function updateClock() {
+      const now = new Date();
+      const utc7 = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+      const hh = String(utc7.getUTCHours()).padStart(2, "0");
+      const mm = String(utc7.getUTCMinutes()).padStart(2, "0");
+      const ss = String(utc7.getUTCSeconds()).padStart(2, "0");
+      if (clockEl) clockEl.textContent = hh + ":" + mm + ":" + ss;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    document.addEventListener("click", function (event) {
+      const nav = document.getElementById("articleMobileNav");
+      if (nav && !nav.contains(event.target) && !event.target.closest(".mobile-menu-btn")) {
+        nav.classList.remove("open");
+      }
+    });
+  </script>
+</body>
+</html>
