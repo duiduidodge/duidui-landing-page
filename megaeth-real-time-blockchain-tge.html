@@ -35,29 +35,42 @@
     }
 
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
       min-height: 100vh;
-      background: var(--paper);
+      background:
+        radial-gradient(circle at 14% 4%, rgba(103,213,139,0.13), transparent 30rem),
+        radial-gradient(circle at 92% 14%, rgba(212,177,90,0.08), transparent 28rem),
+        linear-gradient(180deg, #0b1410 0%, var(--paper) 38%, #0d1711 100%);
       color: var(--ink);
       font-family: var(--font-body);
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
     }
 
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+    }
+
     .mono { font-family: var(--font-mono); }
 
     .site-header {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
+      position: relative;
       z-index: 40;
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 22px 48px;
+      padding: 22px 0 12px;
     }
 
     .brand,
@@ -97,37 +110,54 @@
 
     .hero {
       position: relative;
-      min-height: 74vh;
+      z-index: 1;
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto 42px;
       display: grid;
-      align-items: end;
-      overflow: hidden;
-      padding: 132px 64px 58px;
+      gap: 28px;
+      overflow: visible;
+      padding: 0;
     }
 
-    .hero img {
-      position: absolute;
-      inset: 0;
+    .hero-visual {
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid rgba(219,232,222,0.16);
+      border-radius: 30px;
+      background: #0c1511;
+      box-shadow: 0 24px 72px rgba(0,0,0,0.32);
+    }
+
+    .hero-visual img {
+      display: block;
       width: 100%;
-      height: 100%;
+      aspect-ratio: 3 / 1;
       object-fit: cover;
       object-position: center;
-      opacity: 0.74;
-      filter: saturate(0.85) contrast(1.05);
+      opacity: 0.96;
+      filter: saturate(0.95) contrast(1.02);
     }
 
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at 18% 18%, rgba(103,213,139,0.2), transparent 28rem),
-        linear-gradient(180deg, rgba(9,18,11,0.12), rgba(9,18,11,0.72) 70%, var(--paper));
+    .hero-visual figcaption {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px 16px;
+      border-top: 1px solid rgba(219,232,222,0.1);
+      color: var(--muted);
+      background: rgba(255,255,255,0.035);
+      font: 700 11px/1.45 var(--font-mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
+
+    .hero::after { display: none; }
 
     .hero-inner {
       position: relative;
       z-index: 2;
-      width: min(100%, 980px);
+      width: min(100%, 920px);
+      padding-top: 12px;
     }
 
     .tag {
@@ -146,10 +176,11 @@
     .article-title {
       margin: 0;
       color: #f5faf6;
-      max-width: 980px;
-      font-size: 74px;
-      line-height: 1.02;
+      max-width: 900px;
+      font-size: 56px;
+      line-height: 1.08;
       letter-spacing: 0;
+      text-wrap: balance;
     }
 
     .subtitle {
@@ -169,28 +200,55 @@
       font: 700 12px/1 var(--font-mono);
     }
 
+    .article-layout {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 82px;
+      display: grid;
+      grid-template-columns: minmax(0, 780px) minmax(260px, 1fr);
+      gap: clamp(28px, 5vw, 60px);
+      align-items: start;
+    }
+
     .article-wrap {
-      width: min(100%, 900px);
-      margin: 0 auto;
-      padding: 54px 20px 82px;
+      width: 100%;
+      min-width: 0;
+      margin: 0;
     }
 
     .content {
       color: rgba(219,232,222,0.84);
-      font-size: 18px;
-      line-height: 1.9;
+      font-size: 17px;
+      line-height: 1.92;
+      padding: clamp(24px, 4vw, 44px);
+      border: 1px solid rgba(219,232,222,0.16);
+      border-radius: 34px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.04), transparent 34rem),
+        rgba(24,37,31,0.94);
+      box-shadow: 0 22px 64px rgba(0,0,0,0.24);
     }
 
     .content h2,
     .content h3 {
       color: #f5faf6;
       line-height: 1.25;
-      margin: 46px 0 14px;
+      margin: 56px 0 18px;
       letter-spacing: 0;
+      text-wrap: balance;
     }
 
-    .content h2 { font-size: 32px; }
-    .content h3 { font-size: 24px; }
+    .content h2 { font-size: 30px; }
+    .content h2::before {
+      content: "";
+      display: block;
+      width: 44px;
+      height: 2px;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .content h3 { font-size: 23px; }
     .content p,
     .content ul,
     .content ol,
@@ -212,7 +270,7 @@
     .tldr-card {
       padding: 24px;
       border: 1px solid rgba(103,213,139,0.22);
-      border-radius: 18px;
+      border-radius: 24px;
       background:
         linear-gradient(135deg, rgba(103,213,139,0.1), rgba(212,177,90,0.06)),
         rgba(255,255,255,0.045);
@@ -226,7 +284,7 @@
     .diagram-card {
       padding: 24px;
       border: 1px solid rgba(103,213,139,0.22);
-      border-radius: 18px;
+      border-radius: 24px;
       background: rgba(255,255,255,0.055);
       overflow: hidden;
     }
@@ -251,7 +309,7 @@
     .signal-card {
       padding: 18px;
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 18px;
       background: rgba(255,255,255,0.045);
     }
 
@@ -288,6 +346,75 @@
       font-size: 13px;
     }
 
+    .aside {
+      position: sticky;
+      top: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .side-card {
+      padding: 18px;
+      border: 1px solid rgba(219,232,222,0.14);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)),
+        rgba(13,23,17,0.72);
+      box-shadow: 0 16px 44px rgba(0,0,0,0.18);
+    }
+
+    .side-label {
+      margin-bottom: 12px;
+      color: var(--accent);
+      font: 800 10px/1 var(--font-mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .side-card p {
+      margin: 0;
+      color: rgba(219,232,222,0.74);
+      font-size: 14px;
+      line-height: 1.72;
+    }
+
+    .side-metric {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(219,232,222,0.09);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .side-metric:last-child { border-bottom: 0; }
+    .side-metric strong { color: #f5faf6; }
+
+    .toc-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .toc-list a {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 8px;
+      align-items: baseline;
+      color: rgba(219,232,222,0.76);
+      font-size: 13px;
+      line-height: 1.45;
+      text-decoration: none;
+    }
+
+    .toc-list a:hover { color: var(--accent); }
+
+    .toc-list span {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+
     .site-footer {
       border-top: 1px solid var(--line);
       padding: 28px 20px 36px;
@@ -301,17 +428,28 @@
     }
 
     @media (max-width: 820px) {
-      .site-header { padding: 18px; }
+      .site-header {
+        width: min(100%, calc(100% - 32px));
+        padding: 18px 0 8px;
+      }
       .nav { display: none; }
       .hero {
-        min-height: 68vh;
-        padding: 112px 18px 42px;
+        width: min(100%, calc(100% - 32px));
+        margin-top: 18px;
+        gap: 18px;
       }
       .article-title { font-size: 38px; }
       .subtitle { font-size: 16px; }
+      .hero-visual { border-radius: 20px; }
+      .hero-visual figcaption { flex-direction: column; }
+      .article-layout {
+        width: min(100%, calc(100% - 32px));
+        grid-template-columns: 1fr;
+      }
       .content { font-size: 16px; }
       .content h2 { font-size: 25px; }
       .signal-grid { grid-template-columns: 1fr; }
+      .aside { position: static; }
     }
   </style>
 </head>
@@ -327,7 +465,6 @@
   </header>
 
   <section class="hero">
-    <img src="assets/images/blog/megaeth.png" alt="MegaETH real-time blockchain thesis" />
     <div class="hero-inner">
       <div class="tag">Thesis</div>
       <h1 class="article-title">MegaETH หลัง TGE: real-time blockchain ที่ยังต้องพิสูจน์ value capture</h1>
@@ -340,8 +477,16 @@
         <span>DUIDUI Journal</span>
       </div>
     </div>
+    <figure class="hero-visual">
+      <img src="assets/images/blog/megaeth.png" alt="MegaETH real-time blockchain thesis" />
+      <figcaption>
+        <span>Real-time execution thesis</span>
+        <span>Speed, demand, unlock</span>
+      </figcaption>
+    </figure>
   </section>
 
+  <main class="article-layout">
   <article class="article-wrap">
     <div class="content">
       <div class="tldr-card">
@@ -382,7 +527,7 @@ flowchart TD
         </pre>
       </div>
 
-      <h2>1. ปัญหาที่ MegaETH พยายามแก้</h2>
+      <h2 id="problem">1. ปัญหาที่ MegaETH พยายามแก้</h2>
 
       <p>Layer 2 ส่วนใหญ่ใน Ethereum ecosystem มีเป้าหมายหลักคือการลดต้นทุนและเพิ่ม throughput เมื่อเทียบกับ Ethereum mainnet แต่ถึงแม้ L2 จะช่วยให้ธุรกรรมถูกลงและเร็วขึ้นมากแล้ว แอปพลิเคชันบางประเภทก็ยังต้องการ latency ที่ต่ำกว่านั้น</p>
 
@@ -390,7 +535,7 @@ flowchart TD
 
       <p>ถ้าทำสำเร็จ MegaETH อาจเปิดพื้นที่ใหม่ให้กับ Ethereum ecosystem โดยเฉพาะ use case ที่ก่อนหน้านี้อาจต้องไปอยู่บน centralized infrastructure หรือ specialized chains แทน</p>
 
-      <h2>2. สถาปัตยกรรมโดยรวม</h2>
+      <h2 id="architecture">2. สถาปัตยกรรมโดยรวม</h2>
 
       <p>MegaETH ใช้แนวทางที่เน้น performance อย่างมาก โดยพยายามลด bottleneck ของ EVM execution และ state access ให้มากที่สุด แนวคิดหลักคือการทำให้ execution layer ทำงานด้วย latency ต่ำมาก ขณะที่ยังคงเชื่อมกับ Ethereum สำหรับ settlement</p>
 
@@ -408,7 +553,7 @@ flowchart TD
 
       <p>อย่างไรก็ตาม การออกแบบเช่นนี้มาพร้อมกับ trade-off โดยเฉพาะเรื่องความซับซ้อนของระบบ, hardware requirements และระดับ decentralization ของ sequencer ในช่วงแรก ทำให้กลายเป็นเชนที่มีความ centralized อยู่พอสมควร</p>
 
-      <h2>3. จุดแข็งของ MegaETH</h2>
+      <h2 id="strengths">3. จุดแข็งของ MegaETH</h2>
 
       <h3>3.1 ความเร็วและ latency</h3>
 
@@ -434,7 +579,7 @@ flowchart TD
 
       <p>ดูได้ที่: <a href="https://flux.megaeth.com/kpis" target="_blank" rel="noopener">flux.megaeth.com/kpis</a></p>
 
-      <h2>4. USDM และ liquidity flywheel</h2>
+      <h2 id="usdm">4. USDM และ liquidity flywheel</h2>
 
       <p>องค์ประกอบสำคัญอีกส่วนหนึ่งของ MegaETH คือ USDM ซึ่งเป็น stablecoin ที่มีบทบาทใน ecosystem ของ MegaETH โดยมีการเชื่อมโยงกับกลไก reward และ buyback ของ MEGA</p>
 
@@ -451,7 +596,7 @@ flowchart TD
 
       <p>ถ้า USDM เติบโตเพราะมีการใช้งาน DeFi จริง เช่น lending, trading, collateral, payments หรือ settlement ภายใน ecosystem นั่นจะเป็นสัญญาณบวก แต่ก็ต้องดูว่าการเติบโตหลักมาจาก farming หรือ reward expectation หรือไม่ เพราะการเติบโตแบบนั้นอาจไม่ถาวร</p>
 
-      <h2>5. Token value accrual ของ MEGA</h2>
+      <h2 id="value-accrual">5. Token value accrual ของ MEGA</h2>
 
       <p>คำถามสำคัญสำหรับ MEGA คือ token จะ capture value จาก ecosystem ได้อย่างไร</p>
 
@@ -477,7 +622,7 @@ flowchart TD
 
       <p>การ commit หรือ stake MEGA เพื่อรับ KPI-based rewards อาจช่วยลด circulating supply ระยะสั้น แต่ในระยะยาวก็ต้องพิจารณาว่า rewards ที่ปล่อยออกมาจะถูกถือไว้ต่อหรือขายออกสู่ตลาด</p>
 
-      <h2>6. ความเสี่ยงด้าน supply และ unlock</h2>
+      <h2 id="unlock">6. ความเสี่ยงด้าน supply และ unlock</h2>
 
       <p>แม้ KPI-based tokenomics จะน่าสนใจ แต่ MEGA ยังมีความเสี่ยงด้าน supply อยู่มาก เพราะ circulating supply ในช่วงแรกเป็นเพียงส่วนหนึ่งของ total supply</p>
 
@@ -497,7 +642,7 @@ flowchart TD
 
       <p>MegaETH จึงยังอยู่ในช่วงที่ต้องพิสูจน์ว่า liquidity ที่เข้ามาจะเปลี่ยนเป็น economic activity ได้มากน้อยแค่ไหน</p>
 
-      <h2>8. การเปรียบเทียบกับคู่แข่ง</h2>
+      <h2 id="competition">8. การเปรียบเทียบกับคู่แข่ง</h2>
 
       <p>MegaETH ไม่ได้แข่งขันกับ L2 เพียงกลุ่มเดียว แต่แข่งขันกับหลายประเภทของ infrastructure พร้อมกัน</p>
 
@@ -528,7 +673,7 @@ flowchart TD
         </div>
       </div>
 
-      <h2>9. Decentralization และ sequencer risk</h2>
+      <h2 id="sequencer">9. Decentralization และ sequencer risk</h2>
 
       <p>MegaETH ใช้ design ที่ optimize เพื่อ performance สูงมาก ซึ่งทำให้ sequencer มีบทบาทสำคัญเป็นพิเศษในช่วงแรก</p>
 
@@ -565,6 +710,36 @@ flowchart TD
       </div>
     </div>
   </article>
+
+  <aside class="aside" aria-label="Article sidebar">
+    <div class="side-card">
+      <div class="side-label">Core Thesis</div>
+      <p>MegaETH ไม่ได้ขาด narrative เรื่องความเร็ว แต่ต้องพิสูจน์ว่าความเร็วสามารถกลายเป็น usage, revenue และ MEGA demand ก่อน supply unlock จะเริ่มกดดันได้จริง</p>
+    </div>
+
+    <div class="side-card">
+      <div class="side-label">Watch List</div>
+      <div class="side-metric"><span>Real usage</span><strong>Retention</strong></div>
+      <div class="side-metric"><span>Stablecoin flywheel</span><strong>USDM</strong></div>
+      <div class="side-metric"><span>Token pressure</span><strong>Unlock</strong></div>
+      <div class="side-metric"><span>Infra risk</span><strong>Sequencer</strong></div>
+    </div>
+
+    <div class="side-card">
+      <div class="side-label">In This Memo</div>
+      <div class="toc-list">
+        <a href="#problem"><span>01</span>ปัญหาที่ MegaETH พยายามแก้</a>
+        <a href="#architecture"><span>02</span>สถาปัตยกรรมโดยรวม</a>
+        <a href="#strengths"><span>03</span>จุดแข็งของ MegaETH</a>
+        <a href="#usdm"><span>04</span>USDM flywheel</a>
+        <a href="#value-accrual"><span>05</span>Token value accrual</a>
+        <a href="#unlock"><span>06</span>Supply และ unlock</a>
+        <a href="#competition"><span>08</span>คู่แข่งและ benchmark</a>
+        <a href="#sequencer"><span>09</span>Sequencer risk</a>
+      </div>
+    </div>
+  </aside>
+  </main>
 
   <footer class="site-footer">&copy; 2026 <a href="blog.html">DUIDUI Journal</a></footer>
   <script type="module">
