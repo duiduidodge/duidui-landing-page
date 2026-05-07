@@ -295,7 +295,6 @@
       border: 1px solid rgba(255,255,255,0.1);
       box-shadow: var(--shadow-md);
       background: rgba(47,184,106,0.1);
-      min-height: 220px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -303,6 +302,9 @@
 
     .banner-img {
       width: 100%;
+      aspect-ratio: 3 / 1;
+      object-fit: cover;
+      object-position: center;
       display: block;
       border-radius: 20px;
     }

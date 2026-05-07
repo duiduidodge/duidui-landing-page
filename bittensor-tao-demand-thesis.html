@@ -262,14 +262,13 @@
       border: 1px solid rgba(255,255,255,0.1);
       background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
       box-shadow: var(--shadow-lg);
-      min-height: 320px;
     }
 
     .banner-img {
       display: block;
       width: 100%;
+      aspect-ratio: 3 / 1;
       height: auto;
-      max-height: 560px;
       object-fit: cover;
       object-position: center;
     }
@@ -586,7 +585,7 @@
       .banner-wrap,
       .back-link-row,
       .site-footer { width: min(100%, calc(100% - 36px)); }
-      .banner-img-wrap { min-height: 220px; border-radius: 22px; }
+      .banner-img-wrap { border-radius: 22px; }
       .content h2 { font-size: 21px; }
       .roles-grid,
       .valuation-grid,
