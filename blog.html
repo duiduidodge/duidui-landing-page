@@ -1397,13 +1397,13 @@
     <!-- ── Filter Tabs ── -->
     <div class="filter-wrap fade-up delay-3">
       <button class="filter-tab active" onclick="filterPosts('all', this)">
-        ALL <span class="filter-count">10</span>
+        ALL <span class="filter-count">11</span>
       </button>
       <button class="filter-tab" onclick="filterPosts('thesis', this)">
         THESIS <span class="filter-count">4</span>
       </button>
       <button class="filter-tab" onclick="filterPosts('insight', this)">
-        MARKET INSIGHT <span class="filter-count">5</span>
+        MARKET INSIGHT <span class="filter-count">6</span>
       </button>
       <button class="filter-tab" onclick="filterPosts('narrative', this)">
         NARRATIVE SPOTLIGHT <span class="filter-count">1</span>
@@ -1415,6 +1415,29 @@
 
       <!-- Posts -->
       <div class="post-list" id="post-list">
+
+        <!-- Post: Bitcoin / Structural Logic -->
+        <article class="post-card post-card--landscape" data-cat="insight" onclick="openProtectedArticle('bitcoin-80k-structural-logic.html')">
+          <div class="post-thumb-landscape">
+            <img src="assets/images/blog/bitcoin-80k-structural-logic.png" alt="Bitcoin เหนือ $80K: ตลาดเปลี่ยน Structural Logic" />
+          </div>
+          <div class="post-card-body">
+            <div class="post-meta">
+              <span class="cat-pill insight">MARKET INSIGHT</span>
+              <span class="meta-date">7 พ.ค. 2026</span>
+              <span class="meta-dot">·</span>
+              <span class="meta-read">10 นาที</span>
+              <a class="post-read-inline" href="bitcoin-80k-structural-logic.html" onclick="event.stopPropagation(); return handleProtectedArticleLink(event, 'bitcoin-80k-structural-logic.html');">
+                อ่านบทความ
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+            <h3 class="post-title">Bitcoin เหนือ $80K: ตลาดเปลี่ยน Structural Logic</h3>
+            <p class="post-excerpt">
+              เมื่อ BTC ยืนเหนือ $80K ได้จริง ตลาดอาจกำลังย้ายจาก halving-cycle playbook ไปสู่ structural bid จาก ETF, STRC flywheel, application-first infrastructure, TON rails และ AI energy macro
+            </p>
+          </div>
+        </article>
 
         <!-- Post: MegaETH / Real-Time Blockchain -->
         <article class="post-card post-card--landscape" data-cat="thesis" onclick="openProtectedArticle('megaeth-real-time-blockchain-tge.html')">
@@ -1716,6 +1739,10 @@
               คลังบทความ
             </h4>
             <div class="archive-list">
+              <div class="archive-item is-disabled">
+                <span>พฤษภาคม 2026</span>
+                <span class="archive-count">2</span>
+              </div>
               <div class="archive-item is-disabled">
                 <span>เมษายน 2026</span>
                 <span class="archive-count">3</span>
