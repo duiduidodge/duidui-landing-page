@@ -1,0 +1,1118 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grass: AI Data Provenance Thesis และความเสี่ยงของ GRASS Token | DUIDUI Journal</title>
+  <meta name="description" content="วิเคราะห์ Grass ในฐานะ DePIN x AI data infrastructure ที่เดิมพันกับ data provenance, real-world data และ token value accrual พร้อม bull case, bear case, catalyst และ unlock risk" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Grass: AI Data Provenance Thesis และความเสี่ยงของ GRASS Token" />
+  <meta property="og:description" content="Grass อาจไม่ใช่แค่แอปแชร์ bandwidth แต่เป็นเดิมพันบนตลาดข้อมูลจริงที่ AI ต้องการ พร้อมคำถามเรื่อง supply, botting, transparency และ value accrual" />
+  <meta property="og:image" content="assets/images/blog/grass%20kofi.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@dodgeduidui" />
+  <meta name="twitter:title" content="Grass: AI Data Provenance Thesis และความเสี่ยงของ GRASS Token" />
+  <meta name="twitter:description" content="วิเคราะห์ Grass ในฐานะ AI data sourcing infrastructure ไม่ใช่แค่ passive income DePIN พร้อม bull case, bear case และ unlock pressure" />
+  <meta name="twitter:image" content="assets/images/blog/grass%20kofi.png" />
+  <meta name="theme-color" content="#101b16" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/brand/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/images/brand/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #101b16;
+      --paper-2: #15231c;
+      --reader: #18251f;
+      --reader-soft: #1d2c25;
+      --ink: #e3efe7;
+      --ink-strong: #f5fbf6;
+      --body-copy: #d8e6dc;
+      --muted: #91a99a;
+      --soft: rgba(227, 239, 231, 0.74);
+      --line: rgba(227, 239, 231, 0.12);
+      --line-strong: rgba(227, 239, 231, 0.18);
+      --panel: rgba(255, 255, 255, 0.055);
+      --panel-2: rgba(255, 255, 255, 0.085);
+      --green: #42cc7a;
+      --green-2: #88e8ad;
+      --accent: #42cc7a;
+      --teal: #3fc7b1;
+      --gold: #d6ad48;
+      --font-body: "Noto Sans Thai", "Sora", sans-serif;
+      --font-mono: "IBM Plex Sans Thai", "DM Mono", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 18% 4%, rgba(66, 204, 122, 0.12), transparent 32rem),
+        radial-gradient(circle at 94% 14%, rgba(214, 173, 72, 0.08), transparent 28rem),
+        linear-gradient(180deg, #0b1410 0%, var(--paper) 34%, #0e1813 100%);
+      color: var(--ink);
+      font-family: var(--font-body);
+      line-height: 1.78;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+    }
+
+    a { color: var(--green-2); text-decoration: none; }
+    a:hover { color: #c8f6d8; }
+    strong { color: #f5fff8; font-weight: 700; }
+    ::selection { background: var(--green); color: #06110b; }
+
+    .mono { font-family: var(--font-mono); }
+
+    .nav-hero {
+      position: relative;
+      min-height: 138px;
+      overflow: hidden;
+      border-radius: 0 0 32px 32px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
+      margin-bottom: clamp(20px, 4vw, 38px);
+    }
+
+    .nav-hero-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .nav-hero-scene img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 18%;
+      transform: scale(1.04);
+    }
+
+    .nav-hero-scene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(12,20,15,0.08) 0%, rgba(12,20,15,0.26) 46%, rgba(12,20,15,0.82) 100%),
+        linear-gradient(90deg, rgba(8,20,12,0.12) 0%, transparent 55%, rgba(8,20,12,0.08) 100%);
+    }
+
+    .site-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 20px;
+    }
+
+    .brand {
+      color: rgba(246, 251, 247, 0.95);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .brand span { color: #7debb0; }
+
+    .nav-links-desktop {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px 4px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .nav-link {
+      padding: 7px 14px;
+      border-radius: 999px;
+      color: rgba(255, 255, 255, 0.84);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      white-space: nowrap;
+      transition: 180ms ease;
+    }
+
+    .nav-link.active,
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .clock-display {
+      color: rgba(255, 255, 255, 0.72);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    .nav-links-mobile {
+      display: none !important;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px 20px;
+      border-radius: 0 0 20px 20px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .nav-links-mobile.open { display: flex !important; }
+
+    .nav-links-mobile .nav-link {
+      color: var(--ink) !important;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transform: none !important;
+    }
+
+    .back-link {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .back-link:hover { color: var(--ink); }
+
+    .article-banner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto clamp(24px, 4vw, 42px);
+      border: 1px solid rgba(227, 239, 231, 0.16);
+      border-radius: 30px;
+      overflow: hidden;
+      background: #0c1511;
+      box-shadow: 0 22px 64px rgba(0, 0, 0, 0.28);
+    }
+
+    .article-banner img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 1;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 76px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.42fr);
+      gap: clamp(22px, 4vw, 42px);
+      align-items: stretch;
+      margin-bottom: clamp(24px, 5vw, 56px);
+    }
+
+    .hero-copy {
+      padding: clamp(10px, 2vw, 18px) 0;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 18px;
+      padding: 8px 12px;
+      border: 1px solid rgba(66, 204, 122, 0.25);
+      border-radius: 999px;
+      background: rgba(66, 204, 122, 0.09);
+      color: #9cf0bb;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 18px rgba(66, 204, 122, 0.75);
+    }
+
+    h1 {
+      max-width: 860px;
+      color: #f6fff9;
+      font-size: clamp(2.2rem, 5.2vw, 4.8rem);
+      line-height: 1.06;
+      letter-spacing: -0.045em;
+      text-wrap: balance;
+    }
+
+    .dek {
+      max-width: 720px;
+      margin-top: 24px;
+      color: rgba(227, 239, 231, 0.86);
+      font-size: clamp(1.03rem, 1.7vw, 1.22rem);
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .hero-card {
+      position: relative;
+      min-height: 0;
+      padding: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(227, 239, 231, 0.16);
+      border-radius: 26px;
+      background:
+        linear-gradient(155deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035)),
+        rgba(255, 255, 255, 0.035);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+    }
+
+    .orbital {
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      right: -86px;
+      top: 72px;
+      border: 1px solid rgba(136, 232, 173, 0.18);
+      border-radius: 999px;
+      animation: rotateSlow 28s linear infinite;
+    }
+
+    .orbital::before,
+    .orbital::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+    }
+
+    .orbital::before {
+      inset: 58px;
+      border: 1px dashed rgba(214, 173, 72, 0.24);
+    }
+
+    .orbital::after {
+      width: 22px;
+      height: 22px;
+      left: 56px;
+      top: 44px;
+      background: var(--gold);
+      box-shadow: 0 0 28px rgba(214, 173, 72, 0.58);
+    }
+
+    @keyframes rotateSlow {
+      to { transform: rotate(360deg); }
+    }
+
+    .hero-card-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      height: 100%;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .ticker-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: rgba(227, 239, 231, 0.62);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .signal-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .hero-signal {
+      padding: 14px 15px;
+      border: 1px solid rgba(227, 239, 231, 0.14);
+      border-radius: 16px;
+      background: rgba(10, 20, 15, 0.42);
+    }
+
+    .signal-label {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .signal-value {
+      margin-top: 6px;
+      color: #f7fff9;
+      font-family: var(--font-mono);
+      font-size: clamp(1.45rem, 2.5vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: -0.06em;
+      line-height: 1;
+    }
+
+    .signal-note {
+      margin-top: 6px;
+      color: rgba(227, 239, 231, 0.66);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .article-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 780px) minmax(260px, 1fr);
+      gap: clamp(28px, 5vw, 60px);
+      align-items: start;
+    }
+
+    .content {
+      color: var(--body-copy);
+      font-size: clamp(1.06rem, 1.28vw, 1.14rem);
+      line-height: 1.92;
+      padding: clamp(24px, 4vw, 44px);
+      border: 1px solid var(--line-strong);
+      border-radius: 34px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 34rem),
+        var(--reader);
+      box-shadow: 0 22px 64px rgba(0, 0, 0, 0.24);
+    }
+
+    .content h2,
+    .content h3 {
+      color: var(--ink-strong);
+      line-height: 1.25;
+      margin: 62px 0 20px;
+      letter-spacing: -0.035em;
+      text-wrap: balance;
+    }
+
+    .content h2 { font-size: clamp(1.45rem, 2.4vw, 2.05rem); }
+    .content h2::before {
+      content: "";
+      display: block;
+      width: 44px;
+      height: 2px;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, var(--green), transparent);
+    }
+    .content h3 { font-size: 23px; }
+    .content p,
+    .content ul,
+    .content ol,
+    .content blockquote { margin: 0 0 22px; }
+
+    .content ul,
+    .content ol { padding-left: 24px; }
+
+    .content li { margin-bottom: 8px; }
+    .content strong { color: #f3f8f4; }
+    .content a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+
+    .lead-block {
+      margin: 0 0 34px;
+      padding: clamp(22px, 4vw, 34px);
+      border: 1px solid rgba(66, 204, 122, 0.28);
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(66, 204, 122, 0.12), rgba(255, 255, 255, 0.035)),
+        rgba(255, 255, 255, 0.025);
+    }
+
+    .lead-block p {
+      margin-bottom: 14px;
+      font-size: clamp(1.12rem, 2vw, 1.45rem);
+      line-height: 1.75;
+      color: #f2fff6;
+    }
+
+    .lead-block p:last-child { margin-bottom: 0; }
+
+    .memo-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0 0 34px;
+    }
+
+    .memo-strip-item {
+      padding: 16px;
+      border: 1px solid rgba(227, 239, 231, 0.14);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .memo-strip-label {
+      margin-bottom: 8px;
+      color: var(--gold);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .memo-strip-item p {
+      margin: 0;
+      color: rgba(227, 239, 231, 0.82);
+      font-size: 0.94rem;
+      line-height: 1.7;
+    }
+
+    .tldr-card,
+    .diagram-card,
+    .signal-grid {
+      margin: 34px 0;
+    }
+
+    .tldr-card {
+      padding: 24px;
+      border: 1px solid rgba(103,213,139,0.22);
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(103,213,139,0.1), rgba(212,177,90,0.06)),
+        rgba(255,255,255,0.045);
+    }
+
+    .tldr-card h2 {
+      margin-top: 0;
+      font-size: 24px;
+    }
+
+    .diagram-card {
+      padding: 24px;
+      border: 1px solid rgba(103,213,139,0.22);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.055);
+      overflow: hidden;
+    }
+
+    .diagram-card h2 { margin-top: 0; }
+
+    .signal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .signal-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.045);
+    }
+
+    .signal-card span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--accent);
+      font: 800 10px/1 var(--font-mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .signal-card p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .quote-card {
+      margin: 32px 0;
+      padding: 20px 22px;
+      border-left: 3px solid var(--gold);
+      border-radius: 0 16px 16px 0;
+      background: rgba(212,177,90,0.08);
+      color: #f2e8c2;
+      font-weight: 600;
+    }
+
+    .disclaimer {
+      margin-top: 42px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .aside {
+      position: sticky;
+      top: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .side-card {
+      padding: 18px;
+      border: 1px solid rgba(227, 239, 231, 0.14);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03)),
+        rgba(13, 23, 17, 0.72);
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.18);
+    }
+
+    .side-label {
+      margin-bottom: 12px;
+      color: var(--green);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .side-card p {
+      margin: 0;
+      color: rgba(227, 239, 231, 0.74);
+      font-size: 14px;
+      line-height: 1.72;
+    }
+
+    .side-metric {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(227, 239, 231, 0.09);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .side-metric:last-child { border-bottom: 0; }
+    .side-metric strong { color: #f5faf6; }
+
+    .toc-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .toc-list a {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 8px;
+      align-items: baseline;
+      color: rgba(227, 239, 231, 0.76);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .toc-list a:hover { color: var(--green-2); }
+
+    .toc-list span {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+
+    .site-footer {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .site-footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-socials a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ink);
+    }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .delay-1 { animation-delay: 80ms; }
+    .delay-2 { animation-delay: 140ms; }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 820px) {
+      .nav-links-desktop,
+      .clock-display { display: none; }
+      .mobile-menu-btn { display: inline-flex; }
+      .hero-grid,
+      .article-shell {
+        grid-template-columns: 1fr;
+      }
+      .aside { position: static; }
+      .memo-strip { grid-template-columns: 1fr; }
+      .content { font-size: 16px; }
+      .content h2 { font-size: 25px; }
+      .signal-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .page,
+      .article-banner,
+      .back-link,
+      .site-footer {
+        width: calc(100% - 24px);
+      }
+
+      .site-header { padding: 14px 16px; }
+      h1 { font-size: clamp(2.2rem, 14vw, 3.55rem); }
+      .hero-card { min-height: 330px; padding: 18px; border-radius: 26px; }
+
+      .tldr-card,
+      .diagram-card,
+      .disclaimer {
+        padding: 18px 18px;
+        border-radius: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="nav-hero">
+    <div class="nav-hero-scene">
+      <img src="assets/images/backgrounds/anime-bg.jpg" alt="" aria-hidden="true" />
+    </div>
+
+    <header class="site-header">
+      <a href="index.html" class="brand"><span class="brand-star">*</span> DUIDUI</a>
+
+      <nav class="nav-links-desktop" aria-label="Primary">
+        <div class="nav-container">
+          <a href="index.html" class="nav-link">HOME</a>
+          <a href="index.html#connect" class="nav-link">CONNECT</a>
+          <a href="shop.html" class="nav-link">ARTIFACTS</a>
+          <a href="blog.html" class="nav-link active">BLOG</a>
+        </div>
+      </nav>
+
+      <div class="header-tools">
+        <div class="clock-display" id="clock">--:--:--</div>
+        <button class="mobile-menu-btn" type="button" aria-label="Toggle menu" onclick="document.getElementById('articleMobileNav').classList.toggle('open')">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="nav-links-mobile" id="articleMobileNav">
+      <a href="index.html" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">HOME</a>
+      <a href="index.html#connect" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">CONNECT</a>
+      <a href="shop.html" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">ARTIFACTS</a>
+      <a href="blog.html" class="nav-link active" onclick="document.getElementById('articleMobileNav').classList.remove('open')">BLOG</a>
+    </div>
+  </div>
+
+  <a href="blog.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M12 19l-7-7 7-7" />
+    </svg>
+    Back To Journal
+  </a>
+
+  <div class="article-banner fade-up delay-1">
+    <img src="assets/images/blog/grass%20kofi.png" alt="Grass ไม่ใช่แค่ AI x DePIN แต่คือการเดิมพันบน Data Provenance" />
+  </div>
+
+  <main class="page" id="top">
+    <section class="hero-grid">
+      <div class="hero-copy fade-up">
+        <div class="eyebrow">AI Data Thesis</div>
+        <h1>Grass กับเดิมพัน Data Provenance</h1>
+        <p class="dek">มอง Grass ให้ลึกกว่าแอปแชร์อินเทอร์เน็ตเพื่อรับ reward และถามว่ามันกำลังกลายเป็น infrastructure layer สำหรับ AI data sourcing ได้จริงแค่ไหน</p>
+        <div class="hero-meta">
+          <span>11 พ.ค. 2026</span>
+          <span>·</span>
+          <span>~12 นาที</span>
+          <span>·</span>
+          <span>GRASS / AI / DePIN / Data</span>
+        </div>
+      </div>
+
+      <aside class="hero-card fade-up delay-1" aria-label="Article key metrics">
+        <div class="orbital" aria-hidden="true"></div>
+        <div class="hero-card-content">
+          <div class="ticker-row">
+            <span>GRASS</span>
+            <span>DATA PROVENANCE</span>
+          </div>
+          <div class="signal-stack">
+            <div class="hero-signal">
+              <div class="signal-label">Core Bet</div>
+              <div class="signal-value">Data</div>
+              <div class="signal-note">AI อาจต้องการข้อมูลจริงที่สด สะอาด และตรวจสอบแหล่งที่มาได้มากขึ้น</div>
+            </div>
+            <div class="hero-signal">
+              <div class="signal-label">Network Layer</div>
+              <div class="signal-value">DePIN</div>
+              <div class="signal-note">residential nodes ช่วยเปิดทางเข้าถึง public web จากเส้นทางที่คล้ายผู้ใช้จริง</div>
+            </div>
+            <div class="hero-signal">
+              <div class="signal-label">Key Risk</div>
+              <div class="signal-value">Unlock</div>
+              <div class="signal-note">business growth ไม่ได้แปลว่า token price จะดีทันที ถ้า supply และ value accrual ยังไม่ชัด</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="article-shell">
+      <article class="content fade-up delay-2">
+        <div class="lead-block">
+          <p>บางโปรเจกต์ในคริปโตเริ่มจาก narrative บางโปรเจกต์เริ่มจาก product และบางโปรเจกต์เริ่มจาก “คนจำนวนมากเปิดแอปทิ้งไว้เพื่อหวัง airdrop”</p>
+          <p><strong>ภาพใหญ่ของโพสต์นี้:</strong> Grass ไม่ได้ขายแค่ bandwidth แต่มันกำลังพยายามขายทางเข้าถึงข้อมูลจริงจากโลกจริง พร้อม proof ว่าข้อมูลเหล่านั้นมาจากไหน</p>
+        </div>
+
+        <div class="memo-strip" aria-label="Memo summary">
+          <div class="memo-strip-item">
+            <div class="memo-strip-label">Core Thesis</div>
+            <p>Grass คือ bet บน data provenance มากกว่า AI narrative ทั่วไป เพราะอนาคตของ AI อาจต้องการข้อมูลที่ trace ได้</p>
+          </div>
+          <div class="memo-strip-item">
+            <div class="memo-strip-label">Bull Case</div>
+            <p>AI companies ต้องการ data สดและมีคุณภาพ ส่วน Grass มี network ที่อาจช่วยหา data และยืนยัน provenance ได้</p>
+          </div>
+          <div class="memo-strip-item">
+            <div class="memo-strip-label">Bear Case</div>
+            <p>token อาจยังถูกกดจาก unlock, botting, regulatory risk และคำถามว่า revenue จะไหลกลับสู่ GRASS ได้จริงแค่ไหน</p>
+          </div>
+        </div>
+
+        <div class="tldr-card">
+          <h2>TL;DR</h2>
+          <ul>
+            <li>Grass ไม่ได้ขายแค่ bandwidth แต่ขายทางเข้าถึงข้อมูลจริงจากโลกจริง พร้อมแนวคิดเรื่อง provenance ของ dataset</li>
+            <li>Bull case คือ AI ต้องการข้อมูลสด สะอาด และ trace ได้ ขณะที่ public web data คุณภาพสูงเริ่มหายากขึ้น</li>
+            <li>Bear case คือ token อาจไม่ capture value ทันที แม้ network โต เพราะยังมี unlock, botting risk และ regulatory surface</li>
+            <li>Catalyst ที่ต้องจับตาคือ AI Data Marketplace, Live Context Retrieval และความชัดเจนของ buyback / revenue-linked demand</li>
+          </ul>
+        </div>
+
+        <h2 id="data-scarcity">1. ปัญหาที่ Grass กำลังจับ ไม่ใช่ bandwidth แต่คือ data scarcity</h2>
+
+        <p>ถ้ามองผิวเผิน Grass คือแอปที่ให้ผู้ใช้แชร์อินเทอร์เน็ตที่ไม่ได้ใช้ แล้วรับ reward กลับมา แต่ถ้ามองลึกกว่านั้น Grass กำลังพยายามเป็น infrastructure layer สำหรับ AI data sourcing</p>
+
+        <p>โลก AI เคยเดินด้วยสมมติฐานง่าย ๆ: ยิ่งมี compute มาก ยิ่งมี model ใหญ่ ยิ่ง scrape web ได้เยอะ AI ก็ยิ่งเก่งขึ้น แต่ตอนนี้สมการนี้เริ่มเปลี่ยนไป</p>
+
+        <p>เพราะ public web data ที่มีคุณภาพสูงเริ่มไม่ใช่ของฟรีอีกต่อไป งานวิจัยของ Epoch AI ประเมินว่า หาก trend การใช้ข้อมูลยังดำเนินต่อไป โมเดลภาษาอาจใช้ stock ของ human-generated public text จนเต็มในช่วงปี 2026-2032</p>
+
+        <div class="quote-card">นี่คือสิ่งที่ตลาดเรียกว่า data wall ไม่ใช่ว่าโลกไม่มีข้อมูล แต่ข้อมูลที่สะอาดพอ สดพอ และมี provenance พอเริ่มหายากขึ้น</div>
+
+        <p>เมื่อข้อมูลเริ่มหายาก ข้อมูลก็เริ่มกลายเป็น commodity Grass จึงไม่ได้ขายแค่ bandwidth แต่มันขาย “ทางเข้าถึงข้อมูลจริงจากโลกจริง”</p>
+
+        <div class="signal-grid">
+          <div class="signal-card">
+            <span>Problem</span>
+            <p>public web data คุณภาพสูงเริ่มไม่ใช่ resource ฟรีที่ scrape ได้ไม่จำกัด</p>
+          </div>
+          <div class="signal-card">
+            <span>Demand</span>
+            <p>AI ยังต้องการข้อมูลจริงที่สด สะอาด และตรวจสอบที่มาได้</p>
+          </div>
+          <div class="signal-card">
+            <span>Grass Angle</span>
+            <p>network ของ residential nodes อาจเป็นทางเข้าถึงข้อมูลโลกจริงที่ AI labs ต้องการ</p>
+          </div>
+        </div>
+
+        <h2 id="depin-data-business">2. Grass คือ DePIN หรือ Data Business?</h2>
+
+        <p>คำตอบคือทั้งสองอย่าง แต่ตลาดยัง price ไม่ถูก DePIN รุ่นแรกมักถูกเล่าแบบ passive income: เปิดเครื่องทิ้งไว้ แชร์ resource ได้ token แล้วรอ narrative pump แต่ Grass พยายามย้ายตัวเองออกจากกรอบนั้น</p>
+
+        <p>สิ่งที่ Grass ต้องการเป็นคือ network ของ residential nodes ที่ช่วยดึงข้อมูล public web แล้วแปลงข้อมูลเหล่านั้นเป็น structured datasets พร้อม proof ว่าข้อมูลมาจากไหน</p>
+
+        <p>ในเอกสารของ Grass เอง โครงสร้างสำคัญคือ ZK Processor และ Grass Data Ledger โดย ZK Processor ทำหน้าที่ batch proof ของ session data และส่ง proof ไปยัง L1 ส่วน Data Ledger เชื่อม dataset กับ on-chain proof เพื่อยืนยัน provenance ของข้อมูล</p>
+
+        <div class="diagram-card">
+          <h2>Grass Data Flow แบบสั้น</h2>
+          <div class="signal-grid">
+            <div class="signal-card">
+              <span>01 Nodes</span>
+              <p>ผู้ใช้แชร์ bandwidth ผ่าน residential network และช่วยเปิดเส้นทางเข้าถึง public web</p>
+            </div>
+            <div class="signal-card">
+              <span>02 Proof</span>
+              <p>ZK Processor batch proof ของ session data เพื่อผูกข้อมูลเข้ากับหลักฐานบน chain</p>
+            </div>
+            <div class="signal-card">
+              <span>03 Dataset</span>
+              <p>Data Ledger เชื่อม dataset กับ provenance proof เพื่อให้ผู้ซื้อข้อมูลตรวจสอบที่มาได้</p>
+            </div>
+          </div>
+        </div>
+
+        <p>อธิบายง่าย ๆ คือ Grass ไม่ได้แค่ scrape data แต่มันพยายามสร้าง certificate แหล่งที่มาของข้อมูลให้ AI dataset และนี่คือจุดที่น่าสนใจกว่า passive income มาก</p>
+
+        <h2 id="bull-case">3. Bull Case: Grass อาจเป็นหนึ่งในไม่กี่ DePIN ที่มี demand จริง</h2>
+
+        <p>สิ่งที่ทำให้ Grass แตกต่างจาก DePIN หลายตัวคือมันมี customer logic ที่เข้าใจได้ง่าย: AI companies ต้องการ data, Grass มี network ที่ช่วยหา data, ส่วน token ใช้เป็น incentive ให้ network และ revenue อาจถูกแปลงกลับมาเป็น GRASS เพื่อจ่าย stakeholder ในระบบ</p>
+
+        <p>เอกสารของ Grass ระบุว่า GRASS ใช้สำหรับ web scraping transactions, dataset purchases, LCR usage, staking to routers และ governance โดยผู้ซื้อสามารถจ่ายเป็น USD, USDC หรือ token ที่รองรับ แล้ว revenue จะถูกแปลงเป็น GRASS เพื่อจ่ายผู้มีส่วนร่วมใน network</p>
+
+        <ul>
+          <li>AI ต้องการข้อมูลที่ up-to-date กว่าเดิม</li>
+          <li>public web data คุณภาพสูงกำลังหายากขึ้น</li>
+          <li>synthetic data มีประโยชน์ แต่ถ้าใช้วนมากเกินไปอาจสร้างปัญหา model degradation</li>
+          <li>residential bandwidth มีค่า เพราะเข้าถึง web ได้เหมือนผู้ใช้จริงมากกว่า data center proxy</li>
+          <li>on-chain provenance อาจกลายเป็น feature สำคัญของ AI data supply chain</li>
+        </ul>
+
+        <div class="quote-card">ถ้า demand นี้เกิดจริง Grass อาจกลายเป็น raw material layer ของ AI economy</div>
+
+        <h2 id="bear-case">4. Bear Case: Token ไม่ได้ชนะเพราะธุรกิจโตเสมอไป</h2>
+
+        <p>นี่คือจุดที่ต้องใจเย็นลง 55555 ในโลกคริปโต ธุรกิจดีไม่ได้แปลว่าราคา token จะดีทันที และถึงแม้ revenue มีจริง ไม่ได้แปลว่า value accrual ถึง holder เสมอไป</p>
+
+        <p>GRASS มี total supply 1,000,000,000 tokens ขณะที่ข้อมูลจาก Tokenomist ระบุว่า unlock ไปแล้วประมาณ 587.1M GRASS หรือ 58.71% ของ supply ทั้งหมด แปลว่ายังมี supply อีกจำนวนมากที่ตลาดต้องดูดซับในอนาคต</p>
+
+        <p>นี่คือปัญหาคลาสสิกของ venture-backed token: narrative วิ่งก่อน, airdrop สร้าง community, unlock ตามมา, revenue ต้องโตเร็วพอเพื่อดูด supply ถ้า revenue-to-token-accrual bridge ยังเล็กกว่าแรง unlock ราคาอาจยังถูกกด แม้ business metric จะดีขึ้น</p>
+
+        <h2 id="risks">5. จุดเสี่ยงที่ตลาดไม่ควรมองข้าม</h2>
+
+        <p><strong>Botting Risk:</strong> Grass มี incentive ให้คนเปิด node เมื่อมี incentive ก็มี farming และเมื่อมี farming ก็มี bot ถ้า network เต็มไปด้วย activity ที่ถูกผลักดันเพื่อ reward ไม่ใช่เพื่อ data quality คุณค่าของ dataset อาจถูกตั้งคำถาม</p>
+
+        <p><strong>Transparency Risk:</strong> Grass เล่าว่าตัวเองเป็น data rollup ที่ใช้ ZK และ data ledger แต่นักลงทุนยังต้องดูว่า core infrastructure เปิดให้ตรวจสอบมากแค่ไหน ถ้า provenance กลายเป็นแค่ narrative แต่ข้อมูลจริงปน proxy farm / duplicate traffic / low-quality path มากเกินไป Grass จะเสียสิ่งที่สำคัญที่สุดคือ trust</p>
+
+        <p><strong>Regulatory Risk:</strong> Residential proxy network เป็นพื้นที่เทา ผู้ใช้แชร์ bandwidth จริง แต่ ISP / jurisdiction / terms of service อาจไม่ได้มองสิ่งนี้เหมือนกันทุกประเทศ ถ้า supply side ของ network ถูกกดจาก regulation หรือ ISP restriction capacity ของ Grass อาจลดลงทันที</p>
+
+        <h2 id="market-structure">6. Market Structure: ทำไมราคายังไม่สะท้อน narrative เต็มที่</h2>
+
+        <p>GRASS เคยทำ all-time high ที่ $3.89 และ all-time low ที่ $0.1668 ขณะที่ราคาล่าสุดบนหน้าข้อมูลที่ดึงมาอยู่ราว $0.36 พร้อม circulating supply ประมาณ 590M และ FDV ราว $363.8M</p>
+
+        <p>ภาพนี้บอกเราสองอย่าง: หนึ่ง ตลาดเคย price Grass เป็น high-beta AI x DePIN narrative และสอง ตลาดกำลัง discount supply overhang กับ execution risk</p>
+
+        <div class="quote-card">ราคาไม่ได้ถูกกดเพราะ narrative ตาย แต่เพราะตลาดยังไม่มั่นใจว่า token จะ capture value ได้จริงไหม และ supply ก็กดราคาตาม structure ตลาดคริปโต</div>
+
+        <h2 id="provenance">7. Grass ไม่ใช่ bet บน AI แต่เป็น bet บน data provenance</h2>
+
+        <p>หลายคนมอง Grass เป็น AI play แต่จริง ๆ มันอาจจะลึกกว่านั้น Grass คือ bet ว่าอนาคตของ AI จะต้องการ data ที่ตรวจสอบแหล่งที่มาได้</p>
+
+        <ul>
+          <li>ถ้า AI ต้องการ data สดและมี provenance มากขึ้น Grass ได้ประโยชน์</li>
+          <li>ถ้าโลก AI เดินไปทาง synthetic data มากขึ้น real-world data ก็อาจกลายเป็น hedge เพื่อกัน data pollution</li>
+          <li>ถ้า regulation ด้าน AI เข้มขึ้น Grass อาจได้ narrative เรื่อง provenance และ traceability</li>
+          <li>แต่ถ้า centralized players สร้าง data pipeline เองได้ดีกว่า Grass ก็จะถูกลดบทบาท</li>
+        </ul>
+
+        <h2 id="catalysts">8. Catalyst Map</h2>
+
+        <p>catalyst ใหญ่ที่สุดคือการเปิด AI Data Marketplace ในช่วง H2 2026 ถ้า marketplace นี้ทำงานได้จริง Grass จะเปลี่ยนจากระบบปิดที่ขาย data ผ่าน backend ไปเป็นตลาดซื้อขาย structured web data ที่มี settlement และ utility ชัดขึ้น</p>
+
+        <p>อีกส่วนที่สำคัญคือ Live Context Retrieval หรือ LCR ซึ่งคือการขยับจาก historical training data ไปสู่ real-time inference data พูดง่าย ๆ คือ AI agent หรือ model สามารถดึงข้อมูลสดจาก web ผ่าน Grass nodes ได้</p>
+
+        <p>Grass เริ่มพูดถึงการใช้ B2B revenue เพื่อ buyback GRASS แต่สิ่งที่ตลาดต้องการเห็นไม่ใช่แค่ “มี buyback” สิ่งที่สำคัญกว่าคือ buyback ต้องตรวจสอบได้ ทำซ้ำได้ เชื่อมกับ revenue จริง และเกิด on-chain หรือมี transparency ชัดเจน</p>
+
+        <h2 id="unlock">9. Token Unlock</h2>
+
+        <p>ถ้าใช้ราคาเฉลี่ยราว $0.365: 31.58M GRASS x $0.365 = ประมาณ $11.53M เมื่อเทียบกับ 24h trading volume ประมาณ $19M-$20M monthly unlock จะเท่ากับประมาณ 58-60% ของ daily trading volume</p>
+
+        <p>นี่แปลว่า ถ้า token ที่ unlock ถูกขายวันเดียว ตลาดจะรับแรงขายหนักมาก เพราะ unlock value ใหญ่เกือบเท่าครึ่งหนึ่งของ volume ทั้งวัน แต่ถ้าถูกขายแบบทยอย 30 วัน จะเท่ากับประมาณ 1.05M GRASS ต่อวัน หรือประมาณ $385K ต่อวัน เทียบกับ daily volume $19.7M แล้ว daily unlock pressure อยู่ราว 1.9-2.0% ของ daily volume</p>
+
+        <p>ดังนั้นตัวเลข unlock เองไม่ได้ทำลายตลาดทันที แต่ sell pattern สำคัญมากว่าทีมจะขายแบบไหน เป็น bear case ที่ต้อง note ไว้ เพราะ supply ยังมีอยู่ตลอด แม้ไม่ได้สูงจน trading volume รับไม่ไหวในทุกสถานการณ์</p>
+
+        <h2 id="summary">10. Final View</h2>
+
+        <p>Grass มี thesis ที่สวย: AI ต้องการข้อมูลจริง, ข้อมูลจริงเริ่มหายาก, residential network มีค่า, provenance สำคัญขึ้น และ token ใช้ประสาน incentive ใน global data network</p>
+
+        <p>แต่ Grass ก็มี bear case ที่ใหญ่พอ ๆ กัน: supply ยังไม่จบ, botting ยังเป็นคำถาม, transparency ยังต้องพิสูจน์, regulatory surface ไม่เล็ก และ token accrual ยังต้องแสดงผลจริง</p>
+
+        <p>ดังนั้นมุมมองที่ดีที่สุดอาจไม่ใช่ bullish หรือ bearish แบบสุดโต่ง สำหรับผม Grass ก็เหมือนเหรียญคริปโตบางตัวที่มี narrative unique และมี fundamental แบ็คอยู่ แต่สุดท้ายก็ไม่พุ่งทันที เพราะมันยังมีความเป็น degen อยู่ในนั้น</p>
+
+        <p>ผมมอง fundamental เป็นแค่จุดขาย และต้องเอา TA กับ social sentiment เข้ามาช่วยประกอบการตัดสินใจ โดยสรุปคือ Grass เป็นหนึ่งในเหรียญที่ควรจับตามอง แต่ก็ต้องระวัง supply ที่อาจจะไม่โปร่งใส</p>
+
+        <div class="disclaimer">
+          หมายเหตุ: บทความนี้เป็นการวิเคราะห์เชิงข้อมูลและโครงสร้างตลาด ไม่ใช่คำแนะนำการลงทุน
+        </div>
+      </article>
+
+      <aside class="aside fade-up delay-2" aria-label="Article sidebar">
+        <div class="side-card">
+          <div class="side-label">Core Thesis</div>
+          <p>Grass อาจไม่ใช่แค่ passive-income DePIN แต่เป็น data refinery สำหรับ AI economy ถ้ามันพิสูจน์ provenance และ data quality ได้จริง</p>
+        </div>
+
+        <div class="side-card">
+          <div class="side-label">Numbers To Watch</div>
+          <div class="side-metric"><span>Total supply</span><strong>1B GRASS</strong></div>
+          <div class="side-metric"><span>Unlocked</span><strong>587.1M</strong></div>
+          <div class="side-metric"><span>Unlocked share</span><strong>58.71%</strong></div>
+          <div class="side-metric"><span>ATH / ATL</span><strong>$3.89 / $0.1668</strong></div>
+          <div class="side-metric"><span>Key catalyst</span><strong>H2 2026</strong></div>
+        </div>
+
+        <div class="side-card">
+          <div class="side-label">In This Memo</div>
+          <div class="toc-list">
+            <a href="#top"><span>00</span>บทนำ</a>
+            <a href="#data-scarcity"><span>01</span>Data scarcity</a>
+            <a href="#depin-data-business"><span>02</span>DePIN หรือ data business</a>
+            <a href="#bull-case"><span>03</span>Bull case</a>
+            <a href="#bear-case"><span>04</span>Bear case</a>
+            <a href="#risks"><span>05</span>Risk map</a>
+            <a href="#market-structure"><span>06</span>Market structure</a>
+            <a href="#provenance"><span>07</span>Data provenance</a>
+            <a href="#catalysts"><span>08</span>Catalysts</a>
+            <a href="#unlock"><span>09</span>Token unlock</a>
+            <a href="#summary"><span>10</span>Final view</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-socials">
+      <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" rel="noopener" aria-label="YouTube">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23 8.8c-.3-1.2-1.2-2.1-2.4-2.4C18.4 6 12 6 12 6s-6.4 0-8.6.4A3.3 3.3 0 0 0 1 8.8C.6 11 .6 12 .6 12s0 1 .4 3.2c.3 1.2 1.2 2.1 2.4 2.4 2.2.4 8.6.4 8.6.4s6.4 0 8.6-.4a3.3 3.3 0 0 0 2.4-2.4c.4-2.2.4-3.2.4-3.2s0-1-.4-3.2zM10 15.2V8.8l5.5 3.2L10 15.2z"/></svg>
+      </a>
+      <a href="https://x.com/dodgeduidui" target="_blank" rel="noopener" aria-label="X">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z"/></svg>
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.87v2.26h3.32l-.53 3.5h-2.8V24C19.62 23.1 24 18.1 24 12.07z"/></svg>
+      </a>
+      <a href="https://t.me/duisnote" target="_blank" rel="noopener" aria-label="Telegram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z"/></svg>
+      </a>
+    </div>
+    <div class="footer-copy">
+      &copy; 2026 <a href="blog.html">DUIDUI Journal</a> — Crypto KOL Portal
+    </div>
+  </footer>
+  <script src="assets/js/article-access.js"></script>
+  <script>
+    const clockEl = document.getElementById("clock");
+
+    function updateClock() {
+      const now = new Date();
+      const utc7 = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+      const hh = String(utc7.getUTCHours()).padStart(2, "0");
+      const mm = String(utc7.getUTCMinutes()).padStart(2, "0");
+      const ss = String(utc7.getUTCSeconds()).padStart(2, "0");
+      if (clockEl) clockEl.textContent = hh + ":" + mm + ":" + ss;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    document.addEventListener("click", function (event) {
+      const nav = document.getElementById("articleMobileNav");
+      if (nav && !nav.contains(event.target) && !event.target.closest(".mobile-menu-btn")) {
+        nav.classList.remove("open");
+      }
+    });
+  </script>
+</body>
+
+</html>
