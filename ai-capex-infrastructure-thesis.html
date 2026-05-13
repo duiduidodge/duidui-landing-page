@@ -1,0 +1,1200 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI CapEx คืออะไร? แผนที่ใหม่ของเศรษฐกิจเทคโนโลยี | DUIDUI Journal</title>
+  <meta name="description" content="AI CapEx ไม่ใช่แค่ค่าใช้จ่าย แต่คือ infrastructure buildout จริงที่กำลังเปลี่ยน economics ของ Big Tech: วิเคราะห์ Alphabet, Meta, Microsoft, Amazon และ 5 ตัวชี้วัดที่บอกว่า AI เป็น bubble หรือ supercycle" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="AI CapEx คืออะไร? แผนที่ใหม่ของเศรษฐกิจเทคโนโลยี" />
+  <meta property="og:description" content="ตลาดเปลี่ยนจาก AI narrative ไปสู่ AI CapEx discipline: วิเคราะห์ Big Tech 4 บริษัท, 5 ตัวชี้วัด และ who captures value ในแต่ละ layer" />
+  <meta property="og:image" content="assets/images/blog/ai%20bubbles.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@dodgeduidui" />
+  <meta name="twitter:title" content="AI CapEx คืออะไร? แผนที่ใหม่ของเศรษฐกิจเทคโนโลยี" />
+  <meta name="twitter:description" content="ตลาดเปลี่ยนจาก AI narrative ไปสู่ AI CapEx discipline วิเคราะห์ Alphabet, Meta, Microsoft, Amazon และ 5 ตัวชี้วัดสำคัญ" />
+  <meta name="twitter:image" content="assets/images/blog/ai%20bubbles.png" />
+  <meta name="theme-color" content="#101b16" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/brand/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/images/brand/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #101b16;
+      --paper-2: #15231c;
+      --reader: #18251f;
+      --reader-soft: #1d2c25;
+      --ink: #e3efe7;
+      --ink-strong: #f5fbf6;
+      --body-copy: #d8e6dc;
+      --muted: #91a99a;
+      --soft: rgba(227, 239, 231, 0.74);
+      --line: rgba(227, 239, 231, 0.12);
+      --line-strong: rgba(227, 239, 231, 0.18);
+      --panel: rgba(255, 255, 255, 0.055);
+      --panel-2: rgba(255, 255, 255, 0.085);
+      --green: #42cc7a;
+      --green-2: #88e8ad;
+      --accent: #42cc7a;
+      --teal: #3fc7b1;
+      --gold: #d6ad48;
+      --font-body: "Noto Sans Thai", "Sora", sans-serif;
+      --font-mono: "IBM Plex Sans Thai", "DM Mono", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 18% 4%, rgba(66, 204, 122, 0.12), transparent 32rem),
+        radial-gradient(circle at 94% 14%, rgba(214, 173, 72, 0.08), transparent 28rem),
+        linear-gradient(180deg, #0b1410 0%, var(--paper) 34%, #0e1813 100%);
+      color: var(--ink);
+      font-family: var(--font-body);
+      line-height: 1.78;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+    }
+
+    a { color: var(--green-2); text-decoration: none; }
+    a:hover { color: #c8f6d8; }
+    strong { color: #f5fff8; font-weight: 700; }
+    ::selection { background: var(--green); color: #06110b; }
+
+    .mono { font-family: var(--font-mono); }
+
+    .nav-hero {
+      position: relative;
+      min-height: 138px;
+      overflow: hidden;
+      border-radius: 0 0 32px 32px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
+      margin-bottom: clamp(20px, 4vw, 38px);
+    }
+
+    .nav-hero-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .nav-hero-scene img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 18%;
+      transform: scale(1.04);
+    }
+
+    .nav-hero-scene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(12,20,15,0.08) 0%, rgba(12,20,15,0.26) 46%, rgba(12,20,15,0.82) 100%),
+        linear-gradient(90deg, rgba(8,20,12,0.12) 0%, transparent 55%, rgba(8,20,12,0.08) 100%);
+    }
+
+    .site-header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 20px;
+    }
+
+    .brand {
+      color: rgba(246, 251, 247, 0.95);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .brand span { color: #7debb0; }
+
+    .nav-links-desktop {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px 4px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .nav-link {
+      padding: 7px 14px;
+      border-radius: 999px;
+      color: rgba(255, 255, 255, 0.84);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      white-space: nowrap;
+      transition: 180ms ease;
+    }
+
+    .nav-link.active,
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .clock-display {
+      color: rgba(255, 255, 255, 0.72);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    .nav-links-mobile {
+      display: none !important;
+      position: absolute;
+      top: 100%;
+      left: 0; right: 0;
+      z-index: 50;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px 20px;
+      border-radius: 0 0 20px 20px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .nav-links-mobile.open { display: flex !important; }
+
+    .nav-links-mobile .nav-link {
+      color: var(--ink) !important;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transform: none !important;
+    }
+
+    .back-link {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .back-link:hover { color: var(--ink); }
+
+    .article-banner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto clamp(24px, 4vw, 42px);
+      border: 1px solid rgba(227, 239, 231, 0.16);
+      border-radius: 30px;
+      overflow: hidden;
+      background: #0c1511;
+      box-shadow: 0 22px 64px rgba(0, 0, 0, 0.28);
+    }
+
+    .article-banner img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 1;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 76px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.42fr);
+      gap: clamp(22px, 4vw, 42px);
+      align-items: stretch;
+      margin-bottom: clamp(24px, 5vw, 56px);
+    }
+
+    .hero-copy { padding: clamp(10px, 2vw, 18px) 0; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 18px;
+      padding: 8px 12px;
+      border: 1px solid rgba(66, 204, 122, 0.25);
+      border-radius: 999px;
+      background: rgba(66, 204, 122, 0.09);
+      color: #9cf0bb;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 18px rgba(66, 204, 122, 0.75);
+    }
+
+    h1 {
+      max-width: 860px;
+      color: #f6fff9;
+      font-size: clamp(2.2rem, 5.2vw, 4.8rem);
+      line-height: 1.06;
+      letter-spacing: -0.045em;
+      text-wrap: balance;
+    }
+
+    .dek {
+      max-width: 720px;
+      margin-top: 24px;
+      color: rgba(227, 239, 231, 0.86);
+      font-size: clamp(1.03rem, 1.7vw, 1.22rem);
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .hero-card {
+      position: relative;
+      min-height: 0;
+      padding: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(227, 239, 231, 0.16);
+      border-radius: 26px;
+      background:
+        linear-gradient(155deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035)),
+        rgba(255, 255, 255, 0.035);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+    }
+
+    .orbital {
+      position: absolute;
+      width: 360px; height: 360px;
+      right: -86px; top: 72px;
+      border: 1px solid rgba(136, 232, 173, 0.18);
+      border-radius: 999px;
+      animation: rotateSlow 28s linear infinite;
+    }
+
+    .orbital::before,
+    .orbital::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+    }
+
+    .orbital::before {
+      inset: 58px;
+      border: 1px dashed rgba(214, 173, 72, 0.24);
+    }
+
+    .orbital::after {
+      width: 22px; height: 22px;
+      left: 56px; top: 44px;
+      background: var(--gold);
+      box-shadow: 0 0 28px rgba(214, 173, 72, 0.58);
+    }
+
+    @keyframes rotateSlow { to { transform: rotate(360deg); } }
+
+    .hero-card-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      height: 100%;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .ticker-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: rgba(227, 239, 231, 0.62);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .signal-stack { display: grid; gap: 10px; }
+
+    .hero-signal {
+      padding: 14px 15px;
+      border: 1px solid rgba(227, 239, 231, 0.14);
+      border-radius: 16px;
+      background: rgba(10, 20, 15, 0.42);
+    }
+
+    .signal-label {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .signal-value {
+      margin-top: 6px;
+      color: #f7fff9;
+      font-family: var(--font-mono);
+      font-size: clamp(1.45rem, 2.5vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: -0.06em;
+      line-height: 1;
+    }
+
+    .signal-note {
+      margin-top: 6px;
+      color: rgba(227, 239, 231, 0.66);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .article-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 780px) minmax(260px, 1fr);
+      gap: clamp(28px, 5vw, 60px);
+      align-items: start;
+    }
+
+    .content {
+      color: var(--body-copy);
+      font-size: clamp(1.06rem, 1.28vw, 1.14rem);
+      line-height: 1.92;
+      padding: clamp(24px, 4vw, 44px);
+      border: 1px solid var(--line-strong);
+      border-radius: 34px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 34rem),
+        var(--reader);
+      box-shadow: 0 22px 64px rgba(0, 0, 0, 0.24);
+    }
+
+    .content h2,
+    .content h3 {
+      color: var(--ink-strong);
+      line-height: 1.25;
+      margin: 62px 0 20px;
+      letter-spacing: -0.035em;
+      text-wrap: balance;
+    }
+
+    .content h2 { font-size: clamp(1.45rem, 2.4vw, 2.05rem); }
+    .content h2::before {
+      content: "";
+      display: block;
+      width: 44px; height: 2px;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, var(--green), transparent);
+    }
+    .content h3 { font-size: 23px; }
+    .content p,
+    .content ul,
+    .content ol,
+    .content blockquote { margin: 0 0 22px; }
+    .content ul,
+    .content ol { padding-left: 24px; }
+    .content li { margin-bottom: 8px; }
+    .content strong { color: #f3f8f4; }
+    .content a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+
+    .lead-block {
+      margin: 0 0 34px;
+      padding: clamp(22px, 4vw, 34px);
+      border: 1px solid rgba(66, 204, 122, 0.28);
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(66, 204, 122, 0.12), rgba(255, 255, 255, 0.035)),
+        rgba(255, 255, 255, 0.025);
+    }
+
+    .lead-block p {
+      margin-bottom: 14px;
+      font-size: clamp(1.12rem, 2vw, 1.45rem);
+      line-height: 1.75;
+      color: #f2fff6;
+    }
+
+    .lead-block p:last-child { margin-bottom: 0; }
+
+    .memo-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0 0 34px;
+    }
+
+    .memo-strip-item {
+      padding: 16px;
+      border: 1px solid rgba(227, 239, 231, 0.14);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .memo-strip-label {
+      margin-bottom: 8px;
+      color: var(--gold);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .memo-strip-item p {
+      margin: 0;
+      color: rgba(227, 239, 231, 0.82);
+      font-size: 0.94rem;
+      line-height: 1.7;
+    }
+
+    .tldr-card,
+    .diagram-card,
+    .signal-grid { margin: 34px 0; }
+
+    .tldr-card {
+      padding: 24px;
+      border: 1px solid rgba(103,213,139,0.22);
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(103,213,139,0.1), rgba(212,177,90,0.06)),
+        rgba(255,255,255,0.045);
+    }
+
+    .tldr-card h2 { margin-top: 0; font-size: 24px; }
+
+    .diagram-card {
+      padding: 24px;
+      border: 1px solid rgba(103,213,139,0.22);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.055);
+      overflow: hidden;
+    }
+
+    .diagram-card h2 { margin-top: 0; }
+
+    .signal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .signal-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.045);
+    }
+
+    .signal-card span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--accent);
+      font: 800 10px/1 var(--font-mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .signal-card p { margin: 0; font-size: 15px; line-height: 1.7; }
+
+    .quote-card {
+      margin: 32px 0;
+      padding: 20px 22px;
+      border-left: 3px solid var(--gold);
+      border-radius: 0 16px 16px 0;
+      background: rgba(212,177,90,0.08);
+      color: #f2e8c2;
+      font-weight: 600;
+    }
+
+    .disclaimer {
+      margin-top: 42px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .aside {
+      position: sticky;
+      top: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .side-card {
+      padding: 18px;
+      border: 1px solid rgba(227, 239, 231, 0.14);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03)),
+        rgba(13, 23, 17, 0.72);
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.18);
+    }
+
+    .side-label {
+      margin-bottom: 12px;
+      color: var(--green);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .side-card p {
+      margin: 0;
+      color: rgba(227, 239, 231, 0.74);
+      font-size: 14px;
+      line-height: 1.72;
+    }
+
+    .side-metric {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(227, 239, 231, 0.09);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .side-metric:last-child { border-bottom: 0; }
+    .side-metric strong { color: #f5faf6; }
+
+    .toc-list { display: grid; gap: 8px; }
+
+    .toc-list a {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 8px;
+      align-items: baseline;
+      color: rgba(227, 239, 231, 0.76);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .toc-list a:hover { color: var(--green-2); }
+
+    .toc-list span {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+
+    .site-footer {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .site-footer a { color: var(--accent); text-decoration: none; }
+
+    .footer-socials {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-socials a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px; height: 42px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ink);
+    }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .delay-1 { animation-delay: 80ms; }
+    .delay-2 { animation-delay: 140ms; }
+
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 820px) {
+      .nav-links-desktop,
+      .clock-display { display: none; }
+      .mobile-menu-btn { display: inline-flex; }
+      .hero-grid,
+      .article-shell { grid-template-columns: 1fr; }
+      .aside { position: static; }
+      .memo-strip { grid-template-columns: 1fr; }
+      .content { font-size: 16px; }
+      .content h2 { font-size: 25px; }
+      .signal-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .page,
+      .article-banner,
+      .back-link,
+      .site-footer { width: calc(100% - 24px); }
+      .site-header { padding: 14px 16px; }
+      h1 { font-size: clamp(2.2rem, 14vw, 3.55rem); }
+      .hero-card { min-height: 330px; padding: 18px; border-radius: 26px; }
+      .tldr-card,
+      .diagram-card,
+      .disclaimer { padding: 18px; border-radius: 18px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="nav-hero">
+    <div class="nav-hero-scene">
+      <img src="assets/images/backgrounds/anime-bg.jpg" alt="" aria-hidden="true" />
+    </div>
+
+    <header class="site-header">
+      <a href="index.html" class="brand"><span class="brand-star">*</span> DUIDUI</a>
+
+      <nav class="nav-links-desktop" aria-label="Primary">
+        <div class="nav-container">
+          <a href="index.html" class="nav-link">HOME</a>
+          <a href="index.html#connect" class="nav-link">CONNECT</a>
+          <a href="shop.html" class="nav-link">ARTIFACTS</a>
+          <a href="blog.html" class="nav-link active">BLOG</a>
+        </div>
+      </nav>
+
+      <div class="header-tools">
+        <div class="clock-display" id="clock">--:--:--</div>
+        <button class="mobile-menu-btn" type="button" aria-label="Toggle menu" onclick="document.getElementById('articleMobileNav').classList.toggle('open')">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="nav-links-mobile" id="articleMobileNav">
+      <a href="index.html" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">HOME</a>
+      <a href="index.html#connect" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">CONNECT</a>
+      <a href="shop.html" class="nav-link" onclick="document.getElementById('articleMobileNav').classList.remove('open')">ARTIFACTS</a>
+      <a href="blog.html" class="nav-link active" onclick="document.getElementById('articleMobileNav').classList.remove('open')">BLOG</a>
+    </div>
+  </div>
+
+  <a href="blog.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M12 19l-7-7 7-7" />
+    </svg>
+    Back To Journal
+  </a>
+
+  <div class="article-banner fade-up delay-1">
+    <img src="assets/images/blog/ai%20bubbles.png" alt="AI CapEx คืออะไร? แผนที่ใหม่ของเศรษฐกิจเทคโนโลยี" />
+  </div>
+
+  <main class="page" id="top">
+    <section class="hero-grid">
+      <div class="hero-copy fade-up">
+        <div class="eyebrow">Tech Macro Analysis</div>
+        <h1>AI CapEx คืออะไร? และมันไม่ใช่แค่ค่าใช้จ่าย แต่มันคือแผนที่ใหม่ของเศรษฐกิจเทคโนโลยี</h1>
+        <p class="dek">ตลาดเปลี่ยนจากการถามว่า "บริษัทนี้มี AI ไหม" ไปสู่การถามว่า "บริษัทนี้กล้าลงทุน AI จริงไหม และจะเปลี่ยน CapEx ให้เป็น cash flow ได้จริงไหม" วิเคราะห์ Alphabet, Meta, Microsoft, Amazon และ 5 ตัวชี้วัดที่บอกว่า AI เป็น bubble หรือ supercycle</p>
+        <div class="hero-meta">
+          <span>13 พ.ค. 2026</span>
+          <span>·</span>
+          <span>~18 นาที</span>
+          <span>·</span>
+          <span>AI / GOOGL / META / MSFT / AMZN</span>
+        </div>
+      </div>
+
+      <aside class="hero-card fade-up delay-1" aria-label="Article key metrics">
+        <div class="orbital" aria-hidden="true"></div>
+        <div class="hero-card-content">
+          <div class="ticker-row">
+            <span>AI CapEx</span>
+            <span>INFRASTRUCTURE THESIS</span>
+          </div>
+          <div class="signal-stack">
+            <div class="hero-signal">
+              <div class="signal-label">2026 Total Spend</div>
+              <div class="signal-value">$700B+</div>
+              <div class="signal-note">คาดการณ์ spending บน AI infrastructure ของ Big Tech ปี 2026 จาก ~$410B ในปี 2025</div>
+            </div>
+            <div class="hero-signal">
+              <div class="signal-label">FCF Impact</div>
+              <div class="signal-value">Decade Low</div>
+              <div class="signal-note">AI spending spree กำลังกด collective free cash flow ของ Big Tech ลงสู่ระดับต่ำสุดในรอบทศวรรษ</div>
+            </div>
+            <div class="hero-signal">
+              <div class="signal-label">Debt Issued</div>
+              <div class="signal-value">~$455B</div>
+              <div class="signal-note">Big Tech และ related entities ออก debt เพื่อ fund AI-driven data center boom</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="article-shell">
+      <article class="content fade-up delay-2">
+
+        <div class="lead-block">
+          <p>ตลาดชอบถามว่า AI เป็น bubble ไหม? คำถามนี้สำคัญ แต่ไม่ได้น่ากลัวอย่างที่คิด เพราะถ้าเรามอง AI เป็นแค่ "หุ้นขึ้นแรง" เราจะพลาดสิ่งที่ใหญ่กว่า</p>
+          <p><strong>สิ่งที่กำลังเกิดขึ้นตอนนี้คือ Big Tech ได้เปลี่ยน AI จาก narrative ให้กลายเป็น infrastructure</strong> — data center, GPUs, CPUs, networking, memory, power capacity, cooling systems, fiber, cloud regions, custom silicon และ lease obligations ที่กำลังถูกลงบัญชีจริงในงบการเงิน AI กำลังเดินออกจากหน้า pitch deck แล้วเข้าไปอยู่ใน balance sheet</p>
+        </div>
+
+        <div class="memo-strip" aria-label="Memo summary">
+          <div class="memo-strip-item">
+            <div class="memo-strip-label">Core Thesis</div>
+            <p>AI กำลังเดินออกจาก pitch deck ไปสู่ balance sheet คือ infrastructure buildout จริงที่เปลี่ยน economics ของ Big Tech</p>
+          </div>
+          <div class="memo-strip-item">
+            <div class="memo-strip-label">Scale Shift</div>
+            <p>Spending ระดับ $700B+ ปี 2026 กำลังกด free cash flow ลง decade low และดึง credit market เข้ามาด้วย</p>
+          </div>
+          <div class="memo-strip-item">
+            <div class="memo-strip-label">Alpha Layer</div>
+            <p>GPU/hardware ได้ก่อน cloud hyperscalers ต้องพิสูจน์ utilization application layer ต้องพิสูจน์ willingness to pay</p>
+          </div>
+        </div>
+
+        <div class="tldr-card">
+          <h2>TL;DR</h2>
+          <ul>
+            <li>AI CapEx ของ Big Tech ปี 2026 คาดว่าจะเกิน $700B เปลี่ยนจาก narrative ไปสู่ infrastructure buildout จริง</li>
+            <li>Alphabet ($180–190B), Meta ($125–145B), Microsoft ($37.5B+ ต่อไตรมาส) และ Amazon ต่างลงทุนหนักจนกด free cash flow สู่ decade low</li>
+            <li>ประโยชน์กระจายต่างเวลา: GPU/hardware ได้ก่อน, cloud hyperscalers ต้องพิสูจน์ utilization, application layer ยังต้องพิสูจน์ willingness to pay</li>
+            <li>5 ตัวชี้วัดสำคัญ: utilization, revenue conversion, gross margin after AI cost, depreciation cycle, funding mix</li>
+            <li>AI CapEx ไม่ใช่ bubble ธรรมดา แต่มี bubble risk ได้ คนชนะคือคนที่เปลี่ยน compute เป็น cash flow ได้ดีที่สุด ไม่ใช่คนที่ใช้เงินเยอะที่สุด</li>
+          </ul>
+        </div>
+
+        <h2 id="narrative-to-capex">1. ตลาดไม่ได้ Price AI จาก Story แล้ว แต่ Price จาก CapEx</h2>
+
+        <p>CapEx หรือ Capital Expenditures คือรายจ่ายเพื่อลงทุนในสินทรัพย์ระยะยาว อารมณ์แบบซื้อเครื่องทำกาแฟเพื่อขายกาแฟ — เครื่องทำกาแฟคือ CapEx และเมล็ดกาแฟคือ OpEx</p>
+
+        <p>ช่วงแรกของ AI cycle ตลาดซื้อ narrative ใครมีคำว่า AI ใน presentation ก็ดูมีอนาคต ใครพูดเรื่อง model, agent, automation, inference ก็ดูเหมือนอยู่บนคลื่นใหญ่ ตอนนี้ก็ยังเป็นแบบนั้นอยู่นะ</p>
+
+        <p>แต่ตลาดเริ่ม mature ขึ้น และคำถามจะไม่ใช่แค่ <strong>"บริษัทนี้มี AI ไหม"</strong> แต่คือ:</p>
+
+        <div class="signal-grid">
+          <div class="signal-card">
+            <span>Investment</span>
+            <p>บริษัทนี้กล้าลงทุนจริงไหม? มี demand พอรองรับ capacity ไหม?</p>
+          </div>
+          <div class="signal-card">
+            <span>Distribution</span>
+            <p>ใครเป็นเจ้าของ distribution? ใครมี pricing power?</p>
+          </div>
+          <div class="signal-card">
+            <span>Conversion</span>
+            <p>ใครสามารถเปลี่ยน CapEx ให้เป็น revenue ได้? ใครจะติด depreciation ถ้า demand ไม่มาเร็วพอ?</p>
+          </div>
+        </div>
+
+        <p>นี่คือการเปลี่ยนจาก <strong>AI narrative</strong> ไปสู่ <strong>AI CapEx discipline</strong> และนั่นทำให้ CapEx กลายเป็นตัวเลขที่สำคัญที่สุดตัวหนึ่งของตลาดเทคตอนนี้</p>
+
+        <h2 id="macro-spending">2. ขนาดของเงินลงทุนเริ่มใหญ่เกินกว่าจะเรียกว่า Experiment</h2>
+
+        <p>ปี 2026 คือปีที่ AI infrastructure spending กลายเป็นตัวเลขระดับ macro Reuters รายงานว่า spending on AI infrastructure by major tech firms ถูกคาดว่าจะเกิน <strong>$700B ในปี 2026</strong> จากประมาณ $410B ในปี 2025</p>
+
+        <p>ระดับเงินกำลังเปลี่ยน supply chain ทั้งระบบ มันกระทบ:</p>
+
+        <div class="signal-grid">
+          <div class="signal-card">
+            <span>Hardware Layer</span>
+            <p>semiconductor, memory, GPUs, networking equipment, custom silicon</p>
+          </div>
+          <div class="signal-card">
+            <span>Infrastructure Layer</span>
+            <p>data center construction, cooling systems, power equipment, industrial real estate</p>
+          </div>
+          <div class="signal-card">
+            <span>Capital Layer</span>
+            <p>utility demand, cloud infrastructure, fiber, corporate debt market</p>
+          </div>
+        </div>
+
+        <p>AI CapEx จึงไม่ใช่เรื่องของ Nasdaq อย่างเดียว มันเริ่มกลายเป็น <strong>industrial cycle ของทั้งโลก</strong> AI ไม่ได้อยู่แค่ใน software stack แล้ว มันกำลังกลืน hardware stack, energy stack และ credit market เข้าไปด้วย</p>
+
+        <h2 id="alphabet">3. Alphabet: AI CapEx ในฐานะ Search + Cloud Defense</h2>
+
+        <p>Alphabet เป็นตัวอย่างที่ดีของบริษัทที่ตลาดเคยกลัวว่า AI จะ disrupt core business คำถามเก่าคือ: "ถ้าคนใช้ AI answer engine มากขึ้น Google Search จะเสีย traffic ไหม?"</p>
+
+        <p>แต่ตัวเลข CapEx สะท้อนว่า Alphabet ไม่ได้เลือก defend แบบ passive Alphabet ปรับ full-year 2026 CapEx guidance ขึ้นเป็น <strong>$180B–$190B</strong> และบอกว่าความต้องการ AI compute ทั้ง internal และ external อยู่ในระดับมหาศาล</p>
+
+        <p>นี่คือ signal ที่สำคัญมาก เพราะมันบอกว่า Alphabet ไม่ได้มอง AI เป็นแค่ threat ต่อ Search แต่มอง AI เป็น <strong>infrastructure layer ใหม่</strong>ของทั้ง Google Services และ Google Cloud</p>
+
+        <div class="quote-card">ถ้า AI answer, AI ad tools, enterprise AI, Gemini ecosystem และ custom chips ทำงานร่วมกันได้จริง CapEx นี้จะไม่ใช่แค่ defensive spending แต่มันจะกลายเป็นทางด่วน</div>
+
+        <p>Alphabet อยู่ตรงกลางระหว่างสอง narrative:</p>
+
+        <div class="signal-grid">
+          <div class="signal-card">
+            <span>Bull Case</span>
+            <p>AI ทำให้ Search, Ads และ Cloud แข็งแรงขึ้น เพิ่ม gross profit ต่อ query / ต่อ user / ต่อ cloud customer</p>
+          </div>
+          <div class="signal-card">
+            <span>Bear Case</span>
+            <p>AI ทำให้ cost to serve สูงขึ้นก่อน revenue ตามทัน margin ถูกกดก่อนที่ monetization จะชัด</p>
+          </div>
+          <div class="signal-card">
+            <span>Key Question</span>
+            <p>AI investment จะเพิ่ม gross profit ต่อ query/user/cloud customer ได้จริงไหม ไม่ใช่แค่ว่า Google ลงทุนเยอะ</p>
+          </div>
+        </div>
+
+        <h2 id="meta">4. Meta: CapEx เพื่อควบคุม Distribution และ Recommendation Engine</h2>
+
+        <p>Meta เป็น case ที่น่าสนใจ เพราะไม่ใช่ cloud provider แบบ AWS, Azure หรือ Google Cloud แต่ Meta ใช้ AI CapEx เพื่อเสริม core engine ของตัวเอง: recommendation, ads targeting, content ranking, generative creative tools, business messaging, Llama ecosystem และ internal productivity</p>
+
+        <p>Meta ปรับ 2026 CapEx guidance เป็น <strong>$125B–$145B</strong> จากเดิม $115B–$135B โดยชี้ไปที่ component pricing ที่สูงขึ้น และ data center costs เพื่อรองรับ future capacity</p>
+
+        <p>มันสะท้อนว่า Meta กำลังเลือกซื้อ compute เพื่อปกป้อง <strong>attention economy</strong> ของตัวเอง ถ้า AI ทำให้ feed ดีขึ้น, ads conversion ดีขึ้น, creative generation ถูกลง และ business agents scale ได้ Meta จะสามารถแปลง CapEx เป็น ad yield ได้ค่อนข้างตรง</p>
+
+        <p>แต่ความเสี่ยงคือ Meta ไม่มี external cloud revenue ขนาดเดียวกับ Microsoft, Amazon หรือ Alphabet ดังนั้นตลาดจะถามหนักกว่า: <strong>"เงินที่ลงไป จะกลับมาเป็น ad revenue และ engagement มากพอไหม?"</strong></p>
+
+        <div class="quote-card">สำหรับ Meta, AI CapEx คือการซื้อ intelligence เพื่อเพิ่ม value ต่อ attention unit</div>
+
+        <h2 id="microsoft">5. Microsoft: AI CapEx คือ Azure Capacity Race</h2>
+
+        <p>Microsoft เป็นหนึ่งในบริษัทที่ AI CapEx เชื่อมกับ revenue engine ชัดที่สุด เพราะ Azure เป็น platform ที่สามารถ monetize compute demand ได้โดยตรง</p>
+
+        <p>Microsoft รายงาน FY26 Q1 capital expenditures ที่ <strong>$34.9B</strong> โดยบอกว่าขับเคลื่อนจาก cloud และ AI demand และประมาณครึ่งหนึ่งของ spend เป็น short-lived assets เช่น GPUs และ CPUs ต่อมา FY26 Q2 CapEx อยู่ที่ <strong>$37.5B</strong> และประมาณสองในสามเป็น short-lived assets</p>
+
+        <p>คำว่า <strong>short-lived assets</strong> สำคัญมาก เพราะมันแปลว่า AI infrastructure ไม่เหมือน data center ยุคเก่า:</p>
+
+        <ul>
+          <li>GPU cycle เสื่อมเร็วกว่า model</li>
+          <li>Architecture เปลี่ยนเร็วกว่า hardware</li>
+          <li>Efficiency เปลี่ยนเร็วกว่า</li>
+          <li>Depreciation pressure จะชัดขึ้นถ้า utilization ไม่สูงพอ</li>
+        </ul>
+
+        <p>ดังนั้น Microsoft bull case ไม่ใช่แค่ "AI ดี" แต่คือ Azure ต้องมี utilization สูงพอที่จะ justify GPU-heavy CapEx ถ้า enterprise AI workload ขยายจริง Microsoft จะเป็นหนึ่งในผู้เก็บค่าเช่าหลักของ cycle นี้</p>
+
+        <h2 id="amazon">6. Amazon: AI CapEx คือการป้องกัน AWS Crown</h2>
+
+        <p>Amazon อยู่ในตำแหน่งที่ต่างจาก Meta และคล้าย Microsoft มากกว่า เพราะ AWS คือ cash engine สำคัญของบริษัท ในรอบ cloud cycle ก่อน AWS เป็นผู้ชนะใหญ่ แต่ใน AI cycle นี้ ความเป็นผู้นำไม่ได้การันตีอัตโนมัติ</p>
+
+        <p>เพราะลูกค้าไม่ได้ต้องการแค่ cloud storage หรือ compute ธรรมดา แต่ต้องการ GPU clusters, model hosting, inference scale, AI platform tools และ latency-efficient infrastructure</p>
+
+        <p>รายงานล่าสุดระบุว่า Amazon กำลังหันไปใช้ debt markets รวมถึง Swiss franc bond sale หาทุนเพื่อขยาย business investments และ CapEx</p>
+
+        <div class="diagram-card">
+          <h2>AI CapEx → Credit Market</h2>
+          <div class="signal-grid">
+            <div class="signal-card">
+              <span>Shift</span>
+              <p>AI CapEx ไม่ได้ถูก fund ด้วย free cash flow แบบสบาย ๆ เหมือนอดีตทั้งหมดแล้ว บางส่วนเริ่มไหลเข้าสู่ credit market</p>
+            </div>
+            <div class="signal-card">
+              <span>Implication</span>
+              <p>เมื่อ AI buildout พึ่ง "หนี้สิน" มากขึ้น ตลาดจะเริ่มถามเรื่อง cost of capital มากขึ้น</p>
+            </div>
+            <div class="signal-card">
+              <span>New Lens</span>
+              <p>AI CapEx cycle กำลังเปลี่ยน Big Tech จาก "asset-light compounders" ให้บางส่วนเริ่มคล้าย "digital utilities"</p>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="margin-shift">7. จุดเปลี่ยนสำคัญ: จาก Software Margin ไปสู่ Infrastructure Margin</h2>
+
+        <p>ยุค software เดิม ตลาดรัก Big Tech เพราะมันมีลักษณะ asset-light: margin สูง, free cash flow แข็งแรง, buyback ใหญ่, scale โดยไม่ต้องเพิ่มต้นทุนเท่ากับรายได้ และ incremental margin สวย</p>
+
+        <p>แต่ <strong>AI CapEx กำลังเปลี่ยนสมการนี้</strong> และ AI ไม่ได้ scale ฟรี:</p>
+
+        <ul>
+          <li>ทุก inference มี cost</li>
+          <li>ทุก model ต้องใช้ compute</li>
+          <li>ทุก latency improvement ต้องมี infrastructure</li>
+          <li>ทุก enterprise workload ต้องมี capacity</li>
+        </ul>
+
+        <p>ดังนั้น AI อาจเพิ่ม revenue ได้จริง แต่ก่อนจะไปถึงจุดนั้น บริษัทต้องจ่ายก่อน FT รายงานว่า AI spending spree ระดับ $725B ของ Big Tech กำลังกด <strong>collective free cash flow ลงสู่ระดับต่ำสุดในรอบทศวรรษ</strong></p>
+
+        <div class="quote-card">ตลาดกำลังเปลี่ยนจากการให้ premium กับ "software-like economics" ไปสู่การประเมินว่า "infrastructure-like economics" จะยังสร้าง return สูงพอไหม</div>
+
+        <h2 id="who-benefits">8. ใครได้ประโยชน์ก่อน ใครได้ประโยชน์ทีหลัง</h2>
+
+        <p>AI CapEx ไม่ได้กระจายประโยชน์เท่ากันทุกเลเยอร์ ถ้าจัดเป็นแต่ละ Layer จะเห็นประมาณนี้:</p>
+
+        <div class="diagram-card">
+          <h2>AI CapEx Value Chain</h2>
+          <div class="signal-grid">
+            <div class="signal-card">
+              <span>Layer 1: Immediate</span>
+              <p><strong>GPU / accelerator, HBM memory, networking, power, cooling, data center construction</strong> — รับเงินก่อน เหมือนคนขายพลั่วในยุคตื่นทอง ROI ของคนขุดทองค่อยว่ากันทีหลัง</p>
+            </div>
+            <div class="signal-card">
+              <span>Layer 2: Infrastructure</span>
+              <p><strong>AWS, Azure, Google Cloud, Oracle Cloud</strong> — ต้องลงทุนหนัก แต่มีโอกาสเก็บค่าเช่าระยะยาว เจ้าของถนน ถ้า traffic มาเยอะจะรวยมาก ถ้า traffic ไม่มาจะติด depreciation</p>
+            </div>
+            <div class="signal-card">
+              <span>Layer 3: Application</span>
+              <p><strong>enterprise software, coding tools, AI agents, vertical AI apps</strong> — อาจ capture value สูงในระยะยาว แต่ต้องพิสูจน์ willingness to pay และ retention ก่อน</p>
+            </div>
+          </div>
+        </div>
+
+        <p>Layer 4 คือ <strong>End-user productivity</strong> ที่เป็นปลายทางที่ใหญ่ที่สุด แต่ช้าที่สุด ถ้า AI ทำให้บริษัทลดต้นทุน เพิ่ม output หรือสร้าง product ใหม่ได้จริง CapEx วันนี้จะดูเหมือนถูกมากในอนาคต แต่ถ้า adoption ติด friction CapEx วันนี้จะดูเหมือน overbuild</p>
+
+        <h2 id="bubble-or-supercycle">9. Bubble หรือ Supercycle? ต้องดู 5 ตัวชี้วัดนี้</h2>
+
+        <p>การตัดสินว่า AI CapEx เป็น bubble หรือ infrastructure supercycle ไม่ควรดูจากราคาหุ้นอย่างเดียว ต้องดู 5 ตัวนี้:</p>
+
+        <div class="tldr-card">
+          <h2>5 ตัวชี้วัด</h2>
+          <ol>
+            <li><strong>Utilization</strong> — Data center และ GPU clusters ถูกใช้งานเต็มแค่ไหน? ถ้า utilization สูง CapEx จะดู rational ถ้า utilization ต่ำ overcapacity narrative จะกลับมาเร็วมาก</li>
+            <li><strong>Revenue Conversion</strong> — AI compute แปลงเป็น revenue ได้เร็วแค่ไหน? สำหรับ cloud providers ต้องดู cloud backlog, AI services revenue, enterprise adoption</li>
+            <li><strong>Gross Margin After AI Cost</strong> — คำถามจริงคือ AI เพิ่ม gross profit หรือแค่เพิ่ม revenue ที่ margin ต่ำลง?</li>
+            <li><strong>Depreciation Cycle</strong> — GPU-heavy infrastructure มีอายุเศรษฐกิจสั้นกว่า infrastructure แบบเดิม ถ้า hardware upgrade cycle เร็ว depreciation และ replacement CapEx จะกลายเป็นแรงกดระยะยาว</li>
+            <li><strong>Funding Mix</strong> — ถ้า AI CapEx เริ่มพึ่ง debt, leases และ off-balance-sheet structures มากขึ้น ตลาดจะเริ่มมอง Big Tech ด้วย lens ของ credit cycle มากขึ้น Reuters รายงานว่า Alphabet และ Amazon เริ่ม tap overseas debt markets เพื่อสนับสนุน AI infrastructure push Barron's รายงานว่า Big Tech และ related entities ออก debt รวมประมาณ $455B เพื่อ fund AI-driven data center boom</li>
+          </ol>
+        </div>
+
+        <p>นี่คือจุดที่ต้องไม่มองข้าม เพราะเมื่อ AI buildout เชื่อมกับ credit market มันจะ sensitive ต่อ rates, spreads และ investor appetite มากขึ้น</p>
+
+        <h2 id="pre-positioning">10. The Real Alpha: AI CapEx คือ "Capacity Pre-Positioning"</h2>
+
+        <p>ตลาดทั่วไปมอง CapEx เป็นค่าใช้จ่าย แต่มุมที่ลึกกว่าคือ: <strong>AI CapEx คือการ pre-position capacity ก่อน demand จะมาเต็มรูปแบบ</strong></p>
+
+        <p>นี่คล้าย cloud cycle ช่วงแรก ตอนแรกคนสงสัยว่า cloud data centers จะใช้เต็มไหม แต่เมื่อ enterprise migration มา infrastructure owners ก็กลายเป็นผู้ชนะ</p>
+
+        <p>AI cycle อาจคล้ายกัน แต่มีความเร็วและความเสี่ยงสูงกว่า เพราะ:</p>
+
+        <ul>
+          <li>Hardware cycle เร็วกว่า</li>
+          <li>Model efficiency เปลี่ยนเร็วกว่า</li>
+          <li>Competition ดุกว่า</li>
+          <li>Power constraint จริงกว่า</li>
+          <li>Monetization ยังไม่ normalize</li>
+          <li>Enterprise adoption ยังไม่เท่ากันทุก sector</li>
+        </ul>
+
+        <p>ดังนั้น AI CapEx ไม่ใช่เสือนอนกิน แต่มันคือ <strong>call option ขนาดใหญ่บนอนาคตของ compute demand</strong> คนที่มี capacity ก่อน อาจเป็นคนกำหนดราคา แต่คนที่ build capacity เกิน demand จะเป็นคนรับ depreciation</p>
+
+        <h2 id="why-market">11. ทำไมตลาดยังให้โอกาส AI CapEx</h2>
+
+        <p>ถึงจะมีความเสี่ยง ตลาดยังไม่ reject AI CapEx ทั้งหมด เพราะมีเหตุผลสำคัญ 3 ข้อ:</p>
+
+        <div class="signal-grid">
+          <div class="signal-card">
+            <span>หนึ่ง: Demand ยังไม่อิ่มตัว</span>
+            <p>Alphabet พูดชัดว่า AI compute demand ทั้ง internal และ external อยู่ในระดับสูงมาก Microsoft รายงาน CapEx ขับเคลื่อนโดย cloud และ AI demand อย่างต่อเนื่อง ถ้ายังเจอ demand มากกว่า capacity ตลาดจะยอมให้ลงทุนต่อ</p>
+          </div>
+          <div class="signal-card">
+            <span>สอง: Balance Sheet แข็งแรง</span>
+            <p>แม้ debt และ leases จะเพิ่มขึ้น แต่ Big Tech ยังมี cash flow base ใหญ่กว่าบริษัทเทคยุค bubble หลายรอบ ทำให้ overinvestment risk ไม่เท่ากับ bankruptcy risk ทันที</p>
+          </div>
+          <div class="signal-card">
+            <span>สาม: Winner-Takes-Most</span>
+            <p>ถ้า AI platform layer กลายเป็นตลาดที่ scale สำคัญมาก ผู้ชนะจะยิ่งชนะ ทำให้บริษัทใหญ่ยอมจ่ายก่อน เพราะการ "ลงทุนช้า" อาจแพงกว่า "ลงทุนเกิน"</p>
+          </div>
+        </div>
+
+        <h2 id="no-blank-cheque">12. แต่ตลาดจะไม่ให้ Blank Cheque ตลอดไป</h2>
+
+        <p>จุดที่ต้องระวังคือ investor patience ไม่ได้ไม่มีขีดจำกัด ถ้า CapEx โตต่อ แต่ free cash flow ถูกกด, buybacks ลด, margin ถูกบีบ และ AI revenue ยังไม่ชัด ตลาดอาจตั้งคำถาม: "ใครลงทุน AI เยอะที่สุด?"</p>
+
+        <div class="quote-card">AI CapEx phase แรกให้รางวัลกับ scaling — AI CapEx phase ต่อไปจะให้รางวัลกับ efficiency</div>
+
+        <p>3 ปีต่อจากนี้ อาจไม่ใช่ปีที่ตลาดถามว่าใครมี AI ของตัวเองแล้ว... แต่เป็นปีที่ตลาดถามว่า <strong>AI ของใครมี ROI สูงสุด</strong></p>
+
+        <h2 id="final-view">13. Final View</h2>
+
+        <p>AI CapEx คือหนึ่งใน narrative ที่ใหญ่ที่สุดของตลาดตอนนี้ แต่ไม่ควรอ่านแบบผิวเผินว่า "ลงทุนเยอะ = bullish เสมอ"</p>
+
+        <p>การลงทุนระดับ $600B–$800B+ ไม่ใช่เรื่องเล็ก มันใหญ่พอจะเปลี่ยน earnings quality, free cash flow profile, debt market, semiconductor cycle และ power demand</p>
+
+        <p>แต่ในขณะเดียวกัน มันก็ใหญ่พอจะบอกว่า AI ไม่ใช่แค่กระแสบนหน้าฟีด นี่คือ infrastructure buildout จริง</p>
+
+        <div class="tldr-card">
+          <h2>มุมมองที่ Balanced</h2>
+          <ul>
+            <li>AI ไม่ใช่ bubble ธรรมดา แต่ AI CapEx มี bubble risk ได้</li>
+            <li>ผู้ชนะไม่ใช่คนที่ใช้เงินเยอะที่สุด แต่คือคนที่เปลี่ยน compute เป็น cash flow ได้ดีที่สุด</li>
+            <li>Semiconductor และ hardware layer ได้ประโยชน์ก่อน</li>
+            <li>Hyperscalers ต้องพิสูจน์ utilization และ ROI</li>
+            <li>Application layer ยังต้องพิสูจน์ willingness to pay</li>
+          </ul>
+        </div>
+
+        <p>ดังนั้นบทสรุปคือ: ให้ดูว่าเงินไหลไปไหน ใครเก็บ toll ใครรับ depreciation ใครมี pricing power และใครสามารถเปลี่ยน infrastructure ให้กลายเป็น profit pool</p>
+
+        <p>AI Cycle รอบนี้จะเรียกว่า bubble ก็อาจจะเป็นไปได้ แค่ตลาดตอนนี้ยังไม่ถึงจุดนั้นจริง ๆ ก่อนหน้านี้มันเคยถูกเรียกเป็น bubble เพราะยังจับต้องไม่ได้ขนาดนั้น แต่ล่าสุด CapEx โตเยอะมากและก็ยังมีโอกาสโตเพิ่มมากขึ้น แปลว่าตลาด AI ก็ยังสามารถโตได้อีก</p>
+
+        <p>Bubble อาจจะมาในอนาคต อันนี้มีโอกาสพอสมควร แต่ในระยะเวลา mid term มันอาจจะยังไม่ได้ถึง</p>
+
+        <div class="disclaimer">
+          *ไม่ใช่คำแนะนำในการลงทุน ทั้งหมดนี้เป็นเพียงการแชร์มุมมองเพื่อการศึกษาเท่านั้น ตัวเลขและข้อมูลอ้างอิงมาจากรายงานสาธารณะ ควรตรวจสอบข้อมูลสำคัญซ้ำก่อนนำไปใช้ตัดสินใจลงทุน
+        </div>
+      </article>
+
+      <aside class="aside fade-up delay-2" aria-label="Article sidebar">
+        <div class="side-card">
+          <div class="side-label">Core Thesis</div>
+          <p>AI กำลังเปลี่ยนจาก narrative ไปสู่ infrastructure buildout จริง คนชนะไม่ใช่คนที่ใช้เงินเยอะที่สุด แต่คือคนที่เปลี่ยน compute เป็น cash flow ได้ดีที่สุด</p>
+        </div>
+
+        <div class="side-card">
+          <div class="side-label">Numbers To Watch</div>
+          <div class="side-metric"><span>2026 AI Spend</span><strong>$700B+</strong></div>
+          <div class="side-metric"><span>Alphabet CapEx</span><strong>$180–190B</strong></div>
+          <div class="side-metric"><span>Meta CapEx</span><strong>$125–145B</strong></div>
+          <div class="side-metric"><span>MSFT Q2 CapEx</span><strong>$37.5B</strong></div>
+          <div class="side-metric"><span>Big Tech Debt</span><strong>~$455B</strong></div>
+        </div>
+
+        <div class="side-card">
+          <div class="side-label">In This Memo</div>
+          <div class="toc-list">
+            <a href="#top"><span>00</span>บทนำ</a>
+            <a href="#narrative-to-capex"><span>01</span>CapEx ไม่ใช่แค่ Story</a>
+            <a href="#macro-spending"><span>02</span>Scale ระดับ Macro</a>
+            <a href="#alphabet"><span>03</span>Alphabet</a>
+            <a href="#meta"><span>04</span>Meta</a>
+            <a href="#microsoft"><span>05</span>Microsoft</a>
+            <a href="#amazon"><span>06</span>Amazon</a>
+            <a href="#margin-shift"><span>07</span>Software → Infrastructure</a>
+            <a href="#who-benefits"><span>08</span>ใครได้ก่อน</a>
+            <a href="#bubble-or-supercycle"><span>09</span>Bubble หรือ Supercycle?</a>
+            <a href="#final-view"><span>13</span>Final View</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-socials">
+      <a href="https://www.youtube.com/@duiduithecryptobro" target="_blank" rel="noopener" aria-label="YouTube">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23 8.8c-.3-1.2-1.2-2.1-2.4-2.4C18.4 6 12 6 12 6s-6.4 0-8.6.4A3.3 3.3 0 0 0 1 8.8C.6 11 .6 12 .6 12s0 1 .4 3.2c.3 1.2 1.2 2.1 2.4 2.4 2.2.4 8.6.4 8.6.4s6.4 0 8.6-.4a3.3 3.3 0 0 0 2.4-2.4c.4-2.2.4-3.2.4-3.2s0-1-.4-3.2zM10 15.2V8.8l5.5 3.2L10 15.2z"/></svg>
+      </a>
+      <a href="https://x.com/dodgeduidui" target="_blank" rel="noopener" aria-label="X">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4.2l3.7 5.2L16.7 4H20l-6.5 7.1L20.4 20h-4.2l-4.2-5.9L6.8 20H3.6l6.7-7.4L4 4z"/></svg>
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=61588263951737" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.87v2.26h3.32l-.53 3.5h-2.8V24C19.62 23.1 24 18.1 24 12.07z"/></svg>
+      </a>
+      <a href="https://t.me/duisnote" target="_blank" rel="noopener" aria-label="Telegram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="m20.7 4.3-2.8 13.3c-.2.9-.8 1.1-1.6.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.5-.2L7 11.8l-4.2-1.3c-.9-.3-1-.9.2-1.4l16.3-6.3c.8-.3 1.5.2 1.2 1.5z"/></svg>
+      </a>
+    </div>
+    <div class="footer-copy">
+      &copy; 2026 <a href="blog.html">DUIDUI Journal</a> — Crypto KOL Portal
+    </div>
+  </footer>
+
+  <script src="assets/js/article-access.js"></script>
+  <script>
+    const clockEl = document.getElementById("clock");
+
+    function updateClock() {
+      const now = new Date();
+      const utc7 = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+      const hh = String(utc7.getUTCHours()).padStart(2, "0");
+      const mm = String(utc7.getUTCMinutes()).padStart(2, "0");
+      const ss = String(utc7.getUTCSeconds()).padStart(2, "0");
+      if (clockEl) clockEl.textContent = hh + ":" + mm + ":" + ss;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    document.addEventListener("click", function (event) {
+      const nav = document.getElementById("articleMobileNav");
+      if (nav && !nav.contains(event.target) && !event.target.closest(".mobile-menu-btn")) {
+        nav.classList.remove("open");
+      }
+    });
+  </script>
+</body>
+
+</html>
