@@ -367,7 +367,7 @@ function processImgs(html) {
     (_, file, cap, wide) => {
       file = file.trim();
       cap = cap ? cap.trim() : '';
-      return `<figure class="article-img${wide ? ' wide' : ''}">\n  <img src="assets/images/blog/${file}" alt="${esc(cap || file)}" />${cap ? `\n  <figcaption>${cap}</figcaption>` : ''}\n</figure>`;
+      return `<figure class="article-img${wide ? ' wide' : ''}">\n  <img src="assets/images/blog/${file}" alt="${esc(cap || file)}" loading="lazy" />${cap ? `\n  <figcaption>${cap}</figcaption>` : ''}\n</figure>`;
     });
 }
 
