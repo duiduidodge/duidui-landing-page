@@ -1266,7 +1266,7 @@
             </p>
             <div class="hero-stats-row fade-up delay-3">
               <div class="hero-article-badge">
-                <span class="hero-badge-count">11+</span>
+                <span class="hero-badge-count">12+</span>
                 <span class="hero-badge-label">บทความ</span>
               </div>
             </div>
@@ -1398,13 +1398,13 @@
     <!-- ── Filter Tabs ── -->
     <div class="filter-wrap fade-up delay-3">
       <button class="filter-tab active" onclick="filterPosts('all', this)">
-        ALL <span class="filter-count">12</span>
+        ALL <span class="filter-count">13</span>
       </button>
       <button class="filter-tab" onclick="filterPosts('thesis', this)">
         THESIS <span class="filter-count">5</span>
       </button>
       <button class="filter-tab" onclick="filterPosts('insight', this)">
-        MARKET INSIGHT <span class="filter-count">6</span>
+        MARKET INSIGHT <span class="filter-count">7</span>
       </button>
       <button class="filter-tab" onclick="filterPosts('narrative', this)">
         NARRATIVE SPOTLIGHT <span class="filter-count">1</span>
@@ -1416,6 +1416,29 @@
 
       <!-- Posts -->
       <div class="post-list" id="post-list">
+
+        <!-- Post: Saturn Credit / Gravity Points -->
+        <article class="post-card post-card--landscape" data-cat="insight" onclick="openProtectedArticle('saturn-credit-gravity-points.html')">
+          <div class="post-thumb-landscape">
+            <img src="assets/images/blog/saturn-credit.png" alt="Saturn Credit: ฟาร์ม Gravity Points บน Digital Credit ของ Saylor" loading="lazy" />
+          </div>
+          <div class="post-card-body">
+            <div class="post-meta">
+              <span class="cat-pill insight">MARKET INSIGHT</span>
+              <span class="meta-date">22 พ.ค. 2026</span>
+              <span class="meta-dot">·</span>
+              <span class="meta-read">9 นาที</span>
+              <a class="post-read-inline" href="saturn-credit-gravity-points.html" onclick="event.stopPropagation(); return handleProtectedArticleLink(event, 'saturn-credit-gravity-points.html');">
+                อ่านบทความ
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+            <h3 class="post-title">Saturn Credit: ฟาร์ม Gravity Points บน Digital Credit ของ Saylor</h3>
+            <p class="post-excerpt">
+              Saturn Credit เอา STRC dividend ~11% ของ Saylor มาแพ็กเป็น USDat/sUSDat บน-chain — farming guide ครบ ตั้งแต่ LP Curve 20x, YT-Pendle 30x, จนถึง Morpho route และ trap ที่ต้องระวัง
+            </p>
+          </div>
+        </article>
 
         <!-- Post: Pendle / RWA Yield Thesis -->
         <article class="post-card post-card--landscape" data-cat="thesis" onclick="openProtectedArticle('pendle-rwa-yield-thesis.html')">
@@ -1811,7 +1834,7 @@
             <div class="archive-list">
               <div class="archive-item is-disabled">
                 <span>พฤษภาคม 2026</span>
-                <span class="archive-count">3</span>
+                <span class="archive-count">4</span>
               </div>
               <div class="archive-item is-disabled">
                 <span>เมษายน 2026</span>
